@@ -86,7 +86,7 @@ namespace Redwerb.BizArk.Core.ImageExt
         }
 
         /// <summary>
-        /// Proportionally resizes an image.
+        /// Proportionally resizes an image to fit within the given dimensions.
         /// </summary>
         /// <param name="img"></param>
         /// <param name="maxWidth"></param>
@@ -94,10 +94,88 @@ namespace Redwerb.BizArk.Core.ImageExt
         /// <returns></returns>
         public static Image Resize(this Image img, int maxWidth, int maxHeight)
         {
-            var sz = img.Size.Resize(maxWidth, maxHeight);
-            Bitmap result = new Bitmap(sz.Width, sz.Height);
+            return Resize(img, new Size(maxWidth, maxHeight), ResizeMethod.FitStretch);
+        }
+
+        /// <summary>
+        /// Resizes an image.
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="maxHeight"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public static Image Resize(this Image img, int maxWidth, int maxHeight, ResizeMethod method)
+        {
+            return Resize(img, new Size(maxWidth, maxHeight), method);
+        }
+
+        /// <summary>
+        /// Resizes an image.
+        /// </summary>
+        /// <param name="img"></param>
+        /// <param name="max"></param>
+        /// <param name="method"></param>
+        /// <returns>The resized image. If the image does not need to be resized, returns the original image.</returns>
+        public static Image Resize(this Image img, Size max, ResizeMethod method)
+        {
+            Rectangle srcRect;
+            Rectangle destRect;
+            Bitmap result;
+            Size sz;
+
+            switch (method)
+            {
+                case ResizeMethod.Fit:
+                    if (img.Width <= max.Width && img.Height <= max.Height)
+                        return img;
+                    sz = img.Size.Resize(max);
+                    srcRect = new Rectangle(0, 0, img.Width, img.Height);
+                    destRect = new Rectangle(0, 0, sz.Width, sz.Height);
+                    result = new Bitmap(sz.Width, sz.Height);
+                    break;
+                case ResizeMethod.FitStretch:
+                    if (img.Width == max.Width && img.Height <= max.Height
+                        || img.Width <= max.Width && img.Height == max.Height)
+                        return img;
+                    sz = img.Size.Resize(max);
+                    srcRect = new Rectangle(0, 0, img.Width, img.Height);
+                    destRect = new Rectangle(0, 0, sz.Width, sz.Height);
+                    result = new Bitmap(sz.Width, sz.Height);
+                    break;
+                case ResizeMethod.Fill:
+                    if (img.Width <= max.Width && img.Height <= max.Height)
+                        return img;
+                    sz = (new Size(max.Width, max.Width)).Resize(max);
+                    if (sz.Width == max.Width && sz.Height < max.Height
+                        || sz.Width <= max.Width && sz.Height == max.Height)
+                        sz = (new Size(max.Height, max.Height)).Resize(max);
+
+                    //todo: need to complete fill operation.
+                    srcRect = new Rectangle();
+                    destRect = new Rectangle(0, 0, max.Width, max.Height);
+                    result = new Bitmap(max.Width, max.Height);
+                    break;
+                case ResizeMethod.FillStretch:
+                    if (img.Width == max.Width && img.Height == max.Height)
+                        return img;
+                    srcRect = Rectangle.Empty;
+                    destRect = Rectangle.Empty;
+                    result = new Bitmap(max.Width, max.Height);
+                    break;
+                case ResizeMethod.Stretch:
+                    if (img.Width == max.Width && img.Height == max.Height)
+                        return img;
+                    srcRect = new Rectangle(0, 0, img.Width, img.Height);
+                    destRect = new Rectangle(0, 0, max.Width, max.Height);
+                    result = new Bitmap(destRect.Width, destRect.Height);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("method", string.Format("{0} is not a known ResizeMethod.", method.ToString()));
+            }
+
             using (Graphics g = Graphics.FromImage((Image)result))
-                g.DrawImage(img, 0, 0, sz.Width, sz.Height);
+                g.DrawImage(img, destRect, srcRect, GraphicsUnit.Pixel);
             return result;
         }
 
@@ -130,4 +208,22 @@ namespace Redwerb.BizArk.Core.ImageExt
             }
         }
     }
+
+    /// <summary>
+    /// Methods of resizing.
+    /// </summary>
+    public enum ResizeMethod
+    {
+        /// <summary>Shrink to fit within the given dimensions. Might not fill the given dimensions. If smaller than the given dimensions, will not be resized.</summary>
+        Fit,
+        /// <summary>Shrink or expand to fit within the given dimensions. Might not fill the given dimensions.</summary>
+        FitStretch,
+        /// <summary>Shrink and crop to fit within the given dimensions. If smaller than the given dimensions, will not be resized.</summary>
+        Fill,
+        /// <summary>Shrink or expand and crop to fit within the given dimensions.</summary>
+        FillStretch,
+        /// <summary>Shrink or expand to fill the given dimensions. Does not maintain original proportions.</summary>
+        Stretch
+    }
+
 }
