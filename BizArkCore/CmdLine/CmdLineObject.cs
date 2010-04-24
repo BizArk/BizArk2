@@ -13,7 +13,7 @@ using Redwerb.BizArk.Core.Web;
 namespace Redwerb.BizArk.Core.CmdLine
 {
     /// <summary>
-    /// Represnts an object that can be initialized via command-line arguments.
+    /// Represents an object that can be initialized via command-line arguments.
     /// </summary>
     /// <remarks>
     /// <para>The CmdLineObject class can be inherited from to allow the 
@@ -35,6 +35,7 @@ namespace Redwerb.BizArk.Core.CmdLine
     /// </remarks>
     public abstract class CmdLineObject
     {
+
         #region Initialization and Destruction
 
         /// <summary>
@@ -119,6 +120,15 @@ namespace Redwerb.BizArk.Core.CmdLine
                 return false;
         }
 
+        private bool mIsInitialized = false;
+        /// <summary>
+        /// Gets a value that determines if the CmdLineObject is ready to use.
+        /// </summary>
+        public bool IsInitialized
+        {
+            get { return mIsInitialized; }
+        }
+
         #endregion
 
         #region Methods
@@ -154,10 +164,15 @@ namespace Redwerb.BizArk.Core.CmdLine
         {
             if (Application.ClickOnceDeployed)
             {
-                var url =  AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0];
-                var uri = new Uri(url);
-                var queryStr = uri.Query;
-                InitializeFromQueryString(queryStr);
+                var url = Application.ClickOnceUrl;
+                if (string.IsNullOrEmpty(url))
+                    InitializeEmpty();
+                else
+                {
+                    var uri = new Uri(url);
+                    var queryStr = uri.Query;
+                    InitializeFromQueryString(queryStr);
+                }
             }
             else
             {
@@ -173,7 +188,9 @@ namespace Redwerb.BizArk.Core.CmdLine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void InitializeEmpty()
         {
+            BeginInit();
             Initialize_Internal();
+            EndInit();
         }
 
         /// <summary>
@@ -183,6 +200,7 @@ namespace Redwerb.BizArk.Core.CmdLine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void InitializeFromQueryString(string queryStr)
         {
+            BeginInit();
             Initialize_Internal();
             if (Properties.Count == 0) return;
 
@@ -195,7 +213,8 @@ namespace Redwerb.BizArk.Core.CmdLine
                 var prop = Properties[p.Name];
                 if (prop == null) continue;
                 prop.Value = p.Value;
-            } 
+            }
+            EndInit();
         }
 
         /// <summary>
@@ -209,6 +228,7 @@ namespace Redwerb.BizArk.Core.CmdLine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void InitializeFromCmdLine(params string[] args)
         {
+            BeginInit();
             Initialize_Internal();
             if (Properties.Count == 0) return;
 
@@ -272,6 +292,7 @@ namespace Redwerb.BizArk.Core.CmdLine
                 }
 
             }
+            EndInit();
         }
 
         private string[] GetArgValues(string[] args)
@@ -387,6 +408,7 @@ namespace Redwerb.BizArk.Core.CmdLine
             }
 
             desc.AppendLine(GetTitle());
+            desc.AppendLine(GetAppDescription().Wrap(maxWidth));
             desc.AppendLine("Usage: " + GetUsage());
             desc.AppendLine();
 
@@ -426,6 +448,17 @@ namespace Redwerb.BizArk.Core.CmdLine
             }
 
             return desc.ToString();
+        }
+
+        /// <summary>
+        /// Override to provide a description of the application in the help text. The preferred method of providing a description is applying the DescriptionAttribute to the class.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string GetAppDescription()
+        {
+            var att = this.GetAttribute<DescriptionAttribute>(true);
+            if (att == null) return "";
+            return att.Description;
         }
 
         private int GetMaxNameLength()
@@ -526,7 +559,26 @@ namespace Redwerb.BizArk.Core.CmdLine
             return true;
         }
 
+        private void BeginInit()
+        {
+        }
+
+        private void EndInit()
+        {
+            mIsInitialized = true;
+            Initialized();
+        }
+
+        /// <summary>
+        /// This method is called after initialization is complete to allow for any validation.
+        /// </summary>
+        protected virtual void Initialized()
+        {
+        }
+
         #endregion
+
+        #region Support
 
         private class Arg
         {
@@ -550,5 +602,8 @@ namespace Redwerb.BizArk.Core.CmdLine
 
         }
 
+        #endregion
+
     }
+
 }
