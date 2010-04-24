@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
-using System.Reflection;
-using Redwerb.BizArk.Core.TypeExt;
-using Redwerb.BizArk.Core.ArrayExt;
-using System.Drawing;
 using System.Data;
+using System.Drawing;
+using System.Reflection;
+using System.Text;
+using Redwerb.BizArk.Core.TypeExt;
 
 namespace Redwerb.BizArk.Core.Convert
 {
@@ -78,6 +76,9 @@ namespace Redwerb.BizArk.Core.Convert
             if (fromType == null || toType == null)
                 return new NullConversionStrategy();
 
+            if (toType.IsEnum)
+                return new EnumConversionStrategy(toType);
+
             if (fromType == typeof(string) && toType == typeof(bool))
                 return new StringToBoolConversionStrategy();
 
@@ -117,8 +118,8 @@ namespace Redwerb.BizArk.Core.Convert
             if (ci != null)
                 return new CtorConversionStrategy(ci);
 
-            if (fromType.Implements(typeof(IConvertible)))
-                return new ConvertibleConversionStrategy(fromType);
+            if (fromType.Implements(typeof(IConvertible)) && ConvertibleConversionStrategy.CanConvertTo(toType))
+                return new ConvertibleConversionStrategy(toType);
 
             if (fromType.IsDerivedFrom(typeof(Type)) && toType == typeof(SqlDbType))
                 return new TypeToSqlDBTypeConversionStrategy();

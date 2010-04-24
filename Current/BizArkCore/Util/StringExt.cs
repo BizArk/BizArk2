@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Redwerb.BizArk.Core.StringExt
 {
@@ -50,7 +47,7 @@ namespace Redwerb.BizArk.Core.StringExt
                 } while (remainingLine.Length > 0);
             }
 
-            return string.Join(Environment.NewLine, lines.ToArray());
+            return string.Join(Environment.NewLine + prefix, lines.ToArray());
         }
 
         private static string GetLine(string str, int maxLength)
@@ -113,14 +110,14 @@ namespace Redwerb.BizArk.Core.StringExt
         }
 
         /// <summary>
-        /// Returns the string up to the maximum allowed.
+        /// Gets the string up to the maximum number of characters.
         /// </summary>
         /// <param name="str"></param>
-        /// <param name="length"></param>
+        /// <param name="max"></param>
         /// <returns></returns>
-        public static string Max(this string str, int length)
+        public static string Max(this string str, int max)
         {
-            return str.Substring(0, length);
+            return Max(str, max, false);
         }
 
         /// <summary>
@@ -149,6 +146,89 @@ namespace Redwerb.BizArk.Core.StringExt
                 if (i < 0) throw;
                 throw new FormatException(string.Format("Cannot convert value '{0}'", vals[i]), ex);
             }
+        }
+		
+        /// <summary>
+        /// Gets the string up to the maximum number of characters. If ellipses is true and the string is longer than the max, the last 3 chars will be ellipses.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="max"></param>
+        /// <param name="ellipses"></param>
+        /// <returns></returns>
+        public static string Max(this string str, int max, bool ellipses)
+        {
+            if (str == null) return null;
+
+            if (str.Length <= max) return str;
+            if (ellipses)
+                return str.Substring(0, max - 3) + "...";
+            else
+                return str.Substring(0, max);
+        }
+
+        /// <summary>
+        /// Determines if a string consists of all valid ASCII values.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool IsAscii(this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return true;
+
+            foreach (var ch in str)
+                if ((int)ch > 127) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the right side of the string.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static string Right(this string str, int length)
+        {
+            if (str == null) return null;
+            if (str.Length <= length) return str;
+            return str.Substring(str.Length - length);
+        }
+
+        /// <summary>
+        /// Truncates the string.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static string Left(this string str, int length)
+        {
+            if (str == null) return null;
+            if (str.Length <= length) return str;
+            return str.Substring(0, length);
+        }
+
+        /// <summary>
+        /// Shortcut for string.Format.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string Format(this string str, params object[] args)
+        {
+            if (str == null) return null;
+            return string.Format(str, args);
+        }
+
+        /// <summary>
+        /// If the string is empty, returns the default.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="dflt"></param>
+        /// <returns></returns>
+        public static string IfEmpty(this string str, string dflt)
+        {
+            if (str.IsEmpty()) return dflt;
+            return str;
         }
 
     }

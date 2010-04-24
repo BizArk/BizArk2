@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using My = Redwerb.BizArk.Core.Properties;
-using System.Data;
 using System.ComponentModel;
+using System.Data;
 using System.Data.Common;
+using My = Redwerb.BizArk.Core.Properties;
 
 namespace Redwerb.BizArk.Core.Data
 {

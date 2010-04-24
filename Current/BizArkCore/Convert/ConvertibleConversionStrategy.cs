@@ -117,5 +117,17 @@ namespace Redwerb.BizArk.Core.Convert
             return convertible.ToType(ConversionType, provider);
         }
 
+        /// <summary>
+        /// Determines if IConvertible can convert to the given type.
+        /// </summary>
+        /// <param name="toType"></param>
+        /// <returns></returns>
+        public static bool CanConvertTo(Type toType)
+        {
+            foreach (var cType in ConvertTypes)
+                if (toType == cType) return true;
+            return false;
+        }
+
     }
 }
