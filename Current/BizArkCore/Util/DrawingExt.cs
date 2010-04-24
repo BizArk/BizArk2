@@ -17,19 +17,30 @@ namespace Redwerb.BizArk.Core.DrawingExt
         /// <returns></returns>
         public static Size Resize(this Size sz, int maxWidth, int maxHeight)
         {
+            return Resize(sz, new Size(maxWidth, maxHeight));
+        }
+
+        /// <summary>
+        /// Proportionally resizes a Size structure.
+        /// </summary>
+        /// <param name="sz"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
+        public static Size Resize(this Size sz, Size max)
+        {
             int height = sz.Height;
             int width = sz.Width;
 
             double actualRatio = (double)width / (double)height;
-            double maxRatio = (double)maxWidth / (double)maxHeight;
+            double maxRatio = (double)max.Width / (double)max.Height;
             double resizeRatio;
 
             if (actualRatio > maxRatio)
                 // width is the determinate side.
-                resizeRatio = (double)maxWidth / (double)width;
+                resizeRatio = (double)max.Width / (double)width;
             else
                 // height is the determinate side.
-                resizeRatio = (double)maxHeight / (double)height;
+                resizeRatio = (double)max.Height / (double)height;
 
             width = (int)(width * resizeRatio);
             height = (int)(height * resizeRatio);

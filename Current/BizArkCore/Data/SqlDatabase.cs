@@ -154,7 +154,7 @@ namespace Redwerb.BizArk.Core.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="processRow">void ProcessDataRow(SqlDataReader dr)</param>
-        public void ExecuteDataReader(SqlCommand cmd, ProcessDataRow processRow)
+        public void ExecuteDataReader(SqlCommand cmd, ProcessRowDelegate processRow)
         {
             ExecuteCommand(cmd, () =>
                 {
@@ -217,6 +217,79 @@ namespace Redwerb.BizArk.Core.Data
             }
         }
 
+        /// <summary>
+        /// Executes a command and returns the first row as the given object. The class must have a default constructor.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cmd"></param>
+        /// <param name="process">If not set, sets properties based on the field name returned from the command.</param>
+        /// <returns></returns>
+        public T GetObject<T>(SqlCommand cmd, ProcessRowDelegate<T> process = null) where T : class
+        {
+            if (process == null)
+                process = new ProcessRowDelegate<T>(ProcessRow<T>);
+
+            T obj = null;
+            ExecuteDataReader(cmd, (row) => { obj = process(row); return false; });
+            return obj;
+        }
+
+        /// <summary>
+        /// Executes a command and returns the rows as an array of objects. The class must have a default constructor.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cmd"></param>
+        /// <param name="process">If not set, sets properties based on the field name returned from the command.</param>
+        /// <returns></returns>
+        public T[] GetObjects<T>(SqlCommand cmd, ProcessRowDelegate<T> process = null) where T : class
+        {
+            if (process == null)
+                process = new ProcessRowDelegate<T>(ProcessRow<T>);
+
+            var objs = new List<T>();
+            ExecuteDataReader(cmd, (row) =>
+                {
+                    var obj = process(row); 
+                    if(obj != null) objs.Add(obj); 
+                    return true;
+                });
+            return objs.ToArray();
+        }
+
+        /// <summary>
+        /// Inserts the given object into the given table. The properties are expected to match the field names. Executes SCOPE_IDENTITY() and returns the value.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="values"></param>
+        /// <returns>The identity value. int.MinValue if not available.</returns>
+        public int Insert(string tableName, object values)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// Updates a given record identified by the key.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="key"></param>
+        /// <param name="values"></param>
+        /// <returns>The number of rows affected.</returns>
+        public int Update(string tableName, object key, object values)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="key"></param>
+        /// <returns>The number of rows affected.</returns>
+        public int Delete(string tableName, object key)
+        {
+            return 0;
+        }
+
         #endregion
 
         #region Support
@@ -230,7 +303,35 @@ namespace Redwerb.BizArk.Core.Data
         /// Processes a single row of a data reader.
         /// </summary>
         /// <param name="dr"></param>
-        public delegate void ProcessDataRow(SqlDataReader dr);
+        /// <returns>True to continue, false to stop processing rows.</returns>
+        public delegate bool ProcessRowDelegate(SqlDataReader dr);
+
+        /// <summary>
+        /// Processes a data row and returns the result.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dr"></param>
+        /// <returns></returns>
+        public delegate T ProcessRowDelegate<T>(IDataReader dr);
+
+        /// <summary>
+        /// Implements ProcessRowDelegate[T].
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        private T ProcessRow<T>(IDataReader row)
+        {
+            var obj = Activator.CreateInstance<T>();
+            var props = TypeDescriptor.GetProperties(obj);
+            for (int i = 0; i < row.FieldCount; i++)
+            {
+                var fieldName = row.GetName(i);
+                var prop = props.Find(fieldName, true);
+                if (prop != null) prop.SetValue(obj, ConvertEx.ChangeType(row[i], prop.PropertyType));
+            }
+            return obj;
+        }
 
         #endregion
 
