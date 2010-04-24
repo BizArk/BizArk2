@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
 using Redwerb.BizArk.Core.Convert;
 
 namespace Redwerb.BizArk.Core
@@ -367,7 +363,9 @@ namespace Redwerb.BizArk.Core
 
         #region IsEmpty
 
+        private static object sEmptyValuesLock = new object();
         private static Dictionary<Type, List<object>> sEmptyValues = new Dictionary<Type, List<object>>();
+        private static object sRegisteredDefaultEmptyValuesLock = new object();
         private static List<Type> sRegisteredDefaultEmptyValues = new List<Type>();
 
         /// <summary>
@@ -381,13 +379,15 @@ namespace Redwerb.BizArk.Core
             if (value == DBNull.Value) return true;
 
             Type type = value.GetType();
-            if (!sRegisteredDefaultEmptyValues.Contains(type))
-                RegisterDefaultEmptyValues(type);
+            RegisterDefaultEmptyValues(type);
 
-            foreach (var emptyVal in sEmptyValues[type])
+            lock (sEmptyValuesLock)
             {
-                if (value.Equals(emptyVal))
-                    return true;
+                foreach (var emptyVal in sEmptyValues[type])
+                {
+                    if (value.Equals(emptyVal))
+                        return true;
+                }
             }
             return false;
         }
@@ -406,12 +406,16 @@ namespace Redwerb.BizArk.Core
         /// <param name="emptyValue"></param>
         public static void RegisterEmptyValue(Type type, object emptyValue)
         {
-            if (!sEmptyValues.ContainsKey(type))
-                sEmptyValues.Add(type, new List<object>());
+            if (type == null) return;
 
-            if (!sEmptyValues[type].Contains(emptyValue))
-                sEmptyValues[type].Add(emptyValue);
+            lock (sEmptyValuesLock)
+            {
+                if (!sEmptyValues.ContainsKey(type))
+                    sEmptyValues.Add(type, new List<object>());
 
+                if (!sEmptyValues[type].Contains(emptyValue))
+                    sEmptyValues[type].Add(emptyValue);
+            }
         }
 
         /// <summary>
@@ -420,13 +424,22 @@ namespace Redwerb.BizArk.Core
         /// <param name="type"></param>
         private static void RegisterDefaultEmptyValues(Type type)
         {
-            if (sRegisteredDefaultEmptyValues.Contains(type)) return;
+            if (type == null) return;
 
-            sRegisteredDefaultEmptyValues.Add(type);
+            lock (sRegisteredDefaultEmptyValuesLock)
+            {
+                // check to see if the default values have already been registered. Can only register once.
+                if (sRegisteredDefaultEmptyValues.Contains(type)) return;
 
-            // some types might not have any "default" empty values (such as bool)
-            if (!sEmptyValues.ContainsKey(type))
-                sEmptyValues.Add(type, new List<object>());
+                sRegisteredDefaultEmptyValues.Add(type);
+            }
+
+            lock (sEmptyValuesLock)
+            {
+                // some types might not have any "default" empty values (such as bool)
+                if (!sEmptyValues.ContainsKey(type))
+                    sEmptyValues.Add(type, new List<object>());
+            }
 
             if (type == typeof(char))
             {
@@ -463,13 +476,25 @@ namespace Redwerb.BizArk.Core
             if (type == null)
                 throw new ArgumentNullException("type");
 
-            // Get the first registered empty value.
-            if (sEmptyValues.ContainsKey(type) && sEmptyValues[type].Count > 0)
-                return sEmptyValues[type][0];
+            lock (sEmptyValuesLock)
+            {
+                // Get the first registered empty value.
+                if (sEmptyValues.ContainsKey(type) && sEmptyValues[type].Count > 0)
+                    return sEmptyValues[type][0];
+            }
+
             if (!type.IsValueType)
                 return null;
             else if (type == typeof(char))
                 return '\0';
+            else if (type.IsEnum)
+            {
+                var fields = type.GetFields();
+                if (fields.Length > 1)
+                    return fields[1].GetValue(type);
+                else
+                    return 0;
+            }
             else
             {
                 object emptyVal;

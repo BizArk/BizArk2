@@ -82,6 +82,7 @@
     <Compile Include="Convert\ConvertStrategyMgr.cs" />
     <Compile Include="Convert\ByteArrayToImageConversionStrategy.cs" />
     <Compile Include="Convert\CtorConversionStrategy.cs" />
+    <Compile Include="Convert\EnumConversionStrategy.cs" />
     <Compile Include="Convert\ImageToByteArrayConversionStrategy.cs" />
     <Compile Include="Convert\DefaultValueConversionStrategy.cs" />
     <Compile Include="Convert\IConvertStrategy.cs" />

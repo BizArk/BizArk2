@@ -45,5 +45,13 @@ namespace Redwerb.BizArk.Core.TypeExt
             return ClassFactory.CreateObject(type, args);
         }
 
+        public static bool IsNullable(this Type type)
+        {
+            if (type == null) return false;
+            if (!type.IsGenericType) return false;
+            if (type.GetGenericTypeDefinition() != typeof(Nullable<>)) return false;
+            return true;
+        }
+
     }
 }
