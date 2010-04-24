@@ -161,5 +161,21 @@ namespace Redwerb.BizArk.Core
             }
         }
 
+        /// <summary>
+        /// Gets the URL used for click-once deployed apps.
+        /// </summary>
+        public static string ClickOnceUrl
+        {
+            get
+            {
+                if (AppDomain.CurrentDomain == null) return "";
+                if (AppDomain.CurrentDomain.SetupInformation == null) return "";
+                if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments == null) return "";
+                if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData == null) return "";
+                if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData.Length == 0) return "";
+                return AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0];
+            }
+        }
+
     }
 }
