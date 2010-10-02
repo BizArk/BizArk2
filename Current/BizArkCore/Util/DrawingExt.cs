@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Redwerb.BizArk.Core.DrawingExt
+namespace BizArk.Core.DrawingExt
 {
 
     /// <summary>

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace Redwerb.BizArk.Core.DataExt
+namespace BizArk.Core.DataExt
 {
     /// <summary>
     /// Provides extension methods for string arrays.

@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Uses the IConvertible interface to convert the value.

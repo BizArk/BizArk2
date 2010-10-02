@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using Redwerb.BizArk.Core.AttributeExt;
-using Redwerb.BizArk.Core.ArrayExt;
-using Redwerb.BizArk.Core.StringExt;
+using BizArk.Core.AttributeExt;
+using BizArk.Core.ArrayExt;
+using BizArk.Core.StringExt;
 using System.Xml;
 using io = System.IO;
-using Redwerb.BizArk.Core.Web;
+using BizArk.Core.Web;
 
-namespace Redwerb.BizArk.Core.CmdLine
+namespace BizArk.Core.CmdLine
 {
     /// <summary>
     /// Represents an object that can be initialized via command-line arguments.
@@ -19,7 +19,7 @@ namespace Redwerb.BizArk.Core.CmdLine
     /// <para>The CmdLineObject class can be inherited from to allow the 
     /// properties of a class to be initialized from command-line arguments.
     /// The properties can be any type that can be converted to and from a string 
-    /// using the <see cref="Redwerb.BizArk.Core.ConvertEx.ChangeType(object, Type)"/> 
+    /// using the <see cref="BizArk.Core.ConvertEx.ChangeType(object, Type)"/> 
     /// method.</para>
     /// <para>Only properties that have the CmdLineArgAttribute applied to them
     /// can be initialized from the command-line. To make a property the default
@@ -222,7 +222,7 @@ namespace Redwerb.BizArk.Core.CmdLine
         /// </summary>
         /// <param name="args">The command-line args. Make sure to shrink the array if the first element contains the path to the application (as in Environment.GetCommandLineArgs()) or the default parameter won't get set correctly.</param>
         /// <example>
-        /// using Redwerb.BizArk.Core.ArrayExt;
+        /// using BizArk.Core.ArrayExt;
         /// var args = Environment.GetCommandLineArgs().Shrink(1);
         /// </example>
         [EditorBrowsable(EditorBrowsableState.Advanced)]

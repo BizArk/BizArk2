@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.ArrayExt
+namespace BizArk.Core.ArrayExt
 {
     /// <summary>
     /// Provides extension methods for string arrays.

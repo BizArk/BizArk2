@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Strategy used to return the default value for a type;

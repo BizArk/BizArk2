@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 
-namespace Redwerb.BizArk.Core.Template
+namespace BizArk.Core.Template
 {
 
     /// <summary>

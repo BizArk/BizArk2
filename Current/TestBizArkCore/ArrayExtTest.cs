@@ -1,4 +1,4 @@
-﻿using Redwerb.BizArk.Core.ArrayExt;
+﻿using BizArk.Core.ArrayExt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

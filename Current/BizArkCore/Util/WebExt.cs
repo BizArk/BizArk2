@@ -5,7 +5,7 @@ using System.Net;
 using System.IO;
 using System.Web;
 
-namespace Redwerb.BizArk.Core.WebExt
+namespace BizArk.Core.WebExt
 {
     /// <summary>
     /// Extension methods that are useful when working with web objects.

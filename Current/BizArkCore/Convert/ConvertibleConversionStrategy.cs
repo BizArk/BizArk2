@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Uses the IConvertible interface to convert the value.

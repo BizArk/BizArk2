@@ -11,7 +11,7 @@ using System.IO;
  * Additional information about MAPI can be found on MSDN: http://msdn.microsoft.com/en-us/library/ms529058%28EXCHG.10%29.aspx.
  */
 
-namespace Redwerb.BizArk.Core.Email
+namespace BizArk.Core.Email
 {
     internal class MAPI32
     {

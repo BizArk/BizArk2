@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.ExceptionExt
+namespace BizArk.Core.ExceptionExt
 {
 
     /// <summary>

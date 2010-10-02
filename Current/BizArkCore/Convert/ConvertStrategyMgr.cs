@@ -5,9 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
-using Redwerb.BizArk.Core.TypeExt;
+using BizArk.Core.TypeExt;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Manages the strategies that can be used to convert values. Used by ConvertEx.

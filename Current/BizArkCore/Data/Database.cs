@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using My = Redwerb.BizArk.Core.Properties;
+using My = BizArk.Core.Properties;
 
-namespace Redwerb.BizArk.Core.Data
+namespace BizArk.Core.Data
 {
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace Redwerb.BizArk.Core.Data
 
         private static Database sDefaultDatabase;
         /// <summary>
-        /// Gets or sets the default database to use.  If this property is not set explicitly, a default one will be created automatically based on the DefaultConnStr connection string defined in Redwerb.BizArk.Core.dll.config.
+        /// Gets or sets the default database to use.  If this property is not set explicitly, a default one will be created automatically based on the DefaultConnStr connection string defined in BizArk.Core.dll.config.
         /// </summary>
         public static Database DefaultDatabase
         {

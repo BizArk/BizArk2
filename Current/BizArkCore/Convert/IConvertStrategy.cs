@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Interface for defining conversion strategies. Used in ConvertEx. Each strategy object should be used to convert from exactly one type to another.

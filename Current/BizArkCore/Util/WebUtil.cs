@@ -6,7 +6,7 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 
-namespace Redwerb.BizArk.Core.Util
+namespace BizArk.Core.Util
 {
 
     /// <summary>

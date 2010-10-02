@@ -5,7 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace Redwerb.BizArk.Core.AttributeExt
+namespace BizArk.Core.AttributeExt
 {
     /// <summary>
     /// Provides extension methods for PropertyDescriptor.
