@@ -442,21 +442,27 @@ namespace BizArk.Core
                     sEmptyValues.Add(type, new List<object>());
             }
 
+            if (!type.IsValueType)
+                RegisterEmptyValue(type, null);
+            else if (type.IsNullable())
+                RegisterEmptyValue(type, null);
             if (type == typeof(char))
-            {
                 RegisterEmptyValue(type, '\0');
-            }
-            else
+            if (type.IsEnum)
             {
-                object emptyVal;
-                emptyVal = GetStaticFieldValue(type, "MinValue");
-                if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
-                emptyVal = GetStaticFieldValue(type, "MaxValue");
-                if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
-                emptyVal = GetStaticFieldValue(type, "Empty");
-                if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+                var fields = type.GetFields();
+                if (fields.Length > 1)
+                    RegisterEmptyValue(type, fields[1].GetValue(type));
+                else
+                    RegisterEmptyValue(type, 0);
             }
-
+            object emptyVal;
+            emptyVal = GetStaticFieldValue(type, "MinValue");
+            if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+            emptyVal = GetStaticFieldValue(type, "MaxValue");
+            if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+            emptyVal = GetStaticFieldValue(type, "Empty");
+            if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
         }
 
         /// <summary>
@@ -477,34 +483,13 @@ namespace BizArk.Core
             if (type == null)
                 throw new ArgumentNullException("type");
 
+            RegisterDefaultEmptyValues(type);
+
             lock (sEmptyValuesLock)
             {
                 // Get the first registered empty value.
                 if (sEmptyValues.ContainsKey(type) && sEmptyValues[type].Count > 0)
                     return sEmptyValues[type][0];
-            }
-
-            if (!type.IsValueType)
-                return null;
-            else if (type.IsNullable())
-                return null;
-            else if (type == typeof(char))
-                return '\0';
-            else if (type.IsEnum)
-            {
-                var fields = type.GetFields();
-                if (fields.Length > 1)
-                    return fields[1].GetValue(type);
-                else
-                    return 0;
-            }
-            else
-            {
-                object emptyVal;
-                emptyVal = GetStaticFieldValue(type, "Empty");
-                if (emptyVal != null) return emptyVal;
-                emptyVal = GetStaticFieldValue(type, "MinValue");
-                if (emptyVal != null) return emptyVal;
             }
 
             // Should only reach here if we have an unhandled type.

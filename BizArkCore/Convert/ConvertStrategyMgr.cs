@@ -76,6 +76,12 @@ namespace BizArk.Core.Convert
             if (fromType == null || toType == null)
                 return new NullConversionStrategy();
 
+            if (fromType.IsDerivedFrom(typeof(Type)) && toType == typeof(SqlDbType))
+                return new TypeToSqlDBTypeConversionStrategy();
+
+            if (fromType.IsDerivedFrom(typeof(SqlDbType)) && toType == typeof(Type))
+                return new SqlDBTypeToTypeConversionStrategy();
+
             if (toType.IsEnum)
                 return new EnumConversionStrategy(toType);
 
@@ -120,12 +126,6 @@ namespace BizArk.Core.Convert
 
             if (fromType.Implements(typeof(IConvertible)) && ConvertibleConversionStrategy.CanConvertTo(toType))
                 return new ConvertibleConversionStrategy(toType);
-
-            if (fromType.IsDerivedFrom(typeof(Type)) && toType == typeof(SqlDbType))
-                return new TypeToSqlDBTypeConversionStrategy();
-
-            if (fromType.IsDerivedFrom(typeof(SqlDbType)) && toType == typeof(Type))
-                return new SqlDBTypeToTypeConversionStrategy();
 
             return new InvalidConversionStrategy(String.Format("Invalid cast. Cannot convert from {0} to {1}.", fromType, toType));
         }
