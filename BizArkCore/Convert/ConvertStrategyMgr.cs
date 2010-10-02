@@ -48,7 +48,7 @@ namespace Redwerb.BizArk.Core.Convert
             if (sStrategies.ContainsKey(fromKey))
                 if (sStrategies[fromKey].ContainsKey(toKey))
                 {
-                    strategy = sStrategies[fromType][toKey];
+                    strategy = sStrategies[fromKey][toKey];
                     // A strategy can be set to null in which case
                     // we want to recreate it.
                     if (strategy != null)

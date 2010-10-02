@@ -46,6 +46,14 @@ namespace Redwerb.BizArk.Core.Data
         /// <returns>The number of rows affected.</returns>
         int Delete(string tableName, object key);
 
+        /// <summary>
+        /// Determines if the record exists.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        bool Exists(string tableName, object key);
+
     }
 
     /// <summary>
@@ -143,12 +151,11 @@ namespace Redwerb.BizArk.Core.Data
             using (var conn = CreateConnection())
             {
                 var cmd = conn.CreateCommand();
-                var fields = new List<string>();
                 var criteria = new List<string>();
                 var props = TypeDescriptor.GetProperties(key);
                 foreach (PropertyDescriptor prop in props)
                 {
-                    fields.Add(string.Format("{0} = @{0}", prop.Name));
+                    criteria.Add(string.Format("{0} = @{0}", prop.Name));
                     AddParameter(cmd, prop, key);
                 }
 
@@ -159,6 +166,39 @@ namespace Redwerb.BizArk.Core.Data
 
                 conn.Open();
                 return cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
+        /// Determines if the record exists.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool Exists(string tableName, object key)
+        {
+            using (var conn = CreateConnection())
+            {
+                var cmd = conn.CreateCommand();
+                var criteria = new List<string>();
+                var props = TypeDescriptor.GetProperties(key);
+                foreach (PropertyDescriptor prop in props)
+                {
+                    criteria.Add(string.Format("{0} = @{0}", prop.Name));
+                    AddParameter(cmd, prop, key);
+                }
+
+                if (criteria.Count == 0)
+                    cmd.CommandText = string.Format("SELECT COUNT(*) FROM {0}", tableName);
+                else
+                    cmd.CommandText = string.Format("SELECT COUNT(*) FROM {0} WHERE {1}", tableName, string.Join(" AND ", criteria.ToArray()));
+
+                conn.Open();
+                var count = (int)cmd.ExecuteScalar();
+                if (count == 0)
+                    return false;
+                else
+                    return true;
             }
         }
 

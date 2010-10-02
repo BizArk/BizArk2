@@ -71,6 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
+    <Content Include="Resources\ValidRpcFaultResponse.xml" />
+    <Content Include="Resources\ValidRpcParamsResponse.xml" />
+    <Content Include="Resources\XmlRpcInvokeTest.xml" />
+    <Content Include="Resources\XmlRpcTest.xml" />
     <None Include="Resources\TextTemplateTest.txt" />
   </ItemGroup>
   <ItemGroup>
