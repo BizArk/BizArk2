@@ -135,7 +135,7 @@ namespace TestBizArkCore
             Assert.IsNull(emptyValue);
 
             emptyValue = ConvertEx.GetDefaultEmptyValue<string>();
-            Assert.IsNull(emptyValue);
+            Assert.IsNull(emptyValue, string.Format("The value is '{0}'.", emptyValue));
 
             emptyValue = ConvertEx.GetDefaultEmptyValue<int>();
             Assert.AreEqual(int.MinValue, emptyValue);

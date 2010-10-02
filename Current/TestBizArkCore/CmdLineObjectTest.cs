@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BizArk.Core.CmdLine;
 using BizArk.Core.StringExt;
 using BizArk.Core.WebExt;
+using BizArk.Core.Util;
+using System.IO;
 
 namespace TestBizArkCore
 {
@@ -150,6 +152,8 @@ namespace TestBizArkCore
         public void SaveAndRestoreTest()
         {
             var settingsPath = @"C:\garb\Test.xml";
+            if (!Directory.Exists(@"C:\garb"))
+                Directory.CreateDirectory(@"C:\garb");
             var cmdLine = new MyTestCmdLineObject();
             var stuffILike = new string[] { "Cookies", "Candy", "Ice Cream" };
             Assert.AreNotEqual("Hi", cmdLine.Hello);
