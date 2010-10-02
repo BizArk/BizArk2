@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Redwerb.BizArk.Core.CmdLine;
-using Redwerb.BizArk.Core.StringExt;
-using Redwerb.BizArk.Core.WebExt;
+using BizArk.Core.CmdLine;
+using BizArk.Core.StringExt;
+using BizArk.Core.WebExt;
 
 namespace TestBizArkCore
 {

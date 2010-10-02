@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.CmdLine
+namespace BizArk.Core.CmdLine
 {
     /// <summary>
     /// Apply this attribute to a property in order to allow the CmdLineProcessor to set the value.

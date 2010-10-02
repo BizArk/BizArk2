@@ -1,4 +1,4 @@
-﻿using Redwerb.BizArk.Core.Collections;
+﻿using BizArk.Core.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 

@@ -8,8 +8,8 @@
     <ProjectGuid>{8D3E6472-7E47-4266-947B-659F17F641F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Redwerb.BizArk.Core</RootNamespace>
-    <AssemblyName>Redwerb.BizArk.Core</AssemblyName>
+    <RootNamespace>BizArk.Core</RootNamespace>
+    <AssemblyName>BizArk.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
@@ -41,7 +41,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Redwerb.BizArk.Core.XML</DocumentationFile>
+    <DocumentationFile>bin\BizArk.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

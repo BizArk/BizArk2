@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Redwerb.BizArk.Core.StringExt
+namespace BizArk.Core.StringExt
 {
     /// <summary>
     /// Provides extension methods for strings.

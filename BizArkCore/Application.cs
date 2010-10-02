@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Redwerb.BizArk.Core.AttributeExt;
+using BizArk.Core.AttributeExt;
 using System.Reflection;
-using Redwerb.BizArk.Core.Util;
+using BizArk.Core.Util;
 using System.IO;
 
-namespace Redwerb.BizArk.Core
+namespace BizArk.Core
 {
     /// <summary>
     /// Primary class for application information and plugin support.

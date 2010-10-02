@@ -7,9 +7,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading;
-using Redwerb.BizArk.Core.ExceptionExt;
+using BizArk.Core.ExceptionExt;
 
-namespace Redwerb.BizArk.Core.Web
+namespace BizArk.Core.Web
 {
 
     /// <summary>

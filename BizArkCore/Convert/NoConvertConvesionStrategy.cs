@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Strategy used to do no conversion at all. Just returns the value that was sent in.

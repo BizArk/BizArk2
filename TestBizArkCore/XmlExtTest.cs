@@ -1,4 +1,4 @@
-﻿using Redwerb.BizArk.Core.XmlExt;
+﻿using BizArk.Core.XmlExt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System.Diagnostics;

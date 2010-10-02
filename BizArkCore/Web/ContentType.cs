@@ -4,10 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
-using Redwerb.BizArk.Core.AttributeExt;
-using Redwerb.BizArk.Core.Util;
+using BizArk.Core.AttributeExt;
+using BizArk.Core.Util;
 
-namespace Redwerb.BizArk.Core.Web
+namespace BizArk.Core.Web
 {
 
     /// <summary>

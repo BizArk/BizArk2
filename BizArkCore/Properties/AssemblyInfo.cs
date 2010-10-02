@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("BizArk Core")]
 [assembly: AssemblyDescription("Core assembly in the BizArk framework.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Redwerb")]
+[assembly: AssemblyCompany("BizArk")]
 [assembly: AssemblyProduct("BizArk")]
-[assembly: AssemblyCopyright("Copyright © Redwerb 2008")]
+[assembly: AssemblyCopyright("Copyright © BizArk 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

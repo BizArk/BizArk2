@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace Redwerb.BizArk.Core.XmlExt
+namespace BizArk.Core.XmlExt
 {
     /// <summary>
     /// Provides extension methods for processing Xml.

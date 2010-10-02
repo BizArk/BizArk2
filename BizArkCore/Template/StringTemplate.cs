@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Redwerb.BizArk.Core.ArrayExt;
+using BizArk.Core.ArrayExt;
 
-namespace Redwerb.BizArk.Core.Template
+namespace BizArk.Core.Template
 {
 
     /// <summary>

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Globalization;
-using Redwerb.BizArk.Core.AttributeExt;
-using Redwerb.BizArk.Core.ArrayExt;
+using BizArk.Core.AttributeExt;
+using BizArk.Core.ArrayExt;
 using System.Collections;
 
-namespace Redwerb.BizArk.Core.CmdLine
+namespace BizArk.Core.CmdLine
 {
     /// <summary>
     /// Represents a property that can be set via the command-line.

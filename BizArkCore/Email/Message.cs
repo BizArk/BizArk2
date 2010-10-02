@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 
-namespace Redwerb.BizArk.Core.Email
+namespace BizArk.Core.Email
 {
     /// <summary>
     /// 

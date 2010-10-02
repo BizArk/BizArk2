@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 
-namespace Redwerb.BizArk.Core.Util
+namespace BizArk.Core.Util
 {
 
     /// <summary>

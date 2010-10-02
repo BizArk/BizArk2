@@ -2,7 +2,7 @@
 using System.Net;
 using System.IO;
 
-namespace Redwerb.BizArk.Core.Web
+namespace BizArk.Core.Web
 {
 
     /// <summary>

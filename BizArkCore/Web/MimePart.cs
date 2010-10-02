@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Collections.Specialized;
 
-namespace Redwerb.BizArk.Core.Web
+namespace BizArk.Core.Web
 {
 
     /// <summary>

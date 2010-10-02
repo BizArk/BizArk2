@@ -1,4 +1,4 @@
-﻿using Redwerb.BizArk.Core.StringExt;
+﻿using BizArk.Core.StringExt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

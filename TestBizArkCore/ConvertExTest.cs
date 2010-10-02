@@ -1,4 +1,4 @@
-﻿using Redwerb.BizArk.Core;
+﻿using BizArk.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Drawing;
@@ -69,7 +69,7 @@ namespace TestBizArkCore
         ///A test for IsEqual
         ///</summary>
         [TestMethod()]
-        [DeploymentItem("Redwerb.BizArk.Core.dll")]
+        [DeploymentItem("BizArk.Core.dll")]
         public void IsEmptyTest()
         {
             object value = null;

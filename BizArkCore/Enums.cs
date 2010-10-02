@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core
+namespace BizArk.Core
 {
     /// <summary>
     /// Provides a tri-state boolean to allow something else to determine the value.

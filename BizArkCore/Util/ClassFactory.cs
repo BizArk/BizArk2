@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core
+namespace BizArk.Core
 {
     /// <summary>
     /// The class factory for objects allows for objects to be changed at runtime.

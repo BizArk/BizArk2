@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace Redwerb.BizArk.Core.Collections
+namespace BizArk.Core.Collections
 {
 
     /// <summary>

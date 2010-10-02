@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.CmdLine
+namespace BizArk.Core.CmdLine
 {
     /// <summary>
     /// Apply this attribute to the command-line class in order to define a default argument.

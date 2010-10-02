@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.CmdLine
+namespace BizArk.Core.CmdLine
 {
     /// <summary>
     /// Exception thrown when multiple command-line properties match a given argument name.

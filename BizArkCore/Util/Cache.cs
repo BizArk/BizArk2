@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.Util
+namespace BizArk.Core.Util
 {
     /// <summary>
     /// Provides efficient storage for cached items.

@@ -1,9 +1,9 @@
 using System.Drawing;
 using System.Net;
 using System.Xml;
-using Redwerb.BizArk.Core;
+using BizArk.Core;
 
-namespace Redwerb.BizArk.Core.Web
+namespace BizArk.Core.Web
 {
 
     /// <summary>

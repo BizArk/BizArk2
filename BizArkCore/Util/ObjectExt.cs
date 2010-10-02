@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-namespace Redwerb.BizArk.Core.ObjectExt
+namespace BizArk.Core.ObjectExt
 {
     /// <summary>
     /// Extends the Object class.
@@ -14,7 +14,7 @@ namespace Redwerb.BizArk.Core.ObjectExt
         /// <summary>
         /// Converts the value to the specified type. 
         /// Checks for a TypeConverter, conversion methods, 
-        /// and the IConvertible interface. Uses <see cref="Redwerb.BizArk.Core.ConvertEx.ChangeType(object, Type)"/>.
+        /// and the IConvertible interface. Uses <see cref="BizArk.Core.ConvertEx.ChangeType(object, Type)"/>.
         /// </summary>
         /// <typeparam name="T">The type to convert to.</typeparam>
         /// <param name="obj">The value to convert from.</param>

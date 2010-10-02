@@ -1,4 +1,4 @@
-﻿using Redwerb.BizArk.Core.Template;
+﻿using BizArk.Core.Template;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace TestBizArkCore
         }
 
         [TestMethod()]
-        [DeploymentItem("Redwerb.BizArk.Core.dll")]
+        [DeploymentItem("BizArk.Core.dll")]
         public void GetArgNameTest()
         {
             var template = "Hello {name}".ToCharArray();
@@ -60,7 +60,7 @@ namespace TestBizArkCore
         }
 
         [TestMethod()]
-        [DeploymentItem("Redwerb.BizArk.Core.dll")]
+        [DeploymentItem("BizArk.Core.dll")]
         public void GetLiteralSegmentTest()
         {
             var template = "Hello {name}".ToCharArray();
@@ -83,7 +83,7 @@ namespace TestBizArkCore
         }
 
         [TestMethod()]
-        [DeploymentItem("Redwerb.BizArk.Core.dll")]
+        [DeploymentItem("BizArk.Core.dll")]
         public void DateFormatTest()
         {
             var template = new StringTemplate("Test date: {date:d}");

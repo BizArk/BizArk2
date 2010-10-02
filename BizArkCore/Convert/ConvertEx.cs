@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Redwerb.BizArk.Core.Convert;
-using Redwerb.BizArk.Core.TypeExt;
+using BizArk.Core.Convert;
+using BizArk.Core.TypeExt;
 
-namespace Redwerb.BizArk.Core
+namespace BizArk.Core
 {
     /// <summary>
     /// This class provides the ability to convert types 

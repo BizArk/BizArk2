@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 
-namespace Redwerb.BizArk.Core.Data
+namespace BizArk.Core.Data
 {
 
     /// <summary>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Redwerb.BizArk.Core.Convert
+namespace BizArk.Core.Convert
 {
     /// <summary>
     /// Calls the static parse method of a given type.

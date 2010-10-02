@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Redwerb.BizArk.Core.TypeExt
+namespace BizArk.Core.TypeExt
 {
     /// <summary>
     /// Provides extension methods for Type.

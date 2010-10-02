@@ -6,9 +6,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Diagnostics;
-using Redwerb.BizArk.Core.DrawingExt;
+using BizArk.Core.DrawingExt;
 
-namespace Redwerb.BizArk.Core.ImageExt
+namespace BizArk.Core.ImageExt
 {
     /// <summary>
     /// Extension methods for images.

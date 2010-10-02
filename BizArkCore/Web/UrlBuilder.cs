@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Text;
-using Redwerb.BizArk.Core.AttributeExt;
-using Redwerb.BizArk.Core.WebExt;
+using BizArk.Core.AttributeExt;
+using BizArk.Core.WebExt;
 
-namespace Redwerb.BizArk.Core.Web
+namespace BizArk.Core.Web
 {
 
     /// <summary>
