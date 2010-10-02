@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Redwerb.BizArk.Core.Convert;
+using Redwerb.BizArk.Core.TypeExt;
 
 namespace Redwerb.BizArk.Core
 {
@@ -484,6 +485,8 @@ namespace Redwerb.BizArk.Core
             }
 
             if (!type.IsValueType)
+                return null;
+            else if (type.IsNullable())
                 return null;
             else if (type == typeof(char))
                 return '\0';

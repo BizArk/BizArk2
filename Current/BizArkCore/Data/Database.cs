@@ -255,6 +255,22 @@ namespace Redwerb.BizArk.Core.Data
         }
 
         /// <summary>
+        /// Sets the writable properties of an object from the IDataReader.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="obj"></param>
+        public static void FillObject(IDataReader row, object obj)
+        {
+            var props = TypeDescriptor.GetProperties(obj);
+            for (int i = 0; i < row.FieldCount; i++)
+            {
+                var fieldName = row.GetName(i);
+                var prop = props.Find(fieldName, true);
+                if (prop != null) prop.SetValue(obj, ConvertEx.ChangeType(row[i], prop.PropertyType));
+            }
+        }
+
+        /// <summary>
         /// Inserts the given object into the given table. The properties are expected to match the field names. Executes SCOPE_IDENTITY() and returns the value.
         /// </summary>
         /// <param name="tableName"></param>
@@ -290,6 +306,17 @@ namespace Redwerb.BizArk.Core.Data
         {
             return mDbInfo.Delete(tableName, key);
         }
+        
+        /// <summary>
+        /// Determines if the record exists.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool Exists(string tableName, object key)
+        {
+            return mDbInfo.Exists(tableName, key);
+        }
 
         #endregion
 
@@ -324,13 +351,7 @@ namespace Redwerb.BizArk.Core.Data
         private T ProcessRow<T>(IDataReader row)
         {
             var obj = Activator.CreateInstance<T>();
-            var props = TypeDescriptor.GetProperties(obj);
-            for (int i = 0; i < row.FieldCount; i++)
-            {
-                var fieldName = row.GetName(i);
-                var prop = props.Find(fieldName, true);
-                if (prop != null) prop.SetValue(obj, ConvertEx.ChangeType(row[i], prop.PropertyType));
-            }
+            FillObject(row, obj);
             return obj;
         }
 

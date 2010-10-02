@@ -45,6 +45,11 @@ namespace Redwerb.BizArk.Core.TypeExt
             return ClassFactory.CreateObject(type, args);
         }
 
+        /// <summary>
+        /// Determines if the type is a nullable type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static bool IsNullable(this Type type)
         {
             if (type == null) return false;
