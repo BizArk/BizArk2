@@ -18,34 +18,30 @@ namespace BizArk.Core.Util
         /// <summary>
         /// Creates a query string.
         /// </summary>
-        /// <param name="frmVals"></param>
-        /// <returns></returns>
-        public static string GetUrlEncodedData(NameValueCollection frmVals)
-        {
-            var sb = new StringBuilder();
-            foreach (string key in frmVals.AllKeys)
-            {
-                var value = frmVals[key];
-                if (sb.Length > 0) sb.Append("&");
-                sb.AppendFormat("{0}={1}", key, HttpUtility.UrlEncode(value));
-            }
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Creates a query string.
-        /// </summary>
-        /// <param name="frmVals"></param>
+        /// <param name="values">Encodes the properties of the class. If values is a NameValueCollection, the values of the collection will be encoded.</param>
         /// <returns></returns>
         public static string GetUrlEncodedData(object values)
         {
             var sb = new StringBuilder();
-            var props = TypeDescriptor.GetProperties(values);
-            foreach (PropertyDescriptor prop in props)
+            var nvc = values as NameValueCollection;
+            if (nvc == null)
             {
-                var value = ConvertEx.ToString(prop.GetValue(values));
-                if (sb.Length > 0) sb.Append("&");
-                sb.AppendFormat("{0}={1}", prop.Name, HttpUtility.UrlEncode(value));
+                var props = TypeDescriptor.GetProperties(values);
+                foreach (PropertyDescriptor prop in props)
+                {
+                    var value = ConvertEx.ToString(prop.GetValue(values));
+                    if (sb.Length > 0) sb.Append("&");
+                    sb.AppendFormat("{0}={1}", prop.Name, HttpUtility.UrlEncode(value));
+                }
+            }
+            else
+            {
+                foreach (string key in nvc.AllKeys)
+                {
+                    var value = nvc[key];
+                    if (sb.Length > 0) sb.Append("&");
+                    sb.AppendFormat("{0}={1}", key, HttpUtility.UrlEncode(value));
+                }
             }
             return sb.ToString();
         }
