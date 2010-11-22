@@ -122,6 +122,7 @@
     <Compile Include="Util\ClassFactory.cs" />
     <Compile Include="Util\DataExt.cs" />
     <Compile Include="Util\DateExt.cs" />
+    <Compile Include="Util\MemSize.cs" />
     <Compile Include="Util\StringWriterEx.cs" />
     <Compile Include="Util\WebExt.cs" />
     <Compile Include="Util\WebUtil.cs" />

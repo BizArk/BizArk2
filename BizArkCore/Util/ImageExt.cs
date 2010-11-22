@@ -129,7 +129,7 @@ namespace BizArk.Core.ImageExt
                 case ResizeMethod.Fit:
                     if (img.Width <= max.Width && img.Height <= max.Height)
                         return img;
-                    sz = img.Size.Resize(max);
+                    sz = img.Size.ResizeMax(max);
                     srcRect = new Rectangle(0, 0, img.Width, img.Height);
                     destRect = new Rectangle(0, 0, sz.Width, sz.Height);
                     result = new Bitmap(sz.Width, sz.Height);
@@ -138,7 +138,7 @@ namespace BizArk.Core.ImageExt
                     if (img.Width == max.Width && img.Height <= max.Height
                         || img.Width <= max.Width && img.Height == max.Height)
                         return img;
-                    sz = img.Size.Resize(max);
+                    sz = img.Size.ResizeMin(max).ResizeMax(max);
                     srcRect = new Rectangle(0, 0, img.Width, img.Height);
                     destRect = new Rectangle(0, 0, sz.Width, sz.Height);
                     result = new Bitmap(sz.Width, sz.Height);
@@ -146,13 +146,16 @@ namespace BizArk.Core.ImageExt
                 case ResizeMethod.Fill:
                     if (img.Width <= max.Width && img.Height <= max.Height)
                         return img;
-                    sz = (new Size(max.Width, max.Width)).Resize(max);
-                    if (sz.Width == max.Width && sz.Height < max.Height
-                        || sz.Width <= max.Width && sz.Height == max.Height)
-                        sz = (new Size(max.Height, max.Height)).Resize(max);
 
-                    //todo: need to complete fill operation.
-                    srcRect = new Rectangle();
+                    sz = img.Size.ResizeMin(max);
+
+                    if (sz.Width == max.Width)
+                        // The height needs to be cropped.
+                        srcRect = new Rectangle();
+                    else // sz.Height == max.Height
+                        // The width needs to be cropped.
+                        srcRect = new Rectangle();
+
                     destRect = new Rectangle(0, 0, max.Width, max.Height);
                     result = new Bitmap(max.Width, max.Height);
                     break;

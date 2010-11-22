@@ -11,7 +11,7 @@ namespace BizArk.Core.DataExt
     {
 
         /// <summary>
-        /// Returns the field value as a string. Uses ConvertEx to convert the value to a string.
+        /// Returns the field value as a string. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -22,7 +22,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a string. Uses ConvertEx to convert the value to a string.
+        /// Returns the field value as a string. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -34,18 +34,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static int GetInt(this DataRow row, string fieldName)
+        public static int? GetInt(this DataRow row, string fieldName)
         {
-            return GetValue<int>(row, fieldName);
+            return GetValue<int?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -57,7 +57,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -68,7 +68,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -80,18 +80,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static DateTime GetDateTime(this DataRow row, string fieldName)
+        public static DateTime? GetDateTime(this DataRow row, string fieldName)
         {
-            return GetValue<DateTime>(row, fieldName);
+            return GetValue<DateTime?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -103,18 +103,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a double. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a double. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static double GetDouble(this DataRow row, string fieldName)
+        public static double? GetDouble(this DataRow row, string fieldName)
         {
-            return GetValue<double>(row, fieldName);
+            return GetValue<double?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a double. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a double. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -123,6 +123,29 @@ namespace BizArk.Core.DataExt
         public static double GetDouble(this DataRow row, string fieldName, double dfltVal)
         {
             return GetValue<double>(row, fieldName, dfltVal);
+        }
+
+        /// <summary>
+        /// Returns the field value as a Guid. Uses ConvertEx to convert the value.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static Guid? GetGuid(this DataRow row, string fieldName)
+        {
+            return GetValue<Guid?>(row, fieldName);
+        }
+
+        /// <summary>
+        /// Returns the field value as a Guid. Uses ConvertEx to convert the value.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="dfltVal">The value to return if the value is DBNull</param>
+        /// <returns></returns>
+        public static Guid GetGuid(this DataRow row, string fieldName, Guid dfltVal)
+        {
+            return GetValue<Guid>(row, fieldName, dfltVal);
         }
 
         /// <summary>
@@ -175,18 +198,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static int GetInt(this DataRowView row, string fieldName)
+        public static int? GetInt(this DataRowView row, string fieldName)
         {
-            return GetValue<int>(row, fieldName);
+            return GetValue<int?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -198,7 +221,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -209,7 +232,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -221,18 +244,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static DateTime GetDateTime(this DataRowView row, string fieldName)
+        public static DateTime? GetDateTime(this DataRowView row, string fieldName)
         {
-            return GetValue<DateTime>(row, fieldName);
+            return GetValue<DateTime?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -244,18 +267,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a double. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a double. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static double GetDouble(this DataRowView row, string fieldName)
+        public static double? GetDouble(this DataRowView row, string fieldName)
         {
-            return GetValue<double>(row, fieldName);
+            return GetValue<double?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a double. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a double. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -264,6 +287,29 @@ namespace BizArk.Core.DataExt
         public static double GetDouble(this DataRowView row, string fieldName, double dfltVal)
         {
             return GetValue<double>(row, fieldName, dfltVal);
+        }
+
+        /// <summary>
+        /// Returns the field value as a Guid. Uses ConvertEx to convert the value.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static Guid? GetGuid(this DataRowView row, string fieldName)
+        {
+            return GetValue<Guid?>(row, fieldName);
+        }
+
+        /// <summary>
+        /// Returns the field value as a Guid. Uses ConvertEx to convert the value.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="dfltVal">The value to return if the value is DBNull</param>
+        /// <returns></returns>
+        public static Guid GetGuid(this DataRowView row, string fieldName, Guid dfltVal)
+        {
+            return GetValue<Guid>(row, fieldName, dfltVal);
         }
 
         /// <summary>
@@ -342,18 +388,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static int GetInt(this IDataReader row, string fieldName)
+        public static int? GetInt(this IDataReader row, string fieldName)
         {
-            return GetValue<int>(row, fieldName);
+            return GetValue<int?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -365,7 +411,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -376,7 +422,7 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -388,18 +434,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static DateTime GetDateTime(this IDataReader row, string fieldName)
+        public static DateTime? GetDateTime(this IDataReader row, string fieldName)
         {
-            return GetValue<DateTime>(row, fieldName);
+            return GetValue<DateTime?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a int. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a int. Uses ConvertEx to convert the value.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -411,18 +457,18 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
-        /// Returns the field value as a double. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a double. Uses ConvertEx to convert the value to a double.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public static double GetDouble(this IDataReader row, string fieldName)
+        public static double? GetDouble(this IDataReader row, string fieldName)
         {
-            return GetValue<double>(row, fieldName);
+            return GetValue<double?>(row, fieldName);
         }
 
         /// <summary>
-        /// Returns the field value as a double. Uses ConvertEx to convert the value to a int.
+        /// Returns the field value as a double. Uses ConvertEx to convert the value to a double.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="fieldName"></param>
@@ -431,6 +477,52 @@ namespace BizArk.Core.DataExt
         public static double GetDouble(this IDataReader row, string fieldName, double dfltVal)
         {
             return GetValue<double>(row, fieldName, dfltVal);
+        }
+
+        /// <summary>
+        /// Returns the field value as a decimal. Uses ConvertEx to convert the value to a decimal.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static decimal? GetDecimal(this IDataReader row, string fieldName)
+        {
+            return GetValue<decimal?>(row, fieldName);
+        }
+
+        /// <summary>
+        /// Returns the field value as a decimal. Uses ConvertEx to convert the value to a decimal.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="dfltVal">The value to return if the value is DBNull</param>
+        /// <returns></returns>
+        public static decimal GetDecimal(this IDataReader row, string fieldName, decimal dfltVal)
+        {
+            return GetValue<decimal>(row, fieldName, dfltVal);
+        }
+
+        /// <summary>
+        /// Returns the field value as a Guid. Uses ConvertEx to convert the value.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static Guid? GetGuid(this IDataReader row, string fieldName)
+        {
+            return GetValue<Guid?>(row, fieldName);
+        }
+
+        /// <summary>
+        /// Returns the field value as a Guid. Uses ConvertEx to convert the value.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="dfltVal">The value to return if the value is DBNull</param>
+        /// <returns></returns>
+        public static Guid GetGuid(this IDataReader row, string fieldName, Guid dfltVal)
+        {
+            return GetValue<Guid>(row, fieldName, dfltVal);
         }
 
         /// <summary>
@@ -473,4 +565,5 @@ namespace BizArk.Core.DataExt
         }
 
     }
+
 }

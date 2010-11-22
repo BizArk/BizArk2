@@ -111,6 +111,28 @@ namespace BizArk.Core.Data
             return mDbInfo.CreateConnection();
         }
 
+        private DbCommand CreateCommand(string sql, object values)
+        {
+            var cmd = DbInfo.CreateCommand();
+            cmd.CommandText = sql;
+            if (values == null) return cmd;
+
+            var props = TypeDescriptor.GetProperties(values);
+            foreach (PropertyDescriptor prop in props)
+            {
+                var paramName = "@" + prop.Name;
+                if (!sql.Contains(paramName)) continue;
+                var parameter = cmd.CreateParameter();
+                parameter.ParameterName = paramName;
+                var value = prop.GetValue(values);
+                if (ConvertEx.IsEmpty(value))
+                    value = DBNull.Value;
+                parameter.Value = value;
+                cmd.Parameters.Add(parameter);
+            }
+            return cmd;
+        }
+
         private void ExecuteCommand(DbCommand cmd, ExecuteDelegate execute)
         {
             var connSet = false;
@@ -128,6 +150,20 @@ namespace BizArk.Core.Data
                 cmd.Connection = null;
                 cmd.Transaction = null;
             }
+        }
+
+        /// <summary>
+        /// Executes the command and returns the first column of the first row.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public T ExecuteScalar<T>(string sql, object values)
+        {
+            var cmd = CreateCommand(sql, values);
+            return ExecuteScalar<T>(cmd);
         }
 
         /// <summary>
@@ -168,6 +204,19 @@ namespace BizArk.Core.Data
         /// <summary>
         /// Executes the command against the database.
         /// </summary>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public int ExecuteNonQuery(string sql, object values)
+        {
+            var cmd = CreateCommand(sql, values);
+            return ExecuteNonQuery(cmd);
+        }
+
+        /// <summary>
+        /// Executes the command against the database.
+        /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
@@ -175,11 +224,24 @@ namespace BizArk.Core.Data
         {
             int count = 0;
             ExecuteCommand(cmd, () =>
-                {
-                    count = cmd.ExecuteNonQuery();
-                });
+            {
+                count = cmd.ExecuteNonQuery();
+            });
 
             return count;
+        }
+
+        /// <summary>
+        /// Processes a SqlDataReader calling the processRow delegate for each row.
+        /// </summary>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <param name="processRow">void ProcessDataRow(SqlDataReader dr)</param>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public void ExecuteDataReader(string sql, object values, ProcessRowDelegate processRow)
+        {
+            var cmd = CreateCommand(sql, values);
+            ExecuteDataReader(cmd, processRow);
         }
 
         /// <summary>
@@ -191,11 +253,24 @@ namespace BizArk.Core.Data
         public void ExecuteDataReader(DbCommand cmd, ProcessRowDelegate processRow)
         {
             ExecuteCommand(cmd, () =>
-                {
-                    var dr = cmd.ExecuteReader();
-                    while (dr.Read())
-                        processRow(dr);
-                });
+            {
+                var dr = cmd.ExecuteReader();
+                while (dr.Read())
+                    processRow(dr);
+            });
+        }
+
+        /// <summary>
+        /// Loads a DataTable based on the command.
+        /// </summary>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public DataTable GetDataTable(string sql, object values)
+        {
+            var cmd = CreateCommand(sql, values);
+            return GetDataTable(cmd);
         }
 
         /// <summary>
@@ -208,13 +283,26 @@ namespace BizArk.Core.Data
         {
             DataTable tbl = null;
             ExecuteCommand(cmd, () =>
-                {
-                    var dr = cmd.ExecuteReader();
-                    tbl = new DataTable();
-                    tbl.Load(dr);
-                });
+            {
+                var dr = cmd.ExecuteReader();
+                tbl = new DataTable();
+                tbl.Load(dr);
+            });
 
             return tbl;
+        }
+
+        /// <summary>
+        /// Returns the first row of the DataTable. Null if no rows.
+        /// </summary>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public DataRow GetDataRow(string sql, object values)
+        {
+            var cmd = CreateCommand(sql, values);
+            return GetDataRow(cmd);
         }
 
         /// <summary>
@@ -287,6 +375,20 @@ namespace BizArk.Core.Data
         /// Executes a command and returns the first row as the given object. The class must have a default constructor.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <param name="process">If not set, sets properties based on the field name returned from the command.</param>
+        /// <returns></returns>
+        public T SelectSingle<T>(string sql, object values, ProcessRowDelegate<T> process = null) where T : class
+        {
+            var cmd = CreateCommand(sql, values);
+            return SelectSingle<T>(cmd, process);
+        }
+
+        /// <summary>
+        /// Executes a command and returns the first row as the given object. The class must have a default constructor.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="cmd"></param>
         /// <param name="process">If not set, sets properties based on the field name returned from the command.</param>
         /// <returns></returns>
@@ -304,6 +406,20 @@ namespace BizArk.Core.Data
         /// Executes a command and returns the rows as an array of objects. The class must have a default constructor.
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="sql">Parameterized sql string.</param>
+        /// <param name="values">Object that contains parameters. Property names must match parameters in sql.</param>
+        /// <param name="process">If not set, sets properties based on the field name returned from the command.</param>
+        /// <returns></returns>
+        public T[] Select<T>(string sql, object values, ProcessRowDelegate<T> process = null) where T : class
+        {
+            var cmd = CreateCommand(sql, values);
+            return Select<T>(cmd, process);
+        }
+
+        /// <summary>
+        /// Executes a command and returns the rows as an array of objects. The class must have a default constructor.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="cmd"></param>
         /// <param name="process">If not set, sets properties based on the field name returned from the command.</param>
         /// <returns></returns>
@@ -314,11 +430,11 @@ namespace BizArk.Core.Data
 
             var objs = new List<T>();
             ExecuteDataReader(cmd, (row) =>
-                {
-                    var obj = process(row);
-                    if (obj != null) objs.Add(obj);
-                    return true;
-                });
+            {
+                var obj = process(row);
+                if (obj != null) objs.Add(obj);
+                return true;
+            });
             return objs.ToArray();
         }
 
@@ -401,7 +517,10 @@ namespace BizArk.Core.Data
         /// </remarks>
         public int Insert(string tableName, object values)
         {
-            return mDbInfo.Insert(tableName, values);
+            if (CurrentUpdate == null)
+                return mDbInfo.Insert(tableName, values);
+            else
+                return mDbInfo.Insert(tableName, values, CurrentUpdate.Transaction);
         }
 
         /// <summary>
@@ -413,7 +532,10 @@ namespace BizArk.Core.Data
         /// <returns>The number of rows affected.</returns>
         public int Update(string tableName, object key, object values)
         {
-            return mDbInfo.Update(tableName, key, values);
+            if (CurrentUpdate == null)
+                return mDbInfo.Update(tableName, key, values);
+            else
+                return mDbInfo.Update(tableName, key, values, CurrentUpdate.Transaction);
         }
 
         /// <summary>
@@ -424,7 +546,10 @@ namespace BizArk.Core.Data
         /// <returns>The number of rows affected.</returns>
         public int Delete(string tableName, object key)
         {
-            return mDbInfo.Delete(tableName, key);
+            if (CurrentUpdate == null)
+                return mDbInfo.Delete(tableName, key);
+            else
+                return mDbInfo.Delete(tableName, key, CurrentUpdate.Transaction);
         }
 
         /// <summary>
@@ -435,7 +560,10 @@ namespace BizArk.Core.Data
         /// <returns></returns>
         public bool Exists(string tableName, object key)
         {
-            return mDbInfo.Exists(tableName, key);
+            if (CurrentUpdate == null)
+                return mDbInfo.Exists(tableName, key);
+            else
+                return mDbInfo.Exists(tableName, key, CurrentUpdate.Transaction);
         }
 
         #endregion
