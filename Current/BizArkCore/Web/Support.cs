@@ -45,6 +45,7 @@ namespace BizArk.Core.Web
         public string Value
         {
             get { return mValue; }
+            set { mValue = value; }
         }
 
         /// <summary>

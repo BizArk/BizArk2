@@ -20,6 +20,8 @@ namespace BizArk.Core.WebExt
         /// <returns></returns>
         public static string GetContentString(this WebResponse response)
         {
+            if (response == null) return null;
+
             using (var s = response.GetResponseStream())
             {
                 var sr = new StreamReader(s);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Globalization;
@@ -246,14 +245,14 @@ namespace BizArk.Core.CmdLine
                     return mPropertyDictionary[argName];
 
                 // Search for a command-line property that starts with this name.
-                List<CmdLineProperty> foundProps = new List<CmdLineProperty>();
+                var foundProps = new List<CmdLineProperty>();
                 foreach (var prop in this)
                 {
                     if (prop.Name.StartsWith(argName, StringComparison.InvariantCultureIgnoreCase))
-                        foundProps.Add(prop);
+                        if (!foundProps.Contains(prop)) foundProps.Add(prop);
                     foreach(var alias in prop.Aliases)
                         if (alias.StartsWith(argName, StringComparison.InvariantCultureIgnoreCase))
-                            foundProps.Add(prop);
+                            if (!foundProps.Contains(prop)) foundProps.Add(prop);
                 }
 
                 if (foundProps.Count == 0) return null;

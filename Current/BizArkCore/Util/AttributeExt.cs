@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Reflection;
+using BizArk.Core.TypeExt;
 
 namespace BizArk.Core.AttributeExt
 {
@@ -69,11 +70,20 @@ namespace BizArk.Core.AttributeExt
         public static T GetAttribute<T>(this object obj, bool inherit) where T : Attribute
         {
             if (obj == null) return null;
-            return obj.GetType().GetAttribute<T>(inherit);
+
+            var type = obj.GetType();
+            if (type.IsDerivedFrom(typeof(PropertyDescriptor)))
+                return GetAttribute<T>((PropertyDescriptor)obj);
+            else if (type.IsDerivedFrom(typeof(Assembly)))
+                return GetAttribute<T>((Assembly)obj, inherit);
+            else if (type.IsDerivedFrom(typeof(Type)))
+                return GetAttribute<T>((Type)obj, inherit);
+            else
+                return GetAttribute<T>(type, inherit);
         }
 
         /// <summary>
-        /// Gets the specified attribute for the assembly.
+        /// Gets the specified attribute from the Enum.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="val"></param>
@@ -87,7 +97,7 @@ namespace BizArk.Core.AttributeExt
         }
 
         /// <summary>
-        /// Gets the description for the enumerated value.
+        /// Gets the value from the DescriptionAttribute for the given enumeration value.
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>

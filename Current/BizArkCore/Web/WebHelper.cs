@@ -269,11 +269,16 @@ namespace BizArk.Core.Web
                 var completedArgs = new RequestCompletedEventArgs(ex, mState, false);
                 Post((arg) =>
                 {
+                    // Regardless of the outcome, RequestCompleted is guaranteed to be raised.
+                    // Caller is responsible for checking the status of the request object to
+                    // see if it is successful or not.
                     OnRequestCompleted((RequestCompletedEventArgs)arg);
                 }, completedArgs);
 
-                // We still want to throw the exception.
-                throw;
+                if (mAsyncOperation == null)
+                    // Don't throw the exception if running on a thread. It can't be caught
+                    // and makes it difficult to debug (cannot continue in Visual Studio).
+                    throw;
             }
             finally
             {

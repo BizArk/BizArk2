@@ -219,7 +219,7 @@ namespace BizArk.Core.Data
             }
             if (fields.Count == 0) return 0;
 
-            cmd.CommandText = string.Format("INSERT INTO {0} ({1}) VALUES (@{2})", tableName, string.Join(", ", fields.ToArray()), string.Join(", @", fields.ToArray()));
+            cmd.CommandText = string.Format("INSERT INTO {0} ({1}) VALUES (@{2}); SELECT SCOPE_IDENTITY();", tableName, string.Join(", ", fields.ToArray()), string.Join(", @", fields.ToArray()));
 
             if (trans != null)
             {
@@ -227,9 +227,9 @@ namespace BizArk.Core.Data
                 cmd.Transaction = trans;
             }
 
-            int count = 0;
-            ExecuteCommand(cmd, () => { count = cmd.ExecuteNonQuery(); });
-            return count;
+            int id = int.MinValue;
+            ExecuteCommand(cmd, () => { var val = cmd.ExecuteScalar(); if (val != null) id = ConvertEx.ToInt32(val); });
+            return id;
         }
 
         /// <summary>
