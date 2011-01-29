@@ -553,6 +553,19 @@ namespace BizArk.Core.DataExt
         }
 
         /// <summary>
+        /// Returns the field value as the specified type. Uses ConvertEx to convert the value to the correct type.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static object GetValue(this IDataReader row, string fieldName, Type type)
+        {
+            var i = row.GetOrdinal(fieldName);
+            return ConvertEx.ChangeType(row[i], type);
+        }
+
+        /// <summary>
         /// Determines if the field is null.
         /// </summary>
         /// <param name="row"></param>
@@ -564,6 +577,19 @@ namespace BizArk.Core.DataExt
             return row.IsDBNull(i);
         }
 
+        /// <summary>
+        /// Determines if the IDataReader contains the specified field.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static bool ContainsField(this IDataReader row, string fieldName)
+        {
+            for (int i = 0; i < row.FieldCount; i++)
+            {
+                if (row.GetName(i).Equals(fieldName, StringComparison.CurrentCultureIgnoreCase)) return true;
+            }
+            return false;
+        }
     }
-
 }

@@ -90,8 +90,8 @@
     <Compile Include="Convert\InvalidConversionStrategy.cs" />
     <Compile Include="Convert\NoConvertConvesionStrategy.cs" />
     <Compile Include="Convert\NullConversionStrategy.cs" />
-    <Compile Include="Convert\ParseConversionStrategy.cs" />
     <Compile Include="Convert\SqlDBTypeConversionStrategy.cs" />
+    <Compile Include="Convert\StaticMethodConversionStrategy.cs" />
     <Compile Include="Convert\StringToBoolConversionStrategy.cs" />
     <Compile Include="Convert\StringToByteArrayConversionStrategy.cs" />
     <Compile Include="Convert\TypeConverterConversionStrategy.cs" />
@@ -118,12 +118,15 @@
     <Compile Include="Template\StringTemplateGeneric.cs" />
     <Compile Include="Util\ArrayExt.cs" />
     <Compile Include="Util\AttributeExt.cs" />
+    <Compile Include="Util\Bitmask.cs" />
     <Compile Include="Util\Cache.cs" />
     <Compile Include="Util\ClassFactory.cs" />
     <Compile Include="Util\DataExt.cs" />
     <Compile Include="Util\DateExt.cs" />
     <Compile Include="Util\MemSize.cs" />
+    <Compile Include="Util\PropertyUtil.cs" />
     <Compile Include="Util\StringWriterEx.cs" />
+    <Compile Include="Util\TempFile.cs" />
     <Compile Include="Util\WebExt.cs" />
     <Compile Include="Util\WebUtil.cs" />
     <Compile Include="Util\XmlExt.cs" />

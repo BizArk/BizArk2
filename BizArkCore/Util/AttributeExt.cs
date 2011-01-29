@@ -30,6 +30,20 @@ namespace BizArk.Core.AttributeExt
         }
 
         /// <summary>
+        /// Gets the specified attribute from the PropertyDescriptor.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prop"></param>
+        /// <param name="inherit"></param>
+        /// <returns></returns>
+        public static T GetAttribute<T>(this PropertyInfo prop, bool inherit) where T : Attribute
+        {
+            var atts = prop.GetCustomAttributes(typeof(T), inherit);
+            if (atts.Length == 0) return null;
+            return atts[0] as T;
+        }
+
+        /// <summary>
         /// Gets the specified attribute from the type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -74,6 +88,8 @@ namespace BizArk.Core.AttributeExt
             var type = obj.GetType();
             if (type.IsDerivedFrom(typeof(PropertyDescriptor)))
                 return GetAttribute<T>((PropertyDescriptor)obj);
+            else if(type.IsDerivedFrom(typeof(PropertyInfo)))
+                return GetAttribute<T>((PropertyInfo)obj, inherit);
             else if (type.IsDerivedFrom(typeof(Assembly)))
                 return GetAttribute<T>((Assembly)obj, inherit);
             else if (type.IsDerivedFrom(typeof(Type)))
