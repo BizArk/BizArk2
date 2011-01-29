@@ -35,6 +35,25 @@ namespace BizArk.Core.TypeExt
         }
 
         /// <summary>
+        /// Determines if the type is an instance of a generic type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="genericType"></param>
+        /// <returns></returns>
+        public static bool IsDerivedFromGenericType(this Type type, Type genericType)
+        {
+            var typeTmp = type;
+            while (typeTmp != null)
+            {
+                if (typeTmp.IsGenericType && typeTmp.GetGenericTypeDefinition() == genericType)
+                    return true;
+
+                typeTmp = typeTmp.BaseType;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Creates a new instance of the type.
         /// </summary>
         /// <param name="type"></param>
@@ -46,16 +65,44 @@ namespace BizArk.Core.TypeExt
         }
 
         /// <summary>
-        /// Determines if the type is a nullable type.
+        /// Gets a value that determines if the type allows instances with a null value.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
         public static bool IsNullable(this Type type)
         {
             if (type == null) return false;
-            if (!type.IsGenericType) return false;
-            if (type.GetGenericTypeDefinition() != typeof(Nullable<>)) return false;
-            return true;
+            if (!type.IsValueType) return true;
+            return type.IsDerivedFromGenericType(typeof(Nullable<>));
+        }
+
+        /// <summary>
+        /// Gets the C# name of the type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetCSharpName(this Type type)
+        {
+            var name = type.Name;
+
+            if (type == typeof(bool)) name = "bool";
+            else if (type == typeof(byte)) name = "byte";
+            else if (type == typeof(sbyte)) name = "sbyte";
+            else if (type == typeof(char)) name = "char";
+            else if (type == typeof(short)) name = "short";
+            else if (type == typeof(ushort)) name = "ushort";
+            else if (type == typeof(int)) name = "int";
+            else if (type == typeof(uint)) name = "uint";
+            else if (type == typeof(long)) name = "long";
+            else if (type == typeof(ulong)) name = "ulong";
+            else if (type == typeof(float)) name = "float";
+            else if (type == typeof(double)) name = "double";
+            else if (type == typeof(decimal)) name = "decimal";
+            else if (type == typeof(string)) name = "string";
+
+            if (type.IsValueType && type.IsNullable()) name += "?";
+
+            return name;
         }
 
     }

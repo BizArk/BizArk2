@@ -8,6 +8,8 @@ using BizArk.Core.StringExt;
 using System.Xml;
 using io = System.IO;
 using BizArk.Core.Web;
+using System.IO;
+using System.Net;
 
 namespace BizArk.Core.CmdLine
 {
@@ -524,15 +526,16 @@ namespace BizArk.Core.CmdLine
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public bool RestoreFromXml(string path)
         {
+            var xmlStr = GetXml(path);
             // No point in throwing an exception, just return;
-            if (!io.File.Exists(path))
+            if (string.IsNullOrEmpty(xmlStr))
                 return false;
-            
+
             if (Properties == null)
                 Initialize_Internal();
 
             var xml = new XmlDocument();
-            xml.Load(path);
+            xml.LoadXml(xmlStr);
 
             var propsNode = xml.SelectSingleNode("CmdLineObject/Properties");
             foreach (XmlNode propNode in propsNode.ChildNodes)
@@ -556,6 +559,22 @@ namespace BizArk.Core.CmdLine
             }
 
             return true;
+        }
+
+        private string GetXml(string path)
+        {
+            try
+            {
+                var uri = new Uri(path);
+                using (var response = WebRequest.Create(uri).GetResponse())
+                using (var stream = response.GetResponseStream())
+                using (var reader = new StreamReader(stream))
+                    return reader.ReadToEnd();
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         private void BeginInit()

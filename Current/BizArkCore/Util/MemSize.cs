@@ -36,6 +36,11 @@ namespace BizArk.Core.Util
 
         #region Fields and Properties
 
+        /// <summary>
+        /// Represents a 0 byte memory size.
+        /// </summary>
+        public static readonly MemSize Zero = new MemSize(0);
+
         /// <summary></summary>
         public const long cNumBytesInKilobyte = 1000;
         /// <summary></summary>

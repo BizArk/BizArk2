@@ -240,6 +240,38 @@ namespace BizArk.Core.ArrayExt
 
         #endregion
 
+        #region Append
+
+        /// <summary>
+        /// Concatenates the two arrays together and returns a new array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="arr2"></param>
+        /// <returns></returns>
+        public static T[] Append<T>(this T[] arr, T[] arr2)
+        {
+            var newArr = new List<T>(arr);
+            newArr.AddRange(arr2);
+            return newArr.ToArray();
+        }
+
+        /// <summary>
+        /// Adds the value to the end of the array and returns the new array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static T[] Append<T>(this T[] arr, T value)
+        {
+            var newArr = new List<T>(arr);
+            newArr.Add(value);
+            return newArr.ToArray();
+        }
+
+        #endregion
+
         /// <summary>
         /// Searches for the specified object and returns the index of the first occurrence
         /// within the entire one-dimensional System.Array.

@@ -12,20 +12,38 @@ namespace BizArk.Core.Convert
         : IConvertStrategy
     {
 
+        static StringToBoolConversionStrategy()
+        {
+            TrueValues = new List<string>() { "true", "t", "yes" };
+        }
+
         /// <summary>
-        /// Converts the value to the proper type.
+        /// Gets the list of values that will equate to True. Everything else is false.
+        /// </summary>
+        public static List<string> TrueValues { get; private set; }
+
+        /// <summary>
+        /// Converts the string to a boolean.
         /// </summary>
         /// <param name="value"></param>
         /// <param name="provider"></param>
         /// <returns></returns>
         public object Convert(object value, IFormatProvider provider)
         {
-            // Let's try a few common boolean variations. 
-            string[] trueValues = new string[] { "true", "t", "yes", "1", "-1" };
-            string[] falseValues = new string[] { "false", "f", "no", "0" };
-            string strVal = ((string)value).ToLowerInvariant();
-            if (trueValues.Contains(strVal)) return true;
-            if (falseValues.Contains(strVal)) return false;
+            string strVal = value as string;
+            if (strVal == null) return false;
+            
+            int i;
+            if (int.TryParse(strVal, out i))
+                return i != 0; // only false if i == 0.
+
+            foreach (var trueVal in TrueValues)
+            {
+                if (trueVal.Equals(strVal, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+
+            // Everything else is false.
             return false;
         }
 

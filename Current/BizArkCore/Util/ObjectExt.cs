@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Linq.Expressions;
+using BizArk.Core.Util;
 
 namespace BizArk.Core.ObjectExt
 {
@@ -104,6 +106,18 @@ namespace BizArk.Core.ObjectExt
         public static decimal GetDecimal(this object obj, string propertyName)
         {
             return GetValue<decimal>(obj, propertyName);
+        }
+
+        /// <summary>
+        /// Gets the name of the property based on a Linq expression.
+        /// </summary>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="type"></param>
+        /// <param name="propertyRefExpr"></param>
+        /// <returns></returns>
+        public static string GetPropertyName<TObject>(this TObject type, Expression<Func<TObject, object>> propertyRefExpr)
+        {
+            return PropertyUtil.GetNameCore(propertyRefExpr.Body);
         }
 
     }

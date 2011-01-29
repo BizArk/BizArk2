@@ -76,6 +76,14 @@ namespace BizArk.Core.Convert
             if (fromType == null || toType == null)
                 return new NullConversionStrategy();
 
+            var mi = GetStaticConvertMethod(fromType, fromType, toType);
+            if (mi != null)
+                return new StaticMethodConversionStrategy(mi);
+
+            mi = GetStaticConvertMethod(toType, fromType, toType);
+            if (mi != null)
+                return new StaticMethodConversionStrategy(mi);
+
             if (fromType.IsDerivedFrom(typeof(Type)) && toType == typeof(SqlDbType))
                 return new TypeToSqlDBTypeConversionStrategy();
 
@@ -95,10 +103,10 @@ namespace BizArk.Core.Convert
                 return new ImageToByteArrayConversionStrategy();
 
             if (fromType == typeof(byte[]) && toType == typeof(string))
-                return new ByteArrayToStringConversionStrategy(ASCIIEncoding.ASCII);
+                return new ByteArrayToStringConversionStrategy(Encoding.Default);
 
             if (fromType == typeof(string) && toType == typeof(byte[]))
-                return new StringToByteArrayConversionStrategy(ASCIIEncoding.ASCII);
+                return new StringToByteArrayConversionStrategy(Encoding.Default);
 
             TypeConverter converter = TypeDescriptor.GetConverter(fromType);
             if (converter != null && converter.CanConvertTo(toType))
@@ -108,15 +116,7 @@ namespace BizArk.Core.Convert
             if (converter != null && converter.CanConvertFrom(fromType))
                 return new TypeConverterConversionStrategy(converter);
 
-            MethodInfo mi;
-            if (fromType == typeof(string))
-            {
-                mi = toType.GetMethod("Parse", new Type[] { typeof(string) });
-                if (mi != null && mi.ReturnType == toType)
-                    return new ParseConversionStrategy(mi);
-            }
-
-            mi = GetConvertMethod(fromType, toType);
+            mi = GetInstanceConvertMethod(fromType, toType);
             if (mi != null)
                 return new ConvertMethodConversionStrategy(mi);
 
@@ -130,7 +130,7 @@ namespace BizArk.Core.Convert
             return new InvalidConversionStrategy(String.Format("Invalid cast. Cannot convert from {0} to {1}.", fromType, toType));
         }
 
-        private static MethodInfo GetConvertMethod(Type fromType, Type toType)
+        private static MethodInfo GetInstanceConvertMethod(Type fromType, Type toType)
         {
             List<string> names = new List<string>();
             names.Add(toType.Name);
@@ -143,15 +143,29 @@ namespace BizArk.Core.Convert
             foreach (string name in names)
             {
                 MethodInfo mi = fromType.GetMethod("To" + name, new Type[] { });
-                if (mi != null)
-                    if (mi.ReturnType == toType)
-                        return mi;
-                    else
-                        // If ToXXX is defined but returns the wrong type, the type
-                        // can't define another ToXXX method with no parameters so 
-                        // just return null now.
-                        return null;
+                if (mi == null) continue;
+                if (mi.ReturnType != toType) continue;
+                return mi;
             }
+
+            return null;
+        }
+
+        private static MethodInfo GetStaticConvertMethod(Type typeToSearch, Type fromType, Type toType)
+        {
+            // essentially looks for overloaded operators (or methods that looks like an operator).
+
+            foreach (var method in typeToSearch.GetMethods(BindingFlags.Static | BindingFlags.Public))
+            {
+                if (method.ReturnType != toType) continue;
+
+                var parameters = method.GetParameters();
+                if (parameters.Length != 1) continue;
+                if (parameters[0].ParameterType != fromType) continue;
+
+                return method;
+            }
+
             return null;
         }
 

@@ -18,7 +18,7 @@ namespace BizArk.Core.Convert
             mEncoding = encoding;
         }
 
-        private Encoding mEncoding = ASCIIEncoding.ASCII;
+        private Encoding mEncoding = Encoding.Default;
         /// <summary>
         /// Gets the encoding for the conversion.
         /// </summary>

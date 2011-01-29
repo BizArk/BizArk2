@@ -6,25 +6,27 @@ using System.Reflection;
 
 namespace BizArk.Core.Convert
 {
+
     /// <summary>
-    /// Calls the static parse method of a given type.
+    /// Uses a typed constructor to convert the value.
     /// </summary>
-    public class ParseConversionStrategy
-        : IConvertStrategy
+    public class StaticMethodConversionStrategy
+         : IConvertStrategy
     {
+
         /// <summary>
-        /// Creates an instance of ParseConversionStrategy.
+        /// Creates an instance of ConvertMethodConversionStrategy.
         /// </summary>
         /// <param name="mi"></param>
-        public ParseConversionStrategy(MethodInfo mi)
+        public StaticMethodConversionStrategy(MethodInfo mi)
         {
-            ParseMethod = mi;
+            Method = mi;
         }
 
         /// <summary>
-        /// Gets the method used to parse the value.
+        /// Gets the method used to convert the value.
         /// </summary>
-        public MethodInfo ParseMethod { get; private set; }
+        public MethodInfo Method { get; private set; }
 
         /// <summary>
         /// Converts the value to the proper type.
@@ -34,9 +36,8 @@ namespace BizArk.Core.Convert
         /// <returns></returns>
         public object Convert(object value, IFormatProvider provider)
         {
-            string s = value as string;
-            if (s == null) return null;
-            return ParseMethod.Invoke(null, new object[] { s });
+            return Method.Invoke(null, new object[] { value });
         }
+
     }
 }
