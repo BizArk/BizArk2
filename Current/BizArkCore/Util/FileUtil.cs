@@ -124,7 +124,6 @@ namespace BizArk.Core.Util
         /// Deletes a file. If unable to delete will return false.
         /// </summary>
         /// <param name="path"></param>
-        /// <param name="deleteDirs">If true, empty parent directories are deleted.</param>
         public static void DeleteFile(string path)
         {
             // Somebody wanted this file gone and it doesn't exist, done.

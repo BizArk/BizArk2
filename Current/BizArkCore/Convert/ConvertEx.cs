@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using BizArk.Core.Convert;
 using BizArk.Core.TypeExt;
+using System.Threading;
 
 namespace BizArk.Core
 {
@@ -247,6 +248,41 @@ namespace BizArk.Core
         /// <summary>
         /// Converts the value to the specified type. 
         /// Checks for a TypeConverter, conversion methods, 
+        /// and the IConvertible interface. This is an alias 
+        /// to ChangeType.
+        /// </summary>
+        /// <typeparam name="T">The type to convert to.</typeparam>
+        /// <param name="value">The value to convert from.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// <para>The ChangeType method converts a value to another type.</para>
+        /// <para>It can use a number of different conversion techniques depending on
+        /// what is most appropriate based on the type of the value and the type it
+        /// is converting to. The following lists explains the order that the checks 
+        /// are made in.
+        /// <list type="">
+        /// <item>String to Boolean - Used when we are converting from a string to a boolean. Valid values for true are "true", "t", "yes", "1", and "-1", everything else is false.</item>
+        /// <item>TypeConverter - Used when a TypeConverter exists for either the type we are converting to or from that can convert to the other type.</item>
+        /// <item>Parse method - Used when the type we are converting from is a string and the type we are converting to defines a static, parameterless Parse method that returns the type we are converting to.</item>
+        /// <item>Convert method - Used when the type we are converting from defines an instance method called ToXXX where XXX is the name of the type we are converting to with some common aliases allowed (example ToBool or ToInt instead of ToBoolean and ToInt32). The method must return the type we are converting to</item>
+        /// <item>IConvertible - Used when the type we are converting from implements the IConvertible interface.</item>
+        /// </list>
+        /// </para>
+        /// <para>This method makes use of the strategy pattern for determining how to 
+        /// convert values. To define a custom strategy to convert from one type to 
+        /// another, define a class that implements the IConvertStrategy interface and
+        /// register it with the ConvertStrategyMgr class.</para>
+        /// </remarks>
+        /// <exception cref="System.InvalidCastException">This conversion is not supported. -or-value is null and conversionType is a value type.</exception>
+        /// <exception cref="System.ArgumentNullException">conversionType is null.</exception>
+        public static T To<T>(object value)
+        {
+            return (T)ChangeType(value, typeof(T));
+        }
+
+        /// <summary>
+        /// Converts the value to the specified type. 
+        /// Checks for a TypeConverter, conversion methods, 
         /// and the IConvertible interface.
         /// </summary>
         /// <typeparam name="T">The type to convert to.</typeparam>
@@ -275,7 +311,7 @@ namespace BizArk.Core
         /// <exception cref="System.ArgumentNullException">conversionType is null.</exception>
         public static T ChangeType<T>(object value)
         {
-            return (T)ChangeType(value, typeof(T), System.Threading.Thread.CurrentThread.CurrentCulture);
+            return (T)ChangeType(value, typeof(T));
         }
 
         /// <summary>
@@ -284,41 +320,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        /// <param name="conversionType">The type to convert to.</param>
-        /// <returns></returns>
-        /// <remarks>
-        /// <para>The ChangeType method converts a value to another type.</para>
-        /// <para>It can use a number of different conversion techniques depending on
-        /// what is most appropriate based on the type of the value and the type it
-        /// is converting to. The following lists explains the order that the checks 
-        /// are made in.
-        /// <list type="">
-        /// <item>String to Boolean - Used when we are converting from a string to a boolean. Valid values for true are "true", "t", "yes", "1", and "-1", everything else is false.</item>
-        /// <item>TypeConverter - Used when a TypeConverter exists for either the type we are converting to or from that can convert to the other type.</item>
-        /// <item>Parse method - Used when the type we are converting from is a string and the type we are converting to defines a static, parameterless Parse method that returns the type we are converting to.</item>
-        /// <item>Convert method - Used when the type we are converting from defines an instance method called ToXXX where XXX is the name of the type we are converting to with some common aliases allowed (example ToBool or ToInt instead of ToBoolean and ToInt32). The method must return the type we are converting to</item>
-        /// <item>IConvertible - Used when the type we are converting from implements the IConvertible interface.</item>
-        /// </list>
-        /// </para>
-        /// <para>This method makes use of the strategy pattern for determining how to 
-        /// convert values. To define a custom strategy to convert from one type to 
-        /// another, define a class that implements the IConvertStrategy interface and
-        /// register it with the ConvertStrategyMgr class.</para>
-        /// </remarks>
-        /// <exception cref="System.InvalidCastException">This conversion is not supported. -or-value is null and conversionType is a value type.</exception>
-        /// <exception cref="System.ArgumentNullException">conversionType is null.</exception>
-        public static object ChangeType(object value, Type conversionType)
-        {
-            return ChangeType(value, conversionType, System.Threading.Thread.CurrentThread.CurrentCulture);
-        }
-
-        /// <summary>
-        /// Converts the value to the specified type. 
-        /// Checks for a TypeConverter, conversion methods, 
-        /// and the IConvertible interface.
-        /// </summary>
-        /// <param name="value">The value to convert from.</param>
-        /// <param name="conversionType">The type to convert to.</param>
+        /// <param name="to">The type to convert to.</param>
         /// <param name="provider">The IFormatProvider to use for the conversion.</param>
         /// <returns></returns>
         /// <remarks>
@@ -342,22 +344,28 @@ namespace BizArk.Core
         /// </remarks>
         /// <exception cref="System.InvalidCastException">This conversion is not supported. -or-value is null and conversionType is a value type.</exception>
         /// <exception cref="System.ArgumentNullException">conversionType is null.</exception>
-        public static object ChangeType(object value, Type conversionType, IFormatProvider provider)
+        public static object ChangeType(object value, Type to, IFormatProvider provider = null)
         {
-            if (conversionType == null)
+            if (to == null)
                 throw new ArgumentNullException("conversionType");
 
-            Type fromType;
+            Type from;
             if (value == null)
-                fromType = null;
+                from = null;
+            else if (value == DBNull.Value)
+                from = null;
             else
-                fromType = value.GetType();
+                from = value.GetType();
+
+            if (provider == null) provider = Thread.CurrentThread.CurrentCulture;
 
             // This method uses the strategy pattern to convert values. The ConvertStrategyMgr handles
             // the creation of strategy patterns. 
 
-            IConvertStrategy strategy = ConvertStrategyMgr.GetStrategy(fromType, conversionType);
-            return strategy.Convert(value, provider);
+            var strategy = ConvertStrategyMgr.GetStrategy(from, to);
+            if(strategy == null)
+                throw new InvalidCastException(String.Format("Invalid cast. Cannot convert from {0} to {1}.", from, to));
+            return strategy.Convert(from, to, value, provider);
         }
 
         #endregion
@@ -442,27 +450,21 @@ namespace BizArk.Core
                     sEmptyValues.Add(type, new List<object>());
             }
 
-            if (!type.IsValueType)
-                RegisterEmptyValue(type, null);
-            else if (type.IsNullable())
-                RegisterEmptyValue(type, null);
             if (type == typeof(char))
-                RegisterEmptyValue(type, '\0');
-            if (type.IsEnum)
             {
-                var fields = type.GetFields();
-                if (fields.Length > 1)
-                    RegisterEmptyValue(type, fields[1].GetValue(type));
-                else
-                    RegisterEmptyValue(type, 0);
+                RegisterEmptyValue(type, '\0');
             }
-            object emptyVal;
-            emptyVal = GetStaticFieldValue(type, "MinValue");
-            if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
-            emptyVal = GetStaticFieldValue(type, "MaxValue");
-            if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
-            emptyVal = GetStaticFieldValue(type, "Empty");
-            if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+            else
+            {
+                object emptyVal;
+                emptyVal = GetStaticFieldValue(type, "MinValue");
+                if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+                emptyVal = GetStaticFieldValue(type, "MaxValue");
+                if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+                emptyVal = GetStaticFieldValue(type, "Empty");
+                if (emptyVal != null) RegisterEmptyValue(type, emptyVal);
+            }
+
         }
 
         /// <summary>
@@ -483,8 +485,6 @@ namespace BizArk.Core
             if (type == null)
                 throw new ArgumentNullException("type");
 
-            RegisterDefaultEmptyValues(type);
-
             lock (sEmptyValuesLock)
             {
                 // Get the first registered empty value.
@@ -492,8 +492,40 @@ namespace BizArk.Core
                     return sEmptyValues[type][0];
             }
 
+            if (type.IsNullable())
+                return null;
+            else if (type == typeof(char))
+                return '\0';
+            else if (type == typeof(bool))
+                return false;
+            else if (type.IsEnum)
+            {
+                var fields = type.GetFields();
+                if (fields.Length > 1)
+                    return fields[1].GetValue(type);
+                else
+                    return 0;
+            }
+            else
+            {
+                object emptyVal;
+                emptyVal = GetStaticFieldValue(type, "Empty");
+                if (emptyVal != null) return emptyVal;
+                emptyVal = GetStaticFieldValue(type, "MinValue");
+                if (emptyVal != null) return emptyVal;
+            }
+
             // Should only reach here if we have an unhandled type.
             throw new ArgumentException(string.Format("Unable to determine default empty value for {0}.", type.FullName), "type");
+        }
+
+        /// <summary>
+        /// Removes all the custom default empty values.
+        /// </summary>
+        public static void ResetEmptyValues()
+        {
+            sEmptyValues.Clear();
+            sRegisteredDefaultEmptyValues.Clear();
         }
 
         #endregion

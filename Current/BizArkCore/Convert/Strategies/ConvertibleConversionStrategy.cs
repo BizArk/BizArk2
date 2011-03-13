@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using BizArk.Core.TypeExt;
 
-namespace BizArk.Core.Convert
+namespace BizArk.Core.Convert.Strategies
 {
     /// <summary>
     /// Uses the IConvertible interface to convert the value.
@@ -11,16 +9,6 @@ namespace BizArk.Core.Convert
     public class ConvertibleConversionStrategy
         : IConvertStrategy
     {
-
-        /// <summary>
-        /// Creates an instance of ConvertibleConversionStrategy.
-        /// </summary>
-        /// <param name="toType"></param>
-        public ConvertibleConversionStrategy(Type toType)
-        {
-            ConversionType = toType;
-            //Provider = provider;
-        }
 
         //private const int cEmptyIndex = 0;
         private const int cObjectIndex = 1;
@@ -66,66 +54,107 @@ namespace BizArk.Core.Convert
         };
 
         /// <summary>
-        /// Gets the type of conversion to perform.
+        /// Changes the type of the value.
         /// </summary>
-        public Type ConversionType { get; private set; }
-
-        /// <summary>
-        /// Converts the value to the proper type.
-        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <param name="value"></param>
         /// <param name="provider"></param>
         /// <returns></returns>
-        public object Convert(object value, IFormatProvider provider)
+        public object Convert(Type from, Type to, object value, IFormatProvider provider)
         {
-            IConvertible convertible = value as IConvertible;
+            var val = GetTrueValue(value);
+            IConvertible convertible = val as IConvertible;
             if (convertible == null)
                 throw new InvalidCastException(String.Format("Invalid cast. {0} does not implement the IConvertible interface.", value));
 
-            if (ConversionType == ConvertTypes[cBoolIndex])
+            var cto = GetTrueType(to);
+            if (cto == ConvertTypes[cBoolIndex])
                 return convertible.ToBoolean(provider);
-            if (ConversionType == ConvertTypes[cCharIndex])
+            if (cto == ConvertTypes[cCharIndex])
                 return convertible.ToChar(provider);
-            if (ConversionType == ConvertTypes[cSbyteIndex])
+            if (cto == ConvertTypes[cSbyteIndex])
                 return convertible.ToSByte(provider);
-            if (ConversionType == ConvertTypes[cByteIndex])
+            if (cto == ConvertTypes[cByteIndex])
                 return convertible.ToByte(provider);
-            if (ConversionType == ConvertTypes[cShortIndex])
+            if (cto == ConvertTypes[cShortIndex])
                 return convertible.ToInt16(provider);
-            if (ConversionType == ConvertTypes[cUshortIndex])
+            if (cto == ConvertTypes[cUshortIndex])
                 return convertible.ToUInt16(provider);
-            if (ConversionType == ConvertTypes[cIntIndex])
+            if (cto == ConvertTypes[cIntIndex])
                 return convertible.ToInt32(provider);
-            if (ConversionType == ConvertTypes[cUintIndex])
+            if (cto == ConvertTypes[cUintIndex])
                 return convertible.ToUInt32(provider);
-            if (ConversionType == ConvertTypes[cLongIndex])
+            if (cto == ConvertTypes[cLongIndex])
                 return convertible.ToInt64(provider);
-            if (ConversionType == ConvertTypes[cUlongIndex])
+            if (cto == ConvertTypes[cUlongIndex])
                 return convertible.ToUInt64(provider);
-            if (ConversionType == ConvertTypes[cFloatIndex])
+            if (cto == ConvertTypes[cFloatIndex])
                 return convertible.ToSingle(provider);
-            if (ConversionType == ConvertTypes[cDoubleIndex])
+            if (cto == ConvertTypes[cDoubleIndex])
                 return convertible.ToDouble(provider);
-            if (ConversionType == ConvertTypes[cDecimalIndex])
+            if (cto == ConvertTypes[cDecimalIndex])
                 return convertible.ToDecimal(provider);
-            if (ConversionType == ConvertTypes[cDateTimeIndex])
+            if (cto == ConvertTypes[cDateTimeIndex])
                 return convertible.ToDateTime(provider);
-            if (ConversionType == ConvertTypes[cStringIndex])
+            if (cto == ConvertTypes[cStringIndex])
                 return convertible.ToString(provider);
-            if (ConversionType == ConvertTypes[cObjectIndex])
+            if (cto == ConvertTypes[cObjectIndex])
                 return value;
-            return convertible.ToType(ConversionType, provider);
+            return convertible.ToType(cto, provider);
+        }
+
+        /// <summary>
+        /// Determines whether this converter can convert the value.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public bool CanConvert(Type from, Type to)
+        {
+            var cfrom = GetTrueType(from);
+            if (!cfrom.Implements(typeof(IConvertible))) return false;
+            var cto = GetTrueType(to); 
+            return CanConvertTo(cto);
+        }
+
+        /// <summary>
+        /// Handles nullable types.
+        /// </summary>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        private static Type GetTrueType(Type to)
+        {
+            // check for Nullable enums. 
+            // Null values should be handled by DefaultValueConversionStrategy, but we need to be able
+            // to get the actual type of the enum here.
+            if (to.IsDerivedFromGenericType(typeof(Nullable<>)))
+                return to.GetGenericArguments()[0];
+            else
+                return to;
+        }
+
+        private static object GetTrueValue(object val)
+        {
+            // I'm not sure if this method is necessary. It seems that nullable values
+            // are sent in with the actual value or null, not as Nullable<?>.
+
+            if (val == null) return null;
+            if (!val.GetType().IsDerivedFromGenericType(typeof(Nullable<>))) return val;
+
+            var prop = val.GetType().GetProperty("Value");
+            return prop.GetValue(val, null);
         }
 
         /// <summary>
         /// Determines if IConvertible can convert to the given type.
         /// </summary>
-        /// <param name="toType"></param>
+        /// <param name="to"></param>
         /// <returns></returns>
-        public static bool CanConvertTo(Type toType)
+        private static bool CanConvertTo(Type to)
         {
             foreach (var cType in ConvertTypes)
-                if (toType == cType) return true;
+                if (to == cType) return true;
             return false;
         }
 

@@ -1,48 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
+using BizArk.Core.TypeExt;
 
-namespace BizArk.Core.Convert
+namespace BizArk.Core.Convert.Strategies
 {
 
     /// <summary>
     /// Converts a .Net type to a SqlDBType.
     /// </summary>
-    public class TypeToSqlDBTypeConversionStrategy
+    public class SqlDBTypeConversionStrategy
         : IConvertStrategy
     {
 
         /// <summary>
-        /// Converts the value to the proper type.
+        /// Changes the type of the value.
         /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <param name="value"></param>
         /// <param name="provider"></param>
         /// <returns></returns>
-        public object Convert(object value, IFormatProvider provider)
+        public object Convert(Type from, Type to, object value, IFormatProvider provider)
         {
-            return DbTypeMap.ToSqlDbType((Type)value);
+            if (from == typeof(SqlDbType))
+                return DbTypeMap.ToNetType((SqlDbType)value);
+            else
+            {
+                var type = (Type)value;
+                // check for Nullable enums. 
+                // Null values should be handled by DefaultValueConversionStrategy, but we need to be able
+                // to get the actual type of the enum here.
+                if (type.IsDerivedFromGenericType(typeof(Nullable<>)))
+                    type = type.GetGenericArguments()[0];
+                return DbTypeMap.ToSqlDbType(type);
+            }
         }
 
-    }
-
-    /// <summary>
-    /// Converts a SqlDbType to a .Net type.
-    /// </summary>
-    public class SqlDBTypeToTypeConversionStrategy
-        : IConvertStrategy
-    {
-
         /// <summary>
-        /// Converts the value to the proper type.
+        /// Determines whether this converter can convert the value.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="provider"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <returns></returns>
-        public object Convert(object value, IFormatProvider provider)
+        public bool CanConvert(Type from, Type to)
         {
-            return DbTypeMap.ToNetType((SqlDbType)value);
+            if (from.IsDerivedFrom(typeof(Type)) && to == typeof(SqlDbType)) return true;
+            if (to.IsDerivedFrom(typeof(Type)) && from == typeof(SqlDbType)) return true;
+            return false;
         }
 
     }
@@ -60,15 +65,23 @@ namespace BizArk.Core.Convert
             sMap = new List<DbTypeMapEntry>();
 
             sMap.Add(new DbTypeMapEntry(typeof(bool), DbType.Boolean, SqlDbType.Bit));
-            sMap.Add(new DbTypeMapEntry(typeof(byte), DbType.Double, SqlDbType.TinyInt));
+            sMap.Add(new DbTypeMapEntry(typeof(byte), DbType.Byte, SqlDbType.TinyInt));
+            sMap.Add(new DbTypeMapEntry(typeof(byte?), DbType.Byte, SqlDbType.TinyInt));
             sMap.Add(new DbTypeMapEntry(typeof(byte[]), DbType.Binary, SqlDbType.Binary));
             sMap.Add(new DbTypeMapEntry(typeof(DateTime), DbType.DateTime, SqlDbType.DateTime));
-            sMap.Add(new DbTypeMapEntry(typeof(Decimal), DbType.Decimal, SqlDbType.Decimal));
+            sMap.Add(new DbTypeMapEntry(typeof(DateTime?), DbType.DateTime, SqlDbType.DateTime));
+            sMap.Add(new DbTypeMapEntry(typeof(decimal), DbType.Decimal, SqlDbType.Decimal));
+            sMap.Add(new DbTypeMapEntry(typeof(decimal?), DbType.Decimal, SqlDbType.Decimal));
             sMap.Add(new DbTypeMapEntry(typeof(double), DbType.Double, SqlDbType.Float));
+            sMap.Add(new DbTypeMapEntry(typeof(double?), DbType.Double, SqlDbType.Float));
             sMap.Add(new DbTypeMapEntry(typeof(Guid), DbType.Guid, SqlDbType.UniqueIdentifier));
+            sMap.Add(new DbTypeMapEntry(typeof(Guid?), DbType.Guid, SqlDbType.UniqueIdentifier));
             sMap.Add(new DbTypeMapEntry(typeof(Int16), DbType.Int16, SqlDbType.SmallInt));
+            sMap.Add(new DbTypeMapEntry(typeof(Int16?), DbType.Int16, SqlDbType.SmallInt));
             sMap.Add(new DbTypeMapEntry(typeof(Int32), DbType.Int32, SqlDbType.Int));
+            sMap.Add(new DbTypeMapEntry(typeof(Int32?), DbType.Int32, SqlDbType.Int));
             sMap.Add(new DbTypeMapEntry(typeof(Int64), DbType.Int64, SqlDbType.BigInt));
+            sMap.Add(new DbTypeMapEntry(typeof(Int64?), DbType.Int64, SqlDbType.BigInt));
             sMap.Add(new DbTypeMapEntry(typeof(object), DbType.Object, SqlDbType.Variant));
             sMap.Add(new DbTypeMapEntry(typeof(string), DbType.String, SqlDbType.VarChar));
         }
@@ -176,43 +189,54 @@ namespace BizArk.Core.Convert
             return sMap.Find((e) => { return e.SqlDbType == type; });
         }
 
-        #endregion
-
-    }
-
-    /// <summary>
-    /// Represents a map entry for conversion.
-    /// </summary>
-    public class DbTypeMapEntry
-    {
-
         /// <summary>
-        /// Creates an instance of DbTypeMapEntry.
+        /// Determines if the .Net type can be converted to a SqlDbType/DbType or not.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="dbType"></param>
-        /// <param name="sqlDbType"></param>
-        public DbTypeMapEntry(Type type, DbType dbType, SqlDbType sqlDbType)
+        /// <returns></returns>
+        public static bool CanConvertType(Type type)
         {
-            this.Type = type;
-            this.DbType = dbType;
-            this.SqlDbType = sqlDbType;
+            var entry = Find(type);
+            return entry != null;
         }
 
-        /// <summary>
-        /// Gets the .Net type.
-        /// </summary>
-        public Type Type { get; private set; }
+        #endregion
 
         /// <summary>
-        /// Gets the DbType.
+        /// Represents a map entry for conversion.
         /// </summary>
-        public DbType DbType { get; private set; }
+        private class DbTypeMapEntry
+        {
 
-        /// <summary>
-        /// Gets the SqlDbType.
-        /// </summary>
-        public SqlDbType SqlDbType { get; private set; }
+            /// <summary>
+            /// Creates an instance of DbTypeMapEntry.
+            /// </summary>
+            /// <param name="type"></param>
+            /// <param name="dbType"></param>
+            /// <param name="sqlDbType"></param>
+            public DbTypeMapEntry(Type type, DbType dbType, SqlDbType sqlDbType)
+            {
+                this.Type = type;
+                this.DbType = dbType;
+                this.SqlDbType = sqlDbType;
+            }
+
+            /// <summary>
+            /// Gets the .Net type.
+            /// </summary>
+            public Type Type { get; private set; }
+
+            /// <summary>
+            /// Gets the DbType.
+            /// </summary>
+            public DbType DbType { get; private set; }
+
+            /// <summary>
+            /// Gets the SqlDbType.
+            /// </summary>
+            public SqlDbType SqlDbType { get; private set; }
+
+        }
 
     }
 
