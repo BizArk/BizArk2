@@ -25,15 +25,20 @@ namespace BizArk.Core.Util
             return GetNameCore(propertyRefExpr.Body);
         }
 
+        /// <summary>
+        /// Gets the name of the property in the expression.
+        /// </summary>
+        /// <param name="propertyRefExpr"></param>
+        /// <returns></returns>
         public static string GetNameCore(Expression propertyRefExpr)
         {
             if (propertyRefExpr == null)
                 throw new ArgumentNullException("propertyRefExpr", "propertyRefExpr is null.");
 
-            MemberExpression memberExpr = propertyRefExpr as MemberExpression;
+            var memberExpr = propertyRefExpr as MemberExpression;
             if (memberExpr == null)
             {
-                UnaryExpression unaryExpr = propertyRefExpr as UnaryExpression;
+                var unaryExpr = propertyRefExpr as UnaryExpression;
                 if (unaryExpr != null && unaryExpr.NodeType == ExpressionType.Convert)
                     memberExpr = unaryExpr.Operand as MemberExpression;
             }

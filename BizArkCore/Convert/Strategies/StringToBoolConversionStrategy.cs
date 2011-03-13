@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace BizArk.Core.Convert
+namespace BizArk.Core.Convert.Strategies
 {
     /// <summary>
     /// Converts from a string to a bool.
@@ -14,7 +12,7 @@ namespace BizArk.Core.Convert
 
         static StringToBoolConversionStrategy()
         {
-            TrueValues = new List<string>() { "true", "t", "yes" };
+            TrueValues = new List<string>() { "true", "t", "yes", "ok" };
         }
 
         /// <summary>
@@ -23,12 +21,14 @@ namespace BizArk.Core.Convert
         public static List<string> TrueValues { get; private set; }
 
         /// <summary>
-        /// Converts the string to a boolean.
+        /// Changes the type of the value.
         /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <param name="value"></param>
         /// <param name="provider"></param>
         /// <returns></returns>
-        public object Convert(object value, IFormatProvider provider)
+        public object Convert(Type from, Type to, object value, IFormatProvider provider)
         {
             string strVal = value as string;
             if (strVal == null) return false;
@@ -45,6 +45,19 @@ namespace BizArk.Core.Convert
 
             // Everything else is false.
             return false;
+        }
+
+        /// <summary>
+        /// Determines whether this converter can convert the value.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public bool CanConvert(Type from, Type to)
+        {
+            if (from != typeof(string)) return false;
+            if(to != typeof(bool)) return false;
+            return true;
         }
 
     }

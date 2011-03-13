@@ -20,7 +20,7 @@ namespace BizArk.Core.CmdLine
     /// <para>The CmdLineObject class can be inherited from to allow the 
     /// properties of a class to be initialized from command-line arguments.
     /// The properties can be any type that can be converted to and from a string 
-    /// using the <see cref="BizArk.Core.ConvertEx.ChangeType(object, Type)"/> 
+    /// using the <see cref="BizArk.Core.ConvertEx.ChangeType(object, Type, IFormatProvider)"/> 
     /// method.</para>
     /// <para>Only properties that have the CmdLineArgAttribute applied to them
     /// can be initialized from the command-line. To make a property the default
@@ -251,7 +251,7 @@ namespace BizArk.Core.CmdLine
                 string argName = args[i].Substring(1);
                 if (argName == "") continue;
 
-                var prop = Properties[argName];
+                var prop = Properties[argName.TrimEnd('-')];
                 if (prop == null) continue;
 
                 string[] argValues;
@@ -592,6 +592,15 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         protected virtual void Initialized()
         {
+        }
+
+        /// <summary>
+        /// Determines if the application should wait for a key before exiting. Override this method to allow it to be true.
+        /// </summary>
+        /// <returns></returns>
+        protected internal virtual bool WaitForAnyKey()
+        {
+            return false;
         }
 
         #endregion

@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertEx.cs" />
+    <Compile Include="ConversionStrategyTest.cs" />
     <Compile Include="CmdLineObjectTest.cs" />
     <Compile Include="ConvertExTest.cs" />
     <Compile Include="HashListTest.cs" />
@@ -71,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
+    <None Include="Resources\TestImg.png" />
     <Content Include="Resources\ValidRpcFaultResponse.xml" />
     <Content Include="Resources\ValidRpcParamsResponse.xml" />
     <Content Include="Resources\XmlRpcInvokeTest.xml" />

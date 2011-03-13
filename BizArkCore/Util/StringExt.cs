@@ -32,11 +32,17 @@ namespace BizArk.Core.StringExt
             if (maxLength <= 0) return prefix + str;
 
             var lines = new List<string>();
-
+            var first = true;
             // breaking the string into lines makes it easier to process.
             foreach (string line in str.Lines())
             {
-                var remainingLine = line.Trim();
+                var remainingLine = line;
+                if (!first)
+                {
+                    // Preserve whitespace for the first line
+                    remainingLine = remainingLine.Trim();
+                    first = false;
+                }
                 do
                 {
                     var newLine = GetLine(remainingLine, maxLength - prefix.Length);
@@ -47,7 +53,7 @@ namespace BizArk.Core.StringExt
                 } while (remainingLine.Length > 0);
             }
 
-            return string.Join(Environment.NewLine + prefix, lines.ToArray());
+            return string.Join("\r" + prefix, lines.ToArray());
         }
 
         private static string GetLine(string str, int maxLength)

@@ -15,61 +15,7 @@ namespace TestBizArkCore
     public class ConvertExTest
     {
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        /// <summary>
-        ///A test for IsEqual
-        ///</summary>
         [TestMethod()]
-        [DeploymentItem("BizArk.Core.dll")]
         public void IsEmptyTest()
         {
             object value = null;
@@ -124,12 +70,21 @@ namespace TestBizArkCore
             var test = ConvertEx.ChangeType<ConvertTest>("1,2");
             Assert.AreEqual(1, test.X);
             Assert.AreEqual(2, test.Y);
+
+            var testPt = ConvertEx.To<Point>(test);
+            Assert.AreEqual(1, testPt.X);
+            Assert.AreEqual(2, testPt.Y);
+
+            test = ConvertEx.To<ConvertTest>(testPt);
+            Assert.AreEqual(1, test.X);
+            Assert.AreEqual(2, test.Y);
         }
 
         [TestMethod()]
         public void GetDefaultEmptyTest()
         {
             object emptyValue;
+            ConvertEx.ResetEmptyValues();
 
             emptyValue = ConvertEx.GetDefaultEmptyValue<object>();
             Assert.IsNull(emptyValue);
@@ -227,6 +182,16 @@ namespace TestBizArkCore
             }
 
             public static readonly ConvertTest Empty = new ConvertTest() { X = 0, Y = 0 };
+
+            public static implicit operator Point(ConvertTest test)
+            {
+                return new Point(test.X, test.Y);
+            }
+
+            public static explicit operator ConvertTest(Point pt)
+            {
+                return new ConvertTest(pt);
+            }
         }
 
         private struct ConvertStructTest

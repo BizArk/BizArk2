@@ -31,7 +31,7 @@ namespace BizArk.Core.TypeExt
         /// <returns></returns>
         public static bool IsDerivedFrom(this Type type, Type baseType)
         {
-             return baseType.IsAssignableFrom(type);
+            return baseType.IsAssignableFrom(type);
         }
 
         /// <summary>
@@ -103,6 +103,47 @@ namespace BizArk.Core.TypeExt
             if (type.IsValueType && type.IsNullable()) name += "?";
 
             return name;
+        }
+
+        /// <summary>
+        /// Determines if the type corresponds to one of the built in numeric types (such as int, double, etc).
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsNumericType(this Type type)
+        {
+            type = GetTrueType(type);
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the underlying type if the type is Nullable, otherwise just returns the type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type GetTrueType(this Type type)
+        {
+            // check for Nullable enums. 
+            // Null values should be handled by DefaultValueConversionStrategy, but we need to be able
+            // to get the actual type of the enum here.
+            if (IsDerivedFromGenericType(type, typeof(Nullable<>)))
+                return type.GetGenericArguments()[0];
+            else
+                return type;
         }
 
     }
