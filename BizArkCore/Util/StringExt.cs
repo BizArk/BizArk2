@@ -53,7 +53,7 @@ namespace BizArk.Core.StringExt
                 } while (remainingLine.Length > 0);
             }
 
-            return string.Join("\r" + prefix, lines.ToArray());
+            return string.Join("\n" + prefix, lines.ToArray());
         }
 
         private static string GetLine(string str, int maxLength)
