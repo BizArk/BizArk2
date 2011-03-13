@@ -24,13 +24,13 @@ namespace TestBizArkCore
 
             str = "This is my line.";
             maxLineLength = 5;
-            expected = "This" + Environment.NewLine + "is my" + Environment.NewLine + "line.";
+            expected = "This\ris my\rline.";
             actual = StringExt.Wrap(str, maxLineLength);
             Assert.AreEqual(expected, actual);
 
             str = "ThisIsMyLine.";
             maxLineLength = 5;
-            expected = "ThisI" + Environment.NewLine + "sMyLi" + Environment.NewLine + "ne.";
+            expected = "ThisI\rsMyLi\rne.";
             actual = StringExt.Wrap(str, maxLineLength);
             Assert.AreEqual(expected, actual);
 
@@ -54,7 +54,7 @@ namespace TestBizArkCore
 
             str = "hellohello";
             maxLineLength = 5;
-            expected = "hello" + Environment.NewLine + "hello";
+            expected = "hello\rhello";
             actual = StringExt.Wrap(str, maxLineLength);
             Assert.AreEqual(expected, actual);
 
