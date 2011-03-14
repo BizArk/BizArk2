@@ -6,6 +6,9 @@ using System.Net;
 using System.Text;
 using BizArk.Core.AttributeExt;
 using BizArk.Core.Util;
+using System.ComponentModel;
+using System.Collections.Specialized;
+using System.Web;
 
 namespace BizArk.Core.Web
 {
@@ -18,6 +21,15 @@ namespace BizArk.Core.Web
     {
 
         #region Initialization and Destruction
+
+        /// <summary>
+        /// Creates an instance of ContentType.
+        /// </summary>
+        /// <param name="parameters"></param>
+        protected ContentType(WebParameters parameters)
+        {
+            Parameters = parameters;
+        }
 
         /// <summary>
         /// Disposes the object.
@@ -43,22 +55,26 @@ namespace BizArk.Core.Web
         /// Creates a new instance of a ContentType based on the parameters sent in.
         /// </summary>
         /// <param name="method"></param>
-        /// <param name="uploadFiles"></param>
-        /// <param name="hasFormValues"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
-        public static ContentType CreateContentType(HttpMethod method, bool uploadFiles, bool hasFormValues)
+        public static ContentType CreateContentType(HttpMethod method, WebParameters parameters)
         {
-            if (uploadFiles)
-                return new MultipartFormDataContentType();
-            else if (hasFormValues && method != HttpMethod.Get && method != HttpMethod.Delete)
-                return new ApplicationUrlEncodedContentType();
+            if (parameters.HasFileParameters() || parameters.HasBinaryParameters())
+                return new MultipartFormDataContentType(parameters);
+            else if (parameters.Count > 0 && method != HttpMethod.Get && method != HttpMethod.Delete)
+                return new ApplicationUrlEncodedContentType(parameters);
             else
-                return new NoContentType();
+                return new NoContentType(parameters);
         }
 
         #endregion
 
         #region Fields and Properties
+
+        /// <summary>
+        /// Gets the parameters to upload minus the files.
+        /// </summary>
+        public WebParameters Parameters { get; private set; }
 
         private bool mDisposed;
         /// <summary>
@@ -110,6 +126,19 @@ namespace BizArk.Core.Web
         : ContentType
     {
 
+        #region Initialization and Destruction
+
+        /// <summary>
+        /// Creates an instance of NoContentType.
+        /// </summary>
+        /// <param name="parameters"></param>
+        public NoContentType(WebParameters parameters)
+            : base(parameters)
+        {
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -120,16 +149,7 @@ namespace BizArk.Core.Web
         /// <returns></returns>
         public override void PrepareRequest(HttpWebRequest request, WebHelper helper)
         {
-            switch (helper.Method)
-            {
-                case HttpMethod.Get:
-                case HttpMethod.Delete:
-                    request.Method = helper.Method.GetDescription();
-                    break;
-                default:
-                    request.Method = HttpMethod.Get.GetDescription();
-                    break;
-            }
+            request.Method = helper.Method == HttpMethod.Delete ? "DELETE" : "GET";
         }
 
         /// <summary>
@@ -141,13 +161,15 @@ namespace BizArk.Core.Web
         {
             var sb = new StringBuilder();
             sb.Append(helper.Url);
-            if (helper.FormValues.Count > 0)
+
+            var txtParams = Parameters.GetTextParameters();
+            foreach (var param in txtParams)
             {
                 if (helper.Url.Contains("?"))
                     sb.Append("&");
                 else
                     sb.Append("?");
-                sb.Append(WebUtil.GetUrlEncodedData(helper.FormValues));
+                sb.AppendFormat("{0}={1}", param.Name, HttpUtility.UrlEncode(param.Text));
             }
 
             return sb.ToString();
@@ -176,6 +198,19 @@ namespace BizArk.Core.Web
         : ContentType
     {
 
+        #region Initialization and Destruction
+
+        /// <summary>
+        /// Creates an instance of ApplicationUrlEncodedContentType.
+        /// </summary>
+        /// <param name="parameters"></param>
+        public ApplicationUrlEncodedContentType(WebParameters parameters)
+            : base(parameters)
+        {
+        }
+
+        #endregion
+
         #region Fields and Properties
 
         private byte[] mData;
@@ -200,19 +235,9 @@ namespace BizArk.Core.Web
         public override void PrepareRequest(HttpWebRequest request, WebHelper helper)
         {
             request.ContentType = "application/x-www-form-urlencoded";
-            mData = Encoding.UTF8.GetBytes(WebUtil.GetUrlEncodedData(helper.FormValues));
+            mData = Encoding.UTF8.GetBytes(WebUtil.GetUrlEncodedData(Parameters));
             request.ContentLength = mData.Length;
-            switch (helper.Method)
-            {
-                case HttpMethod.Post:
-                case HttpMethod.Put:
-                    request.Method = helper.Method.GetDescription();
-                    break;
-                default:
-                    request.Method = HttpMethod.Post.GetDescription();
-                    break;
-            }
-
+            request.Method = helper.Method == HttpMethod.Put ? "PUT" : "POST";
             if (mData.Length > 5242880)
                 // if the content is more than 5MiB don't store it in the cache or there will be memory problems.
                 request.AllowWriteStreamBuffering = false;
@@ -250,7 +275,8 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Creates an instance of MultipartFormDataContentType.
         /// </summary>
-        public MultipartFormDataContentType()
+        public MultipartFormDataContentType(WebParameters parameters)
+            : base(parameters)
         {
             PartBoundary = "---------------------" + DateTime.Now.Ticks.ToString("x", NumberFormatInfo.InvariantInfo);
         }
@@ -325,16 +351,7 @@ namespace BizArk.Core.Web
             mParts = GetParts(helper);
             mContentLength = CalcContentLength(mParts, mPartFooter);
             request.ContentLength = mContentLength;
-            switch (helper.Method)
-            {
-                case HttpMethod.Post:
-                case HttpMethod.Put:
-                    request.Method = helper.Method.GetDescription();
-                    break;
-                default:
-                    request.Method = HttpMethod.Post.GetDescription();
-                    break;
-            }
+            request.Method = helper.Method == HttpMethod.Put ? "PUT" : "POST";
             if (mContentLength > 5242880)
                 // if the content is more than 5MiB don't store it in the cache or there will be memory problems.
                 request.AllowWriteStreamBuffering = false;
@@ -394,13 +411,23 @@ namespace BizArk.Core.Web
         {
             var parts = new List<MimePart>();
 
-            foreach (string key in helper.FormValues.AllKeys)
+            foreach (var param in Parameters.GetTextParameters())
             {
-                var value = helper.FormValues[key];
-                var s = new MemoryStream(Encoding.UTF8.GetBytes(value));
+                var s = new MemoryStream(Encoding.UTF8.GetBytes(param.Text));
                 var part = new MimePart(s);
 
-                part.Headers["Content-Disposition"] = "form-data; name=\"" + key + "\"";
+                part.Headers["Content-Disposition"] = "form-data; name=\"" + param.Name + "\"";
+                part.Prepare(mPartBoundary);
+
+                parts.Add(part);
+            }
+
+            foreach (var param in Parameters.GetBinaryParameters())
+            {
+                var s = new MemoryStream(param.Data);
+                var part = new MimePart(s);
+
+                part.Headers["Content-Disposition"] = "form-data; name=\"" + param.Name + "\"";
                 part.Prepare(mPartBoundary);
 
                 parts.Add(part);
@@ -409,17 +436,13 @@ namespace BizArk.Core.Web
             // This does not strictly conform to RFC2388 (http://www.faqs.org/rfcs/rfc2388.html). The RFC states that 
             // if you upload multiple files they should be in a multipart/mixed part within a multipart/form-data.
             // However, this seems to work with IIS7 which is good enough for now.
-            var nameIndex = 0;
-            foreach (UploadFile file in helper.Files)
+            foreach (var param in Parameters.GetFileParameters())
             {
-                var s = file.GetStream();
+                var s = param.File.GetStream();
                 var part = new MimePart(s);
 
-                if (string.IsNullOrEmpty(file.FieldName))
-                    file.FieldName = "file" + nameIndex++;
-
-                part.Headers["Content-Disposition"] = "form-data; name=\"" + file.FieldName + "\"; filename=\"" + file.FileName + "\"";
-                part.Headers["Content-Type"] = file.ContentType;
+                part.Headers["Content-Disposition"] = "form-data; name=\"" + param.Name + "\"; filename=\"" + param.File.FileName + "\"";
+                part.Headers["Content-Type"] = param.File.ContentType;
                 part.Prepare(mPartBoundary);
 
                 parts.Add(part);
