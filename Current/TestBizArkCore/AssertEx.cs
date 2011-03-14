@@ -31,6 +31,21 @@ namespace TestBizArkCore
             }
         }
 
+        public static void Throws(Type exceptionType, Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                if (ex.GetType() == exceptionType)
+                    return;
+                else
+                    throw;
+            }
+        }
+
         //public static void NoError(FieldValidationResults res)
         //{
         //    if (res.Error == null) return;

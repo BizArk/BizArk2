@@ -14,12 +14,10 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Creates an instance of UploadFile.
         /// </summary>
-        /// <param name="fieldName"></param>
         /// <param name="contentType"></param>
         /// <param name="path"></param>
-        public UploadFile(string fieldName, string contentType, string path)
+        public UploadFile(string contentType, string path)
         {
-            mFieldName = fieldName;
             mContentType = contentType;
             mFileName = Path.GetFileName(path);
             mFilePath = path;
@@ -28,13 +26,11 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Creates an instance of UploadFile.
         /// </summary>
-        /// <param name="fieldName"></param>
         /// <param name="contentType"></param>
         /// <param name="fileName"></param>
         /// <param name="data"></param>
-        public UploadFile(string fieldName, string contentType, string fileName, byte[] data)
+        public UploadFile(string contentType, string fileName, Stream data)
         {
-            mFieldName = fieldName;
             mContentType = contentType;
             mFileName = fileName;
             mData = data;
@@ -43,16 +39,6 @@ namespace BizArk.Core.Web
         #endregion
 
         #region Fields and Properties
-
-        private string mFieldName;
-        /// <summary>
-        /// Gets or sets the name of the field used by the server to identify this file.
-        /// </summary>
-        public string FieldName
-        {
-            get { return mFieldName; }
-            set { mFieldName = value; }
-        }
 
         private string mContentType;
         /// <summary>
@@ -66,7 +52,7 @@ namespace BizArk.Core.Web
 
         private string mFileName;
         /// <summary>
-        /// Gets or sets the name of the file.
+        /// Gets or sets the name of the file. Option if FilePath is set (the name will come from the file path).
         /// </summary>
         public string FileName
         {
@@ -84,11 +70,11 @@ namespace BizArk.Core.Web
             set { mFilePath = value; }
         }
 
-        private byte[] mData;
+        private Stream mData;
         /// <summary>
         /// Gets or sets the data to upload. Optional, if this is set, FilePath will be ignored.
         /// </summary>
-        public byte[] Data
+        public Stream Data
         {
             get { return mData; }
             set { mData = value; }
@@ -105,7 +91,7 @@ namespace BizArk.Core.Web
         internal Stream GetStream()
         {
             if (mData != null)
-                return new MemoryStream(mData);
+                return mData;
             else
                 return new FileStream(mFilePath, FileMode.Open, FileAccess.Read);
         }

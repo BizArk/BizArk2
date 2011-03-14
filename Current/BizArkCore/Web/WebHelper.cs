@@ -23,8 +23,17 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Creates an instance of WebHelper.
         /// </summary>
-        public WebHelper()
+        public WebHelper(string url)
         {
+            Parameters = new WebParameters();
+            Url = url;
+            Timeout = TimeSpan.FromSeconds(100);
+            Method = HttpMethod.Get;
+            Headers = new WebHeaderCollection();
+            UserAgent = "";
+            KeepAlive = true;
+            AllowAutoRedirect = true;
+            UseCompression = true;
         }
 
         #endregion
@@ -36,118 +45,61 @@ namespace BizArk.Core.Web
         private long mRequestContentLength = 0;
         private long mResponseContentLength = 0;
 
-        private string mUrl;
         /// <summary>
         /// Gets or sets the url for the web request.
         /// </summary>
-        public string Url
-        {
-            get { return mUrl; }
-            set { mUrl = value; }
-        }
+        public string Url { get; private set; }
 
-        private HttpMethod mMethod = HttpMethod.Get;
         /// <summary>
         /// Gets or sets the method for the web request. The default is GET but might be different based on the content type.
         /// </summary>
-        public HttpMethod Method
-        {
-            get { return mMethod; }
-            set { mMethod = value; }
-        }
+        public HttpMethod Method { get; set; }
 
-        private TimeSpan mTimeout = TimeSpan.MaxValue;
         /// <summary>
         /// Gets or sets the timeout for the web request. If null, uses the default value for HttpWebRequest (100 seconds). For no timeout, set to TimeSpan.MaxValue.
         /// </summary>
-        public TimeSpan Timeout
-        {
-            get { return mTimeout; }
-            set { mTimeout = value; }
-        }
+        public TimeSpan Timeout { get; set; }
 
-        private ContentType mContentType;
         /// <summary>
         /// Gets or sets the content type for the request. If null, will determine the content type based on what needs to be sent. ContentTypes are a one-use thing. If set, it will need to be set for each call.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public ContentType ContentType
-        {
-            get { return mContentType; }
-            set { mContentType = value; }
-        }
+        public ContentType ContentType { get; set; }
 
-        private List<UploadFile> mFiles = new List<UploadFile>();
         /// <summary>
-        /// Gets the files to be uploaded.
+        /// Gets or sets the parameters for the request. This can be an object with the properties as parameters (recommend anonymous object) or it can be a WebParameterDictionary. To upload files, use a UploadFile object.
         /// </summary>
-        public List<UploadFile> Files
-        {
-            get { return mFiles; }
-        }
+        public dynamic Parameters { get; private set; }
 
-        private NameValueCollection mFormValues = new NameValueCollection();
-        /// <summary>
-        /// Gets the form values to be uploaded.
-        /// </summary>
-        public NameValueCollection FormValues
-        {
-            get { return mFormValues; }
-        }
-
-        private WebHeaderCollection mHeaders = new WebHeaderCollection();
         /// <summary>
         /// Gets the headers for the request.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public WebHeaderCollection Headers
-        {
-            get { return mHeaders; }
-        }
+        public WebHeaderCollection Headers { get; private set; }
 
-        private string mUserAgent;
         /// <summary>
         /// Gets or sets the user agent.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public string UserAgent
-        {
-            get { return mUserAgent; }
-            set { mUserAgent = value; }
-        }
+        public string UserAgent { get; set; }
 
-        private bool mKeepAlive = true;
         /// <summary>
         /// Gets or sets a value that determines if http keep-alives are used. The default is true.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public bool KeepAlive
-        {
-            get { return mKeepAlive; }
-            set { mKeepAlive = value; }
-        }
+        public bool KeepAlive { get; set; }
 
-        private bool mAllowAutoRedirect = true;
         /// <summary>
         /// Gets or sets a value that determines if redirects are followed. Default is false.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public bool AllowAutoRedirect
-        {
-            get { return mAllowAutoRedirect; }
-            set { mAllowAutoRedirect = value; }
-        }
+        public bool AllowAutoRedirect { get; set; }
 
-        private long mEstimatedResponseLength = -1;
         /// <summary>
-        /// Gets or sets the estimated length of the response in number of bytes. This is used to estimate the total progress percent until we can get the actual length of the response.
+        /// Gets or sets the estimated length of the response in number of bytes. This is used to estimate the total progress percent until we can get the actual length of the response. If set to null, upload/download will be split 50/50.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public long EstimatedResponseLength
-        {
-            get { return mEstimatedResponseLength; }
-            set { mEstimatedResponseLength = value; }
-        }
+        public long? EstimatedResponseLength { get; set; }
 
         /// <summary>
         /// Gets a value that determines if an asynchronous request is already in progress.
@@ -163,36 +115,22 @@ namespace BizArk.Core.Web
             }
         }
 
-        private bool mCancellationPending = false;
         /// <summary>
         /// Gets a value that determines if the current asynchronous request has been cancelled.
         /// </summary>
-        public bool CancellationPending
-        {
-            get { return mCancellationPending; }
-        }
+        public bool CancellationPending { get; private set; }
 
-        private object mState;
         /// <summary>
         /// Gets or sets the state object that will be sent through the events. The state object is not used internally.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public object State
-        {
-            get { return mState; }
-            set { mState = value; }
-        }
+        public object State { get; set; }
 
-        private bool mUseCompression = true;
         /// <summary>
         /// Gets or sets a value that determines if compression should be used. The default is true.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public bool UseCompression
-        {
-            get { return mUseCompression; }
-            set { mUseCompression = value; }
-        }
+        public bool UseCompression { get; set; }
 
         #endregion
 
@@ -206,6 +144,7 @@ namespace BizArk.Core.Web
         {
             if (IsBusy) throw new InvalidOperationException("A request has already been made. WebHelper only supports a single request at a time.");
 
+            // Make sure the thread is dead. We don't want to make a request on the thread.
             if (mRequestThread != null)
             {
                 try
@@ -223,16 +162,41 @@ namespace BizArk.Core.Web
             return MakeRequest_Internal();
         }
 
+        /// <summary>
+        /// Makes the web request asynchronously.
+        /// </summary>
+        public void MakeRequestAsync()
+        {
+            MakeRequestAsync(null);
+        }
+
+        /// <summary>
+        /// Makes the web request asynchronously.
+        /// </summary>
+        /// <param name="state"></param>
+        public void MakeRequestAsync(object state)
+        {
+            if (IsBusy) throw new InvalidOperationException("An asynchronous request is already in progress. WebHelper only supports a single request at a time.");
+
+            mAsyncOperation = AsyncOperationManager.CreateOperation(state);
+            mRequestThread = new Thread(() =>
+            {
+                MakeRequest_Internal();
+            });
+            mRequestThread.Start();
+        }
+
         private WebHelperResponse MakeRequest_Internal()
         {
-            mCancellationPending = false;
+            CancellationPending = false;
 
             WebHelperResponse whResponse = null;
             try
             {
                 HttpWebRequest request = null;
                 bool sent = false;
-                using (var contentType = mContentType ?? ContentType.CreateContentType(mMethod, mFiles.Count > 0, mFormValues.Count > 0))
+
+                using (var contentType = ContentType ?? ContentType.CreateContentType(Method, (WebParameters)Parameters))
                 {
                     request = CreateRequest(contentType);
                     sent = contentType.SendRequest(this, request);
@@ -241,8 +205,8 @@ namespace BizArk.Core.Web
                 RequestCompletedEventArgs completedArgs = null;
                 if (!sent)
                 {
-                    if (!mCancellationPending) throw new InvalidOperationException("Unable to complete request. Unknown error.");
-                    completedArgs = new RequestCompletedEventArgs(mState, true);
+                    if (!CancellationPending) throw new InvalidOperationException("Unable to complete request. Unknown error.");
+                    completedArgs = new RequestCompletedEventArgs(State, true);
                 }
                 else
                 {
@@ -251,9 +215,9 @@ namespace BizArk.Core.Web
 
                     // even if a cancellation is pending, if we recieved the response, complete the request as normal.
                     if (whResponse != null)
-                        completedArgs = new RequestCompletedEventArgs(whResponse, mState, false);
-                    else if (mCancellationPending)
-                        completedArgs = new RequestCompletedEventArgs(whResponse, mState, true);
+                        completedArgs = new RequestCompletedEventArgs(whResponse, State, false);
+                    else if (CancellationPending)
+                        completedArgs = new RequestCompletedEventArgs(whResponse, State, true);
                     else
                         throw new InvalidOperationException("Unable to receive response. Unknown error.");
                 }
@@ -266,7 +230,7 @@ namespace BizArk.Core.Web
             }
             catch (Exception ex)
             {
-                var completedArgs = new RequestCompletedEventArgs(ex, mState, false);
+                var completedArgs = new RequestCompletedEventArgs(ex, State, false);
                 Post((arg) =>
                 {
                     // Regardless of the outcome, RequestCompleted is guaranteed to be raised.
@@ -303,35 +267,11 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
-        /// Makes the web request asynchronously.
-        /// </summary>
-        public void MakeRequestAsync()
-        {
-            MakeRequestAsync(null);
-        }
-
-        /// <summary>
-        /// Makes the web request asynchronously.
-        /// </summary>
-        /// <param name="state"></param>
-        public void MakeRequestAsync(object state)
-        {
-            if (IsBusy) throw new InvalidOperationException("An asynchronous request is already in progress. WebHelper only supports a single request at a time.");
-
-            mAsyncOperation = AsyncOperationManager.CreateOperation(state);
-            mRequestThread = new Thread(() =>
-            {
-                MakeRequest_Internal();
-            });
-            mRequestThread.Start();
-        }
-
-        /// <summary>
         /// Cancels the request in progress.
         /// </summary>
         public void CancelRequestAsync()
         {
-            mCancellationPending = true;
+            CancellationPending = true;
         }
 
         /// <summary>
@@ -366,7 +306,7 @@ namespace BizArk.Core.Web
 
             using (var responseStream = response.GetResponseStream())
             {
-                var processArgs = new ProcessResponseStreamEventArgs(responseStream, response, mState);
+                var processArgs = new ProcessResponseStreamEventArgs(responseStream, response, State);
                 OnProcessResponseStream(processArgs);
                 if (processArgs.Handled)
                     return new WebHelperResponse(processArgs.Result, response.ContentType, response.StatusCode, response.ContentEncoding, response.CharacterSet);
@@ -377,7 +317,6 @@ namespace BizArk.Core.Web
                 int read;
                 Stream s;
 
-                //todo: this has not been tested.
                 if (response.ContentEncoding.ToLower().Contains("deflate"))
                     s = new DeflateStream(responseStream, CompressionMode.Decompress);
                 else if (response.ContentEncoding.ToLower().Contains("gzip"))
@@ -387,8 +326,8 @@ namespace BizArk.Core.Web
 
                 while ((read = s.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    if (mCancellationPending) return null;
-                    
+                    if (CancellationPending) return null;
+
                     ms.Write(buffer, 0, read);
                     bytesRead += read;
                     ReportResponseProgress(bytesRead);
@@ -408,29 +347,23 @@ namespace BizArk.Core.Web
         {
             var request = (HttpWebRequest)WebRequest.Create(contentType.GetUrl(this));
 
-            request.Timeout = GetTimeout();
-            request.Headers = mHeaders;
-            if (mUseCompression)
+            request.Timeout = (int)Timeout.TotalMilliseconds;
+            request.Headers = Headers;
+            if (UseCompression)
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-            if (!string.IsNullOrEmpty(mUserAgent)) request.UserAgent = mUserAgent;
-            request.KeepAlive = mKeepAlive;
-            request.AllowAutoRedirect = mAllowAutoRedirect;
+            if (!string.IsNullOrEmpty(UserAgent)) request.UserAgent = UserAgent;
+            request.KeepAlive = KeepAlive;
+            request.AllowAutoRedirect = AllowAutoRedirect;
 
             // let the content type update the request.
             contentType.PrepareRequest(request, this);
 
             // let the request be customized.
-            OnPrepareRequest(new PrepareRequestEventArgs(request, mState));
+            OnPrepareRequest(new PrepareRequestEventArgs(request, State));
 
             if (request.ContentLength > 0)
                 // Used to determine progress
                 mRequestContentLength = request.ContentLength;
-            if (mEstimatedResponseLength < 0)
-                // Used to determine progress. 
-                // If the estimate is not set, assume it is the same as the request.
-                // Probably not a great assumption, but this is the behavior of
-                // the WebClient class (50% for the request, 50% for the response).
-                mEstimatedResponseLength = request.ContentLength;
 
             return request;
         }
@@ -453,13 +386,6 @@ namespace BizArk.Core.Web
             }
         }
 
-        private int GetTimeout()
-        {
-            if (mTimeout == null) return (int)TimeSpan.FromSeconds(100).TotalMilliseconds; // default timeout for HttpWebRequest.
-            if (mTimeout == TimeSpan.MaxValue) return System.Threading.Timeout.Infinite;
-            return (int)mTimeout.TotalMilliseconds;
-        }
-
         private int mLastReqPct = -1;
         /// <summary>
         /// Used by ContentType object to report progress during send.
@@ -472,7 +398,7 @@ namespace BizArk.Core.Web
             if (mLastReqPct != pct)
             {
                 // Only raise the progress changed event if the progress percent changed. It can become a performance issue if you raise it every time you write a few bytes.
-                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, bytesSent, pct, mEstimatedResponseLength, 0, 0, mState);
+                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, bytesSent, pct, EstimatedResponseLength ?? mRequestContentLength, 0, 0, State);
                 Post((arg) =>
                 {
                     OnProgressChanged((WebHelperProgressChangedEventArgs)arg);
@@ -493,7 +419,7 @@ namespace BizArk.Core.Web
             if (mLastResPct != pct)
             {
                 // Only raise the progress changed event if the progress percent changed. It can become a performance issue if you raise it every time you write a few bytes.
-                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, mRequestContentLength, 100, mResponseContentLength, bytesRead, pct, mState);
+                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, mRequestContentLength, 100, mResponseContentLength, bytesRead, pct, State);
                 Post((arg) =>
                 {
                     OnProgressChanged((WebHelperProgressChangedEventArgs)arg);
