@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using My = BizArk.Core.Properties;
+using BizArk.Core.ORM;
+using System.Linq;
 
 namespace BizArk.Core.Data
 {
@@ -369,7 +371,7 @@ namespace BizArk.Core.Data
 
         #endregion
 
-        #region object methods
+        #region Object Methods
 
         /// <summary>
         /// Executes a command and returns the first row as the given object. The class must have a default constructor.
@@ -564,6 +566,118 @@ namespace BizArk.Core.Data
                 return mDbInfo.Exists(tableName, key);
             else
                 return mDbInfo.Exists(tableName, key, CurrentUpdate.Transaction);
+        }
+
+        #endregion
+
+        #region Entity Methods
+
+        private T ProcessEntityRow<T>(IDataReader row, EntityManager mgr) where T : Entity
+        {
+            var entity = Activator.CreateInstance<T>();
+            var props = mgr.Properties;
+            for (int i = 0; i < row.FieldCount; i++)
+            {
+                var fldName = row.GetName(i);
+                var prop = props.FirstOrDefault(p => { return p.ColumnName == fldName; });
+                if (prop == null) continue;
+                // Make sure the value is compatible with the property type.
+                var val = ConvertEx.ChangeType(row[i], prop.PropertyType);
+                entity.State.SetValue_Internal(prop.Name, val);
+            }
+
+            entity.State.SetUnmodified();
+            entity.State.IsNew = false;
+            return entity;
+        }
+
+        /// <summary>
+        /// Inserts, updates, or deletes the entity, depending on the state of the entity. Will not issue sql updates if not necessary. Updates the identifier property if defined. Initializes the original values once it is done.
+        /// </summary>
+        /// <param name="entity"></param>
+        public void Save(Entity entity)
+        {
+            if (entity == null) return;
+
+            // No need to issue a sql statement if we are deleting an entity that is not in the database yet.
+            if (entity.State.IsNew && entity.State.IsDeleted) return;
+
+            // Need to validate the entity before saving it to the database.
+            entity.State.Validate();
+
+            DatabaseUpdate update = null;
+            if (CurrentUpdate == null)
+                update = BeginUpdate();
+            var updateOK = false;
+            try
+            {
+                if (entity.State.IsNew)
+                    Insert(entity);
+                else if (entity.State.IsDeleted)
+                    Delete(entity);
+                else if (entity.State.IsModified)
+                    Update(entity);
+
+                if (update != null)
+                    update.Commit();
+                updateOK = true;
+            }
+            finally
+            {
+                if (update != null)
+                {
+                    if (!updateOK)
+                        update.Rollback();
+                    update.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserts, updates, or deletes the entity, depending on the state of the entity. Will not issue sql updates if not necessary. Updates the identifier property if defined. Initializes the original values once it is done.
+        /// </summary>
+        /// <param name="entities"></param>
+        public void Save<T>(IEnumerable<T> entities) where T : Entity
+        {
+            foreach (var entity in entities)
+                Save(entity);
+        }
+
+        private void Insert(Entity entity)
+        {
+            var mgr = entity.State.Manager;
+            var fields = new List<FieldValue>();
+            foreach (var val in entity.State.GetValuesForSave())
+            {
+                var fld = val.GetFieldValue();
+                fields.Add(fld);
+            }
+            var id = Insert(mgr.TableName, fields);
+            if (mgr.Identity != null)
+                entity.State.SetValue_Internal(mgr.Identity.Name, id);
+
+            entity.State.IsNew = false;
+            entity.State.SetUnmodified();
+        }
+
+        private void Update(Entity entity)
+        {
+            var mgr = entity.State.Manager;
+            var fields = new List<FieldValue>();
+            foreach (var val in entity.State.GetValuesForSave())
+            {
+                var fld = val.GetFieldValue();
+                fields.Add(fld);
+            }
+            Update(mgr.TableName, entity.State.DbKey, fields);
+            entity.State.SetUnmodified();
+        }
+
+        private void Delete(Entity entity)
+        {
+            var mgr = entity.State.Manager;
+            var count = this.Delete(mgr.TableName, entity.State.DbKey);
+            if (count > 1) throw new InvalidOperationException(string.Format("Multiple rows were changed in the database when deleting {0}.", entity));
         }
 
         #endregion
