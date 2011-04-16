@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Collections;
+using BizArk.Core.AttributeExt;
+using BizArk.Core.ORM;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace BizArk.Core.Data
 {
@@ -33,7 +38,7 @@ namespace BizArk.Core.Data
         void ExecuteCommand(DbCommand cmd, ExecuteDelegate execute);
 
         /// <summary>
-        /// Inserts the given object into the given table. The properties are expected to match the field names. Executes SCOPE_IDENTITY() and returns the value.
+        /// Inserts the given object into the given table. The properties of the parameter values are expected to match the field names or should be an IEnumarable of FieldValue objects. Executes SCOPE_IDENTITY() and returns the value.
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="values"></param>
@@ -173,15 +178,106 @@ namespace BizArk.Core.Data
         /// <returns></returns>
         public abstract bool Exists(string tableName, object key, DbTransaction trans = null);
 
-        internal static void AddParameter(DbCommand cmd, PropertyDescriptor prop, object obj)
+        internal static DbParameter AddParameter(DbCommand cmd, PropertyDescriptor prop, object obj)
+        {
+            var fld = GetFieldFromProperty(prop, obj);
+            return AddParameter(cmd, fld);
+        }
+
+        internal static DbParameter AddParameter(DbCommand cmd, FieldValue fld)
         {
             var parameter = cmd.CreateParameter();
-            parameter.ParameterName = "@" + prop.Name;
-            var value = prop.GetValue(obj);
+            parameter.ParameterName = "@" + fld.Name;
+            var value = fld.Value;
             if (ConvertEx.IsEmpty(value))
                 value = DBNull.Value;
             parameter.Value = value;
+            parameter.Size = fld.Size;
             cmd.Parameters.Add(parameter);
+
+
+            var param = cmd.CreateParameter();
+            param.ParameterName = "@" + fld.Name;
+
+            if (fld.DbType < 0)
+                param.Value = fld.Value;
+            else
+            {
+                param.DbType = fld.DbType;
+                if (fld.Size > 0) param.Size = fld.Size;
+
+                if (ConvertEx.IsEmpty(fld.Value))
+                    param.Value = DBNull.Value;
+                else
+                {
+                    switch (fld.DbType)
+                    {
+                        case DbType.Int32:
+                            // Useful for enums that are saved as ints.
+                            param.Value = ConvertEx.ToInt32(fld.Value);
+                            break;
+                        case DbType.String:
+                            // Useful for enums that are saved as strings.
+                            param.Value = ConvertEx.ToString(fld.Value);
+                            break;
+                        default:
+                            param.Value = fld.Value;
+                            break;
+                    }
+                }
+            }
+
+            return param;
+        }
+
+        /// <summary>
+        /// Gets a list of FieldValue objects out of the values parameter.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        protected FieldValue[] GetFields(object values)
+        {
+            var fields = new List<FieldValue>();
+
+            var flds = values as IEnumerable;
+            if (flds != null)
+            {
+                foreach (var fld in flds)
+                {
+                    var fldval = fld as FieldValue;
+                    if (fldval == null) throw new ArgumentException("If values is of type IEnumerable, all the items must be of type FieldValue.");
+                    fields.Add(fldval);
+                }
+            }
+            else
+            {
+                var props = TypeDescriptor.GetProperties(values);
+                foreach (PropertyDescriptor prop in props)
+                {
+                    var fld = GetFieldFromProperty(prop, values);
+                    fields.Add(fld);
+                }
+            }
+
+            return fields.ToArray();
+        }
+
+        internal static FieldValue GetFieldFromProperty(PropertyDescriptor prop, object obj)
+        {
+            var fld = new FieldValue(prop.Name, prop.GetValue(obj));
+
+            var colAtt = prop.GetAttribute<ColumnAttribute>(true);
+            if (colAtt != null)
+            {
+                fld.DbName = colAtt.Name;
+                fld.DbType = colAtt.DbType;
+            }
+
+            var sizeAtt = prop.GetAttribute<StringLengthAttribute>(true);
+            if (sizeAtt != null && sizeAtt.MaximumLength > 0)
+                fld.Size = sizeAtt.MaximumLength;
+
+            return fld;
         }
 
         #endregion
@@ -210,16 +306,16 @@ namespace BizArk.Core.Data
         public override int Insert(string tableName, object values, DbTransaction trans = null)
         {
             var cmd = CreateCommand();
-            var props = TypeDescriptor.GetProperties(values);
-            var fields = new List<string>();
-            foreach (PropertyDescriptor prop in props)
+            var fields = GetFields(values);
+            var fieldNames = new List<string>();
+            foreach (var fld in fields)
             {
-                fields.Add(prop.Name);
-                AddParameter(cmd, prop, values);
+                fieldNames.Add(fld.Name);
+                AddParameter(cmd, fld);
             }
-            if (fields.Count == 0) return 0;
+            if (fieldNames.Count == 0) return 0;
 
-            cmd.CommandText = string.Format("INSERT INTO {0} ({1}) VALUES (@{2}); SELECT SCOPE_IDENTITY();", tableName, string.Join(", ", fields.ToArray()), string.Join(", @", fields.ToArray()));
+            cmd.CommandText = string.Format("INSERT INTO {0} ({1}) VALUES (@{2}); SELECT SCOPE_IDENTITY();", tableName, string.Join(", ", fieldNames.ToArray()), string.Join(", @", fieldNames.ToArray()));
 
             if (trans != null)
             {
@@ -243,27 +339,27 @@ namespace BizArk.Core.Data
         public override int Update(string tableName, object key, object values, DbTransaction trans = null)
         {
             var cmd = CreateCommand();
-            var fields = new List<string>();
-            var props = TypeDescriptor.GetProperties(values);
-            foreach (PropertyDescriptor prop in props)
+            var fields = GetFields(values);
+            var fieldNames = new List<string>();
+            foreach (var fld in fields)
             {
-                fields.Add(string.Format("{0} = @{0}", prop.Name));
-                AddParameter(cmd, prop, values);
+                fieldNames.Add(string.Format("{0} = @{0}", fld.Name));
+                AddParameter(cmd, fld);
             }
-            if (fields.Count == 0) return 0;
+            if (fieldNames.Count == 0) return 0;
 
             var criteria = new List<string>();
-            props = TypeDescriptor.GetProperties(key);
-            foreach (PropertyDescriptor prop in props)
+            fields = GetFields(key);
+            foreach (var fld in fields)
             {
-                criteria.Add(string.Format("{0} = @{0}", prop.Name));
-                AddParameter(cmd, prop, key);
+                criteria.Add(string.Format("{0} = @{0}", fld.Name));
+                AddParameter(cmd, fld);
             }
 
             if (criteria.Count == 0)
-                cmd.CommandText = string.Format("UPDATE {0} SET {1}", tableName, string.Join(", ", fields.ToArray()));
+                cmd.CommandText = string.Format("UPDATE {0} SET {1}", tableName, string.Join(", ", fieldNames.ToArray()));
             else
-                cmd.CommandText = string.Format("UPDATE {0} SET {1} WHERE {2}", tableName, string.Join(", ", fields.ToArray()), string.Join(" AND ", criteria.ToArray()));
+                cmd.CommandText = string.Format("UPDATE {0} SET {1} WHERE {2}", tableName, string.Join(", ", fieldNames.ToArray()), string.Join(" AND ", criteria.ToArray()));
 
             if (trans != null)
             {
@@ -277,7 +373,7 @@ namespace BizArk.Core.Data
         }
 
         /// <summary>
-        /// 
+        /// Removes the given record from the database.
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="key">Uses AND when building the criteria.</param>
@@ -287,11 +383,11 @@ namespace BizArk.Core.Data
         {
             var cmd = CreateCommand();
             var criteria = new List<string>();
-            var props = TypeDescriptor.GetProperties(key);
-            foreach (PropertyDescriptor prop in props)
+            var fields = GetFields(key);
+            foreach (var fld in fields)
             {
-                criteria.Add(string.Format("{0} = @{0}", prop.Name));
-                AddParameter(cmd, prop, key);
+                criteria.Add(string.Format("{0} = @{0}", fld.Name));
+                AddParameter(cmd, fld);
             }
 
             if (criteria.Count == 0)
@@ -321,11 +417,11 @@ namespace BizArk.Core.Data
         {
             var cmd = CreateCommand();
             var criteria = new List<string>();
-            var props = TypeDescriptor.GetProperties(key);
-            foreach (PropertyDescriptor prop in props)
+            var fields = GetFields(key);
+            foreach (var fld in fields)
             {
-                criteria.Add(string.Format("{0} = @{0}", prop.Name));
-                AddParameter(cmd, prop, key);
+                criteria.Add(string.Format("{0} = @{0}", fld.Name));
+                AddParameter(cmd, fld);
             }
 
             if (criteria.Count == 0)
