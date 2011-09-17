@@ -94,7 +94,6 @@
     <Compile Include="Convert\Strategies\StaticMethodConversionStrategy.cs" />
     <Compile Include="Convert\Strategies\StringToBoolConversionStrategy.cs" />
     <Compile Include="Convert\Strategies\TypeConverterConversionStrategy.cs" />
-    <Compile Include="Data\FieldValue.cs" />
     <Compile Include="Data\IDbInfo.cs" />
     <Compile Include="Data\Database.cs">
       <SubType>Code</SubType>
@@ -103,15 +102,6 @@
     <Compile Include="Email\MAPI32.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="ORM\ColumnAttribute.cs" />
-    <Compile Include="ORM\EntityManagerAttribute.cs" />
-    <Compile Include="ORM\TableAttribute.cs" />
-    <Compile Include="ORM\Entity.cs" />
-    <Compile Include="ORM\EntityList.cs" />
-    <Compile Include="ORM\EntityManager.cs" />
-    <Compile Include="ORM\EntityProperty.cs" />
-    <Compile Include="ORM\EntityState.cs" />
-    <Compile Include="ORM\EntityValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -130,6 +120,7 @@
     <Compile Include="Util\Bitmask.cs" />
     <Compile Include="Util\Cache.cs" />
     <Compile Include="Util\ClassFactory.cs" />
+    <Compile Include="Util\FormatExt.cs" />
     <Compile Include="Util\DataExt.cs" />
     <Compile Include="Util\DateExt.cs" />
     <Compile Include="Util\MemSize.cs" />
