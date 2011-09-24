@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Reflection;
-using System.Text;
-using BizArk.Core.TypeExt;
 using BizArk.Core.Convert.Strategies;
 
 namespace BizArk.Core.Convert

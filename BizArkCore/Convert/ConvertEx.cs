@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using BizArk.Core.Convert;
 using BizArk.Core.TypeExt;
-using System.Threading;
 
 namespace BizArk.Core
 {

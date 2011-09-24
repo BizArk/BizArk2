@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
 using System.IO;
-using System.Web;
+using System.Net;
 
 namespace BizArk.Core.WebExt
 {
@@ -36,7 +33,7 @@ namespace BizArk.Core.WebExt
         /// <returns></returns>
         public static string HtmlEncode(this string str)
         {
-            return HttpUtility.HtmlEncode(str);
+            return WebUtility.HtmlEncode(str);
         }
 
         /// <summary>
@@ -46,7 +43,7 @@ namespace BizArk.Core.WebExt
         /// <returns></returns>
         public static string HtmlDecode(this string str)
         {
-            return HttpUtility.HtmlDecode(str);
+            return WebUtility.HtmlDecode(str);
         }
 
         /// <summary>
@@ -56,7 +53,7 @@ namespace BizArk.Core.WebExt
         /// <returns></returns>
         public static string UrlEncode(this string str)
         {
-            return HttpUtility.UrlEncode(str);
+            return Uri.EscapeUriString(str);
         }
 
         /// <summary>
@@ -66,7 +63,7 @@ namespace BizArk.Core.WebExt
         /// <returns></returns>
         public static string UrlDecode(this string str)
         {
-            return HttpUtility.UrlDecode(str);
+            return Uri.UnescapeDataString(str);
         }
 
     }

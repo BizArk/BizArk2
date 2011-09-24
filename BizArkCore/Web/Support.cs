@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Web;
+using BizArk.Core.WebExt;
 
 namespace BizArk.Core.Web
 {
@@ -53,7 +53,7 @@ namespace BizArk.Core.Web
         /// </summary>
         public string EncodedValue
         {
-            get { return HttpUtility.UrlEncode(mValue); }
+            get { return mValue.UrlEncode(); }
         }
 
         #endregion
@@ -131,10 +131,19 @@ namespace BizArk.Core.Web
         {
             var paramList = new List<UrlParam>();
 
-            var r = HttpUtility.ParseQueryString(queryStr);
-            foreach (string key in r.Keys)
-                paramList.Add(this.Add(key, r[key]));
+            string[] segments = queryStr.Split('&');
+            foreach (string segment in segments)
+            {
+                string[] parts = segment.Split('=');
+                if (parts.Length > 0)
+                {
+                    string key = parts[0].Trim(new char[] { '?', ' ' });
+                    string val = parts[1].Trim();
+                    val = val.UrlDecode();
 
+                    paramList.Add(new UrlParam(key, val));
+                }
+            }
             return paramList.ToArray();
         }
 
