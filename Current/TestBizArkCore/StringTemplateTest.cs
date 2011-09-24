@@ -133,18 +133,6 @@ namespace TestBizArkCore
             Debug.WriteLine(string.Format("Diff: {0}", (double)textTemplateTime / (double)stringFormatTime));
         }
 
-        [TestMethod()]
-        public void GenericTest()
-        {
-            var template = new StringTemplate<Letter>("{Greeting} {Recipient.Name}, this is version {Revision, 2} written on {Date:dd/MM/yyyy}");
-            template.Args.Greeting = "Hello";
-            template.Args.Recipient.Name = "John";
-            template.Args.Revision = 1;
-            template.Args.Date = DateTime.Now;
-            var letter = template.ToString();
-            Assert.IsTrue(letter.StartsWith("Hello John,"));
-        }
-
         public class Letter
         {
 
