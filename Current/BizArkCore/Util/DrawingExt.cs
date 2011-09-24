@@ -1,6 +1,5 @@
-using System.Drawing;
 using System;
-using System.IO;
+using System.Drawing;
 
 namespace BizArk.Core.DrawingExt
 {

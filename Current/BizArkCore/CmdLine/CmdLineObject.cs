@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
-using BizArk.Core.AttributeExt;
-using BizArk.Core.ArrayExt;
-using BizArk.Core.StringExt;
-using System.Xml;
-using io = System.IO;
-using BizArk.Core.Web;
 using System.IO;
 using System.Net;
+using System.Text;
+using System.Xml;
+using BizArk.Core.ArrayExt;
+using BizArk.Core.AttributeExt;
+using BizArk.Core.StringExt;
+using BizArk.Core.Web;
 
 namespace BizArk.Core.CmdLine
 {

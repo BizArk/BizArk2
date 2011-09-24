@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using BizArk.Core.TypeExt;
-using System.Drawing.Imaging;
 
 namespace BizArk.Core.Convert.Strategies
 {

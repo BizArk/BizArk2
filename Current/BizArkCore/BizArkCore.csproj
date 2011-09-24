@@ -31,7 +31,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +60,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -114,7 +113,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Template\StringTemplate.cs" />
-    <Compile Include="Template\StringTemplateGeneric.cs" />
     <Compile Include="Util\ArrayExt.cs" />
     <Compile Include="Util\AttributeExt.cs" />
     <Compile Include="Util\Bitmask.cs" />
@@ -123,6 +121,7 @@
     <Compile Include="Util\FormatExt.cs" />
     <Compile Include="Util\DataExt.cs" />
     <Compile Include="Util\DateExt.cs" />
+    <Compile Include="Util\MathExt.cs" />
     <Compile Include="Util\MemSize.cs" />
     <Compile Include="Util\PropertyUtil.cs" />
     <Compile Include="Util\StringWriterEx.cs" />
@@ -144,6 +143,7 @@
     <Compile Include="Web\UploadFile.cs" />
     <Compile Include="Web\UrlBuilder.cs" />
     <Compile Include="Web\WebHelper.cs" />
+    <Compile Include="Web\WebHelper2.cs" />
     <Compile Include="Web\WebHelperEventArgs.cs" />
     <Compile Include="Web\WebHelperResponse.cs" />
     <Compile Include="Web\WebParameters.cs" />

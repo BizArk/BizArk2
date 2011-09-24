@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel;
-using System.Globalization;
-using BizArk.Core.AttributeExt;
-using BizArk.Core.ArrayExt;
 using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using BizArk.Core.ArrayExt;
+using BizArk.Core.AttributeExt;
 
 namespace BizArk.Core.CmdLine
 {

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.Specialized;
-using System.Web;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
-using System.Net;
 using System.IO;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BizArk.Core.Util
 {
@@ -33,7 +31,7 @@ namespace BizArk.Core.Util
                 {
                     var value = ConvertEx.ToString(prop.GetValue(values));
                     if (sb.Length > 0) sb.Append("&");
-                    sb.AppendFormat("{0}={1}", prop.Name, HttpUtility.UrlEncode(value));
+                    sb.AppendFormat("{0}={1}", prop.Name, Uri.EscapeUriString(value));
                 }
             }
             else
@@ -42,7 +40,7 @@ namespace BizArk.Core.Util
                 {
                     var value = nvc[key];
                     if (sb.Length > 0) sb.Append("&");
-                    sb.AppendFormat("{0}={1}", key, HttpUtility.UrlEncode(value));
+                    sb.AppendFormat("{0}={1}", key, Uri.EscapeUriString(value));
                 }
             }
             return sb.ToString();

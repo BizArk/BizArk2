@@ -4,11 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
-using BizArk.Core.AttributeExt;
 using BizArk.Core.Util;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using System.Web;
+using BizArk.Core.WebExt;
 
 namespace BizArk.Core.Web
 {
@@ -169,7 +166,7 @@ namespace BizArk.Core.Web
                     sb.Append("&");
                 else
                     sb.Append("?");
-                sb.AppendFormat("{0}={1}", param.Name, HttpUtility.UrlEncode(param.Text));
+                sb.AppendFormat("{0}={1}", param.Name, param.Text.UrlEncode());
             }
 
             return sb.ToString();
