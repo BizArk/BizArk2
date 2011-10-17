@@ -8,6 +8,10 @@ using Microsoft.CSharp.RuntimeBinder;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
+using System.Drawing;
+using System.Text;
+using BizArk.Core.Util;
+using System.Threading;
 
 namespace TestBizArkCore
 {
@@ -128,10 +132,111 @@ namespace TestBizArkCore
         //}
 
         [TestMethod]
-        public void UploadFileTest()
+        public void MakeRequestStringTest()
         {
-            var str = WebHelper2.DownloadString("http://www.google.com");
+            var response = WebHelper.MakeRequest("http://www.google.com");
+            var str = response.ResultToString();
             Assert.IsFalse(string.IsNullOrWhiteSpace(str));
+
+            // Try with a different charset.
+            response = WebHelper.MakeRequest("http://www.google.co.jp/");
+            str = response.ResultToString();
+            Assert.IsFalse(string.IsNullOrWhiteSpace(str));
+            Assert.IsTrue(str.IndexOf("日本") > 0); // I don't read japanese, but I think that this says "Google".
+        }
+
+        [TestMethod]
+        public void MakeRequestXmlTest()
+        {
+            var response = WebHelper.MakeRequest("http://www.w3schools.com/xml/note.xml");
+            var doc = response.ResultToXml();
+            Assert.IsNotNull(doc);
+        }
+
+        [TestMethod]
+        public void DownloadFileTest()
+        {
+            var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".png");
+            try
+            {
+                var url = new UrlBuilder();
+                url.Protocol = "https";
+                url.Host = "chart.googleapis.com";
+                url.Path.Add("chart");
+                url.Parameters.Add("chs", "150x150");
+                url.Parameters.Add("cht", "qr");
+                url.Parameters.Add("chl", "http://bizark.codeplex.com");
+                url.Parameters.Add("choe", "UTF-8");
+                var response = WebHelper.DownloadFile(url.ToUri(), tmp);
+
+                var fi = new FileInfo(tmp);
+                Assert.IsTrue(fi.Exists);
+                Assert.IsTrue(fi.Length > 0);
+                using (var img = Image.FromFile(tmp))
+                {
+                    Assert.AreEqual(150, img.Width);
+                    Assert.AreEqual(150, img.Height);
+                }
+            }
+            finally
+            {
+                if (File.Exists(tmp))
+                {
+                    Thread.Sleep(500); // make sure the file is released before we try to delete it.
+                    File.Delete(tmp);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void MakeRequestDataTest()
+        {
+            var url = new UrlBuilder();
+            url.Protocol = "https";
+            url.Host = "chart.googleapis.com";
+            url.Path.Add("chart");
+            url.Parameters.Add("chs", "150x150");
+            url.Parameters.Add("cht", "qr");
+            url.Parameters.Add("chl", "http://bizark.codeplex.com");
+            url.Parameters.Add("choe", "UTF-8");
+            var response = WebHelper.MakeRequest(url.ToUri());
+            var data = (byte[])response.Result;
+            Assert.IsTrue(data.Length > 0);
+            var ms = new MemoryStream(data);
+            ms.Position = 0;
+            using (var img = Image.FromStream(ms))
+            {
+                Assert.AreEqual(150, img.Width);
+                Assert.AreEqual(150, img.Height);
+            }
+        }
+
+        [TestMethod]
+        public void MakeRequestUploadValuesTest()
+        {
+            var result = WebHelper.MakeRequest("http://localhost:89/Test/UploadValues", new { intVal = 123, strVal = "ABC" });
+            var str = result.ResultToString();
+            Assert.AreEqual("123 ABC", str);
+        }
+
+        [TestMethod]
+        public void MakeRequestUploadFileTest()
+        {
+            using (var tmp = new TempFile("txt"))
+            {
+                tmp.Write("TEST");
+                var result = WebHelper.MakeRequest("http://localhost:89/Test/UploadValues", new { intVal = 123, strVal = "ABC", file = new FileInfo(tmp.TempPath) });
+                var str = result.ResultToString();
+                Assert.AreEqual("123 ABC [TEST]", str);
+            }
+        }
+
+        private void Garb()
+        {
+            var web = new WebClient();
+
+            var options = new WebHelperOptions();
+            //options.
         }
 
     }
