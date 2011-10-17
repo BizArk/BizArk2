@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using BizArk.Core.ArrayExt;
+using BizArk.Core.WebExt;
+using System.ComponentModel;
 
 namespace BizArk.Core.Web
 {
@@ -10,19 +12,71 @@ namespace BizArk.Core.Web
     /// <summary>
     /// Dynamic class that stores parameters to be sent with the web request.
     /// </summary>
-    public class WebParameters : DynamicObject
+    public class WebParameters
     {
+
+        #region Initialization and Destruction
+
+        /// <summary>
+        /// Creates an instance of WebParameters.
+        /// </summary>
+        public WebParameters()
+        {
+        }
+
+        /// <summary>
+        /// Creates an instance of WebParamters.
+        /// </summary>
+        /// <param name="values">The properties of this object will be converted to web parameters.</param>
+        public WebParameters(object values)
+        {
+            Add(values);
+        }
+
+        #endregion
 
         #region Fields and Properties
 
-        private List<WebParameter> mParameters = new List<WebParameter>();
+        private List<WebTextParameter> mValues = new List<WebTextParameter>();
+        /// <summary>
+        /// Gets the parameters to upload.
+        /// </summary>
+        public List<WebTextParameter> Values
+        {
+            get { return mValues; }
+        }
+
+        private List<WebBinaryParameter> mBinary = new List<WebBinaryParameter>();
+        /// <summary>
+        /// Gets the list of binary values to upload.
+        /// </summary>
+        public List<WebBinaryParameter> Binary
+        {
+            get { return mBinary; }
+        }
+
+        private List<WebFileParameter> mFiles = new List<WebFileParameter>();
+        /// <summary>
+        /// Get the list of files to upload.
+        /// </summary>
+        public List<WebFileParameter> Files
+        {
+            get { return mFiles; }
+        }
 
         /// <summary>
-        /// Gets the number of parameters in the collection.
+        /// Gets the total number of parameters.
         /// </summary>
         public int Count
         {
-            get { return mParameters.Count; }
+            get
+            {
+                var count = 0;
+                count += mValues.Count;
+                count += mBinary.Count;
+                count += mFiles.Count;
+                return count;
+            }
         }
 
         #endregion
@@ -30,99 +84,40 @@ namespace BizArk.Core.Web
         #region Methods
 
         /// <summary>
-        /// Gets the value of the named member.
+        /// Adds the properties of the object to the parameters.
         /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        /// <param name="values"></param>
+        public void Add(object values)
         {
-            var param = Find(binder.Name);
-            result = param == null ? null : param.Value;
-            return param != null;
-        }
+            if (values == null) return;
 
-        /// <summary>
-        /// Sets the value of the named member.
-        /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            var param = Find(binder.Name);
-            if (param != null)
-                mParameters.Remove(param); // parameters are immutable.
-            param = WebParameter.CreateParameter(binder.Name, value);
-            mParameters.Add(param);
-            return true;
-        }
+            var props = TypeDescriptor.GetProperties(values);
+            foreach (PropertyDescriptor prop in props)
+            {
+                var value = prop.GetValue(values);
+                if (value == null) continue; // Do not send null values.
 
-        /// <summary>
-        /// Finds a named WebParameter.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public WebParameter Find(string name)
-        {
-            return mParameters.Find((param) => { return param.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase); });
-        }
+                // Check to see if this is a binary data type.
+                var binary = value as byte[];
+                if (binary != null)
+                {
+                    Binary.Add(new WebBinaryParameter(prop.Name, binary));
+                    continue;
+                }
 
-        /// <summary>
-        /// Gets all the file parameters.
-        /// </summary>
-        /// <returns></returns>
-        public WebFileParameter[] GetFileParameters()
-        {
-            return mParameters.FindAll((param) => { return param.GetType() == typeof(WebFileParameter); }).ToArray().Convert<WebFileParameter>();
-        }
+                // Check to see if this is a file.
+                var fi = value as FileInfo;
+                if (fi != null) value = (UploadFile)fi;
+                var file = value as UploadFile;
+                if (file != null)
+                {
+                    Files.Add(new WebFileParameter(prop.Name, file));
+                    continue;
+                }
 
-        /// <summary>
-        /// Gets all the binary parameters.
-        /// </summary>
-        /// <returns></returns>
-        public WebBinaryParameter[] GetBinaryParameters()
-        {
-            return mParameters.FindAll((param) => { return param.GetType() == typeof(WebBinaryParameter); }).ToArray().Convert<WebBinaryParameter>();
-        }
-
-        /// <summary>
-        /// Gets all the text parameters.
-        /// </summary>
-        /// <returns></returns>
-        public WebTextParameter[] GetTextParameters()
-        {
-            return mParameters.FindAll((param) => { return param.GetType() == typeof(WebTextParameter); }).ToArray().Convert<WebTextParameter>();
-        }
-
-        /// <summary>
-        /// Determines if the collection has one or more file parameters.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasFileParameters()
-        {
-            var p = mParameters.Find((param) => { return param.GetType() == typeof(WebFileParameter); });
-            return p != null;
-        }
-
-        /// <summary>
-        /// Determines if the collection has one or more binary parameters.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasBinaryParameters()
-        {
-            var p = mParameters.Find((param) => { return param.GetType() == typeof(WebBinaryParameter); });
-            return p != null;
-        }
-
-        /// <summary>
-        /// Determines if the collection has one or more text parameters.
-        /// </summary>
-        /// <returns></returns>
-        public bool HasTextParameters()
-        {
-            var p = mParameters.Find((param) => { return param.GetType() == typeof(WebTextParameter); });
-            return p != null;
+                // Convert the value to a string and add it to the values list.
+                Values.Add(new WebTextParameter(prop.Name, ConvertEx.ToString(value)));
+            }
         }
 
         #endregion
@@ -139,9 +134,11 @@ namespace BizArk.Core.Web
         /// Creates an instance of WebParameter.
         /// </summary>
         /// <param name="name"></param>
-        protected WebParameter(string name)
+        /// <param name="value"></param>
+        protected WebParameter(string name, object value)
         {
             Name = name;
+            Value = value;
         }
 
         /// <summary>
@@ -152,7 +149,7 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Gets the value of the parameter.
         /// </summary>
-        public object Value { get; protected set; }
+        public object Value { get; private set; }
 
         /// <summary>
         /// Factory method to create the parameter.
@@ -165,11 +162,11 @@ namespace BizArk.Core.Web
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
             if (value == null) throw new ArgumentNullException("value");
 
+            var fi = value as FileInfo;
+            if (fi != null) return new WebFileParameter(name, (UploadFile)fi);
+
             var file = value as UploadFile;
             if (file != null) return new WebFileParameter(name, file);
-
-            var fi = value as FileInfo;
-            if (fi != null) return new WebFileParameter(name, new UploadFile("", fi.FullName));
 
             var data = value as byte[];
             if (data != null) return new WebBinaryParameter(name, data);
@@ -187,15 +184,23 @@ namespace BizArk.Core.Web
     {
 
         internal WebFileParameter(string name, UploadFile file)
-            : base(name)
+            : base(name, file)
         {
-            Value = file;
         }
 
         /// <summary>
         /// Gets the file.
         /// </summary>
         public UploadFile File { get { return (UploadFile)Value; } }
+
+        /// <summary>
+        /// Displays the parameter.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}=[file:{1}]", Name, File.FileName);
+        }
 
     }
 
@@ -206,15 +211,23 @@ namespace BizArk.Core.Web
     {
 
         internal WebBinaryParameter(string name, byte[] data)
-            : base(name)
+            : base(name, data)
         {
-            Value = data;
         }
 
         /// <summary>
         /// Gets the byte array.
         /// </summary>
         public byte[] Data { get { return (byte[])Value; } }
+
+        /// <summary>
+        /// Displays the parameter.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}=[data:{1}]", Name, Data.Length);
+        }
 
     }
 
@@ -225,15 +238,23 @@ namespace BizArk.Core.Web
     {
 
         internal WebTextParameter(string name, string text)
-            : base(name)
+            : base(name, text)
         {
-            Value = text;
         }
 
         /// <summary>
         /// Gets the text.
         /// </summary>
         public string Text { get { return (string)Value; } }
+
+        /// <summary>
+        /// Displays the parameter.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("{0}={1}", Name, Text.UrlEncode());
+        }
 
     }
 

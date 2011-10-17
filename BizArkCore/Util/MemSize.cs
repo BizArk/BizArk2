@@ -243,5 +243,29 @@ namespace BizArk.Core.Util
 
         #endregion
 
+        #region Operators
+
+        /// <summary>
+        /// Converts a MemSize to a long by returning the total number of bytes.
+        /// </summary>
+        /// <param name="sz"></param>
+        /// <returns></returns>
+        public static implicit operator long(MemSize sz)
+        {
+            return sz.TotalBytes;
+        }
+
+        /// <summary>
+        /// Converts a long that represents a number of bytes to a MemSize.
+        /// </summary>
+        /// <param name="numBytes"></param>
+        /// <returns></returns>
+        public static implicit operator MemSize(long numBytes)
+        {
+            return new MemSize(numBytes);
+        }
+
+        #endregion
+
     }
 }

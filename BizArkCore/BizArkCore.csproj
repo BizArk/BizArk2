@@ -118,11 +118,13 @@
     <Compile Include="Util\Bitmask.cs" />
     <Compile Include="Util\Cache.cs" />
     <Compile Include="Util\ClassFactory.cs" />
+    <Compile Include="Util\FontUtil.cs" />
     <Compile Include="Util\FormatExt.cs" />
     <Compile Include="Util\DataExt.cs" />
     <Compile Include="Util\DateExt.cs" />
     <Compile Include="Util\MathExt.cs" />
     <Compile Include="Util\MemSize.cs" />
+    <Compile Include="Util\MimeMap.cs" />
     <Compile Include="Util\PropertyUtil.cs" />
     <Compile Include="Util\StringWriterEx.cs" />
     <Compile Include="Util\TempFile.cs" />
@@ -143,8 +145,8 @@
     <Compile Include="Web\UploadFile.cs" />
     <Compile Include="Web\UrlBuilder.cs" />
     <Compile Include="Web\WebHelper.cs" />
-    <Compile Include="Web\WebHelper2.cs" />
     <Compile Include="Web\WebHelperEventArgs.cs" />
+    <Compile Include="Web\WebHelperOptions.cs" />
     <Compile Include="Web\WebHelperResponse.cs" />
     <Compile Include="Web\WebParameters.cs" />
   </ItemGroup>
@@ -160,6 +162,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Resources\Mime.Types" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

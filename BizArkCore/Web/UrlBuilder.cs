@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using BizArk.Core.AttributeExt;
 using BizArk.Core.WebExt;
+using BizArk.Core.StringExt;
 
 namespace BizArk.Core.Web
 {
@@ -12,6 +13,7 @@ namespace BizArk.Core.Web
     /// </summary>
     public class UrlBuilder
     {
+
         #region Initialization and Destruction
 
         /// <summary>
@@ -20,8 +22,6 @@ namespace BizArk.Core.Web
         public UrlBuilder()
         {
             Protocol = "http";
-            Host = "";
-            Port = -1;
             Path = new UrlSegmentList();
             Parameters = new UrlParamList();
         }
@@ -43,7 +43,7 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Gets or sets the port number. Less than or equal to 0 prevents the port from appearing in the URL.
         /// </summary>
-        public int Port { get; set; }
+        public int? Port { get; set; }
 
         /// <summary>
         /// Gets the host:port (e.g. www.tourfactory.com:8080).
@@ -53,8 +53,27 @@ namespace BizArk.Core.Web
             get
             {
                 if (string.IsNullOrEmpty(Host)) return "";
-                if (Port <= 0) return Host;
+                if (Port == null) return Host;
                 return Host + ":" + Port;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    Host = null;
+                    Port = null;
+                    return;
+                }
+                
+                var tmp = (value + ":").Split(':');
+                
+                Host = tmp[0].IfEmpty(null);
+
+                int port;
+                if (int.TryParse(tmp[1], out port))
+                    Port = port;
+                else
+                    Port = null;
             }
         }
 
@@ -120,9 +139,7 @@ namespace BizArk.Core.Web
             if (string.IsNullOrEmpty(Host)) return "";
 
             var sb = new StringBuilder();
-            sb.AppendFormat(@"{0}://{1}", Protocol, Host);
-            if (Port > 0)
-                sb.AppendFormat(":{0}", Port);
+            sb.AppendFormat(@"{0}://{1}", Protocol, Authority);
 
             foreach (string segment in Path)
                 sb.AppendFormat(@"/{0}", segment);
@@ -134,62 +151,6 @@ namespace BizArk.Core.Web
                 sb.Append("#" + mAnchor);
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Submits the request to the server.
-        /// </summary>
-        /// <param name="method"></param>
-        /// <returns></returns>
-        public string Submit(HttpMethod method)
-        {
-            WebRequest request;
-
-            if (method == HttpMethod.Get)
-                request = WebRequest.Create(ToUri(true));
-            else
-                request = WebRequest.Create(ToUri(false));
-            request.Method = method.GetDescription();
-
-            // If the method is Get, the params are included in the querystring, 
-            // otherwise they should be put in the content of the request.
-            if (method != HttpMethod.Get)
-            {
-                //todo: check to see if any of the parameters are of type FileInfo. 
-                // If they are, use multi-part encoding and send files.
-                // Will need to allow Objects in parameters. Probably better anyway 
-                // so that we can easily send different data types and let the 
-                // system convert to a string (using ConvertEx of course).
-
-                var content = GetEncodedContent();
-                request.ContentType = "application/x-www-form-urlencoded";
-                request.ContentLength = content.Length;
-                using (var s = request.GetRequestStream())
-                {
-                    var contentData = UTF8Encoding.Default.GetBytes(content.ToString());
-                    s.Write(contentData, 0, contentData.Length);
-                }
-            }
-
-            var response = request.GetResponse() as HttpWebResponse;
-            var result = response.GetContentString();
-            response.Close();
-
-            return result;
-        }
-
-        private string GetEncodedContent()
-        {
-            var content = new StringBuilder();
-            var first = true;
-            foreach (var p in Parameters)
-            {
-                if (!first)
-                    content.Append("&");
-                first = false;
-                content.AppendFormat("{0}={1}", p.Name, p.EncodedValue);
-            }
-            return content.ToString();
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using BizArk.Core.AttributeExt;
 using BizArk.Core.Util;
+using BizArk.Core.StringExt;
 
 namespace BizArk.Core
 {
@@ -16,7 +17,7 @@ namespace BizArk.Core
             var asm = Assembly.GetEntryAssembly();
 
             if (asm == null) return;
-           
+
             var titleAtt = asm.GetAttribute<AssemblyTitleAttribute>();
             if (titleAtt != null)
                 Title = titleAtt.Title;
@@ -127,8 +128,9 @@ namespace BizArk.Core
         public static string GetTempPath()
         {
             string tempPath = Path.GetTempPath();
-            tempPath = Path.Combine(tempPath, ExeName);
-            
+            if (!ExeName.IsEmpty())
+                tempPath = Path.Combine(tempPath, ExeName);
+
             if (!Directory.Exists(tempPath))
                 Directory.CreateDirectory(tempPath);
 

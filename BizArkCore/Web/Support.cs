@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using BizArk.Core.WebExt;
+using BizArk.Core.StringExt;
 
 namespace BizArk.Core.Web
 {
@@ -126,7 +127,7 @@ namespace BizArk.Core.Web
         /// Adds a range of parameters based on a query string.
         /// </summary>
         /// <param name="queryStr"></param>
-        /// <returns></returns>
+        /// <returns>The list of new UrlParam objects.</returns>
         public UrlParam[] AddRange(string queryStr)
         {
             var paramList = new List<UrlParam>();
@@ -140,10 +141,28 @@ namespace BizArk.Core.Web
                     string key = parts[0].Trim(new char[] { '?', ' ' });
                     string val = parts[1].Trim();
                     val = val.UrlDecode();
-
-                    paramList.Add(new UrlParam(key, val));
+                    paramList.Add(Add(key, val));
                 }
             }
+            return paramList.ToArray();
+        }
+
+        /// <summary>
+        /// Adds the properties of the object as parameters to the list.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>The list of new UrlParam objects.</returns>
+        public UrlParam[] AddRange(object values)
+        {
+            var paramList = new List<UrlParam>();
+
+            foreach(PropertyDescriptor prop in TypeDescriptor.GetProperties(values))
+            {
+                var val = prop.GetValue(values);
+                var str = ConvertEx.ToString(val);
+                paramList.Add(Add(prop.Name, str));
+            }
+
             return paramList.ToArray();
         }
 
@@ -212,19 +231,9 @@ namespace BizArk.Core.Web
         /// Returns the value of the given parameter.
         /// </summary>
         /// <param name="name"></param>
-        /// <returns></returns>
-        public string GetString(string name)
-        {
-            return GetString(name, "");
-        }
-
-        /// <summary>
-        /// Returns the value of the given parameter.
-        /// </summary>
-        /// <param name="name"></param>
         /// <param name="dflt"></param>
         /// <returns></returns>
-        public string GetString(string name, string dflt)
+        public string GetString(string name, string dflt = null)
         {
             var p = this[name];
             if (p == null) return dflt;
@@ -235,10 +244,13 @@ namespace BizArk.Core.Web
         /// Returns the value of the given parameter.
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="dflt"></param>
         /// <returns></returns>
-        public long GetLong(string name)
+        public int? GetInt(string name, int? dflt = null)
         {
-            return GetLong(name, int.MinValue);
+            var str = GetString(name);
+            if (str.IsEmpty()) return dflt;
+            return ConvertEx.ToInt(str);
         }
 
         /// <summary>
@@ -247,32 +259,26 @@ namespace BizArk.Core.Web
         /// <param name="name"></param>
         /// <param name="dflt"></param>
         /// <returns></returns>
-        public long GetLong(string name, int dflt)
+        public long? GetLong(string name, long? dflt = null)
         {
-            var p = this[name];
-            if (p == null) return dflt;
-            int val;
-            if (int.TryParse(p.Value, out val)) return val;
-            return dflt;
+            var str = GetString(name);
+            if (str.IsEmpty()) return dflt;
+            long val;
+            return long.TryParse(str, out val) ? val : dflt;
         }
 
         /// <summary>
         /// Returns the value of the given parameter.
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="dflt"></param>
         /// <returns></returns>
-        public Guid GetGuid(string name)
+        public Guid? GetGuid(string name, Guid? dflt = null)
         {
-            var p = this[name];
-            if (p == null) return Guid.Empty;
-            try
-            {
-                return new Guid(p.Value);
-            }
-            catch (Exception)
-            {
-                return Guid.Empty;
-            }
+            var str = GetString(name);
+            if (str.IsEmpty()) return dflt;
+            Guid val;
+            return Guid.TryParse(str, out val) ? val : dflt;
         }
 
         /// <summary>

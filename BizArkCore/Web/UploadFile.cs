@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using BizArk.Core.Util;
 
 namespace BizArk.Core.Web
 {
@@ -94,6 +95,20 @@ namespace BizArk.Core.Web
                 return mData;
             else
                 return new FileStream(mFilePath, FileMode.Open, FileAccess.Read);
+        }
+
+        #endregion
+
+        #region Operators
+
+        /// <summary>
+        /// Convert FileInfo to UploadFile.
+        /// </summary>
+        /// <param name="fi"></param>
+        /// <returns></returns>
+        public static explicit operator UploadFile(FileInfo fi)
+        {
+            return new UploadFile(MimeMap.GetMimeType(fi.Extension), fi.FullName); 
         }
 
         #endregion

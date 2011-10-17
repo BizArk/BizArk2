@@ -35,7 +35,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Char ToChar(object value)
+        public static char ToChar(object value)
         {
             if (value == null) return default(Char);
             return ConvertEx.ChangeType<Char>(value);
@@ -47,7 +47,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static SByte ToSByte(object value)
+        public static sbyte ToSByte(object value)
         {
             if (value == null) return default(SByte);
             return ConvertEx.ChangeType<SByte>(value);
@@ -59,7 +59,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Byte ToByte(object value)
+        public static byte ToByte(object value)
         {
             if (value == null) return default(Byte);
             return ConvertEx.ChangeType<Byte>(value);
@@ -71,7 +71,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Int16 ToInt16(object value)
+        public static short ToInt16(object value)
         {
             if (value == null) return default(Int16);
             return ConvertEx.ChangeType<Int16>(value);
@@ -83,7 +83,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Int16 ToShort(object value)
+        public static short ToShort(object value)
         {
             return ToInt16(value);
         }
@@ -94,10 +94,10 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static UInt16 ToUInt16(object value)
+        public static ushort ToUInt16(object value)
         {
-            if (value == null) return default(UInt16);
-            return ConvertEx.ChangeType<UInt16>(value);
+            if (value == null) return default(ushort);
+            return ConvertEx.ChangeType<ushort>(value);
         }
 
         /// <summary>
@@ -106,10 +106,10 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Int32 ToInt32(object value)
+        public static int ToInt32(object value)
         {
-            if (value == null) return default(Int32);
-            return ConvertEx.ChangeType<Int32>(value);
+            if (value == null) return default(int);
+            return ConvertEx.ChangeType<int>(value);
         }
 
         /// <summary>
@@ -118,7 +118,18 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Int32 ToInteger(object value)
+        public static int ToInt(object value)
+        {
+            return ToInt32(value);
+        }
+
+        /// <summary>
+        /// Converts the value to a Int32. 
+        /// Checks for a TypeConverter, conversion methods, 
+        /// and the IConvertible interface.
+        /// </summary>
+        /// <param name="value">The value to convert from.</param>
+        public static int ToInteger(object value)
         {
             return ToInt32(value);
         }
@@ -129,7 +140,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static UInt32 ToUInt32(object value)
+        public static uint ToUInt32(object value)
         {
             if (value == null) return default(UInt32);
             return ConvertEx.ChangeType<UInt32>(value);
@@ -141,7 +152,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Int64 ToInt64(object value)
+        public static long ToInt64(object value)
         {
             if (value == null) return default(Int64);
             return ConvertEx.ChangeType<Int64>(value);
@@ -153,7 +164,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Int64 ToLong(object value)
+        public static long ToLong(object value)
         {
             return ToInt64(value);
         }
@@ -164,7 +175,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static UInt64 ToUInt64(object value)
+        public static ulong ToUInt64(object value)
         {
             if (value == null) return default(UInt64);
             return ConvertEx.ChangeType<UInt64>(value);
@@ -176,7 +187,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Single ToSingle(object value)
+        public static float ToSingle(object value)
         {
             if (value == null) return default(Single);
             return ConvertEx.ChangeType<Single>(value);
@@ -188,7 +199,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Single ToFloat(object value)
+        public static float ToFloat(object value)
         {
             return ToSingle(value);
         }
@@ -199,7 +210,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Double ToDouble(object value)
+        public static double ToDouble(object value)
         {
             if (value == null) return default(Double);
             return ConvertEx.ChangeType<Double>(value);
@@ -211,7 +222,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static Decimal ToDecimal(object value)
+        public static decimal ToDecimal(object value)
         {
             if (value == null) return default(Decimal);
             return ConvertEx.ChangeType<Decimal>(value);
@@ -235,7 +246,7 @@ namespace BizArk.Core
         /// and the IConvertible interface.
         /// </summary>
         /// <param name="value">The value to convert from.</param>
-        public static String ToString(object value)
+        public static string ToString(object value)
         {
             if (value == null) return default(String);
             return ConvertEx.ChangeType<String>(value);

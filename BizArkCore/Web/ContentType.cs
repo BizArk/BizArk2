@@ -56,7 +56,7 @@ namespace BizArk.Core.Web
         /// <returns></returns>
         public static ContentType CreateContentType(HttpMethod method, WebParameters parameters)
         {
-            if (parameters.HasFileParameters() || parameters.HasBinaryParameters())
+            if (parameters.Files.Count > 0 || parameters.Binary.Count > 0)
                 return new MultipartFormDataContentType(parameters);
             else if (parameters.Count > 0 && method != HttpMethod.Get && method != HttpMethod.Delete)
                 return new ApplicationUrlEncodedContentType(parameters);
@@ -107,7 +107,7 @@ namespace BizArk.Core.Web
         /// </summary>
         /// <param name="webHelper"></param>
         /// <returns></returns>
-        public virtual string GetUrl(WebHelper webHelper)
+        public virtual Uri GetUrl(WebHelper webHelper)
         {
             return webHelper.Url;
         }
@@ -146,7 +146,7 @@ namespace BizArk.Core.Web
         /// <returns></returns>
         public override void PrepareRequest(HttpWebRequest request, WebHelper helper)
         {
-            request.Method = helper.Method == HttpMethod.Delete ? "DELETE" : "GET";
+            request.Method = helper.Options.Method == HttpMethod.Delete ? "DELETE" : "GET";
         }
 
         /// <summary>
@@ -154,22 +154,19 @@ namespace BizArk.Core.Web
         /// </summary>
         /// <param name="helper"></param>
         /// <returns></returns>
-        public override string GetUrl(WebHelper helper)
+        public override Uri GetUrl(WebHelper helper)
         {
             var sb = new StringBuilder();
             sb.Append(helper.Url);
 
-            var txtParams = Parameters.GetTextParameters();
-            foreach (var param in txtParams)
+            var valSep = sb.ToString().Contains("?") ? "&" : "?";
+            foreach (var param in Parameters.Values)
             {
-                if (helper.Url.Contains("?"))
-                    sb.Append("&");
-                else
-                    sb.Append("?");
-                sb.AppendFormat("{0}={1}", param.Name, param.Text.UrlEncode());
+                sb.AppendFormat("{0}{1}={2}", valSep, param.Name, param.Text.UrlEncode());
+                valSep = "&";
             }
 
-            return sb.ToString();
+            return new Uri(sb.ToString());
         }
 
         /// <summary>
@@ -234,7 +231,7 @@ namespace BizArk.Core.Web
             request.ContentType = "application/x-www-form-urlencoded";
             mData = Encoding.UTF8.GetBytes(WebUtil.GetUrlEncodedData(Parameters));
             request.ContentLength = mData.Length;
-            request.Method = helper.Method == HttpMethod.Put ? "PUT" : "POST";
+            request.Method = helper.Options.Method == HttpMethod.Put ? "PUT" : "POST";
             if (mData.Length > 5242880)
                 // if the content is more than 5MiB don't store it in the cache or there will be memory problems.
                 request.AllowWriteStreamBuffering = false;
@@ -348,7 +345,7 @@ namespace BizArk.Core.Web
             mParts = GetParts(helper);
             mContentLength = CalcContentLength(mParts, mPartFooter);
             request.ContentLength = mContentLength;
-            request.Method = helper.Method == HttpMethod.Put ? "PUT" : "POST";
+            request.Method = helper.Options.Method == HttpMethod.Put ? "PUT" : "POST";
             if (mContentLength > 5242880)
                 // if the content is more than 5MiB don't store it in the cache or there will be memory problems.
                 request.AllowWriteStreamBuffering = false;
@@ -364,7 +361,7 @@ namespace BizArk.Core.Web
         {
             using (Stream s = request.GetRequestStream())
             {
-                byte[] buffer = new byte[8192]; // 8k buffer
+                byte[] buffer = new byte[helper.Options.BufferSize];
                 byte[] fileFooter = Encoding.UTF8.GetBytes("\r\n");
                 int read;
                 long bytesSent = 0;
@@ -408,7 +405,7 @@ namespace BizArk.Core.Web
         {
             var parts = new List<MimePart>();
 
-            foreach (var param in Parameters.GetTextParameters())
+            foreach (var param in Parameters.Values)
             {
                 var s = new MemoryStream(Encoding.UTF8.GetBytes(param.Text));
                 var part = new MimePart(s);
@@ -419,7 +416,7 @@ namespace BizArk.Core.Web
                 parts.Add(part);
             }
 
-            foreach (var param in Parameters.GetBinaryParameters())
+            foreach (var param in Parameters.Binary)
             {
                 var s = new MemoryStream(param.Data);
                 var part = new MimePart(s);
@@ -433,7 +430,7 @@ namespace BizArk.Core.Web
             // This does not strictly conform to RFC2388 (http://www.faqs.org/rfcs/rfc2388.html). The RFC states that 
             // if you upload multiple files they should be in a multipart/mixed part within a multipart/form-data.
             // However, this seems to work with IIS7 which is good enough for now.
-            foreach (var param in Parameters.GetFileParameters())
+            foreach (var param in Parameters.Files)
             {
                 var s = param.File.GetStream();
                 var part = new MimePart(s);

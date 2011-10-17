@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BizArk.Core.Properties
-{
-
-
+namespace BizArk.Core.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -57,6 +57,22 @@ namespace BizArk.Core.Properties
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # This file maps Internet media types to unique file extension(s).
+        ///# Although created for httpd, this file is used by many software systems
+        ///# and has been placed in the public domain for unlimited redisribution.
+        ///#
+        ///# The table below contains both registered and (common) unregistered types.
+        ///# A type that has no unique extension can be ignored -- they are listed
+        ///# here to guide configurations toward known types and to make it easier to
+        ///# identify &quot;new&quot; types.  File extensions are also commonly used to i [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Mime_Types {
+            get {
+                return ResourceManager.GetString("Mime_Types", resourceCulture);
             }
         }
     }

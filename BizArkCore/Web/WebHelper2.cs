@@ -4,7 +4,12 @@ using System.Net;
 using System.Text;
 using BizArk.Core.MathExt;
 using BizArk.Core.StringExt;
+using BizArk.Core.FormatExt;
 using BizArk.Core.Util;
+using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace BizArk.Core.Web
 {
@@ -56,11 +61,11 @@ namespace BizArk.Core.Web
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
             using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write))
-                ProcessRequest(address, options, (buffer, read) => { fs.Write(buffer, 0, read); });
+                ProcessRequest(address, options, fs);
         }
 
         /// <summary>
-        /// Downloads the request and converts it to a string.
+        /// Downloads the request and returns the byte array.
         /// </summary>
         /// <param name="address">URL to the file to download.</param>
         /// <param name="options">Request options.</param>
@@ -71,7 +76,7 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
-        /// Downloads the request and converts it to a string.
+        /// Downloads the request and returns the byte array.
         /// </summary>
         /// <param name="address">URL to the file to download.</param>
         /// <param name="options">Request options.</param>
@@ -81,7 +86,7 @@ namespace BizArk.Core.Web
             options = options ?? DefaultOptions;
             using (var ms = new MemoryStream())
             {
-                var response = ProcessRequest(address, options, (buffer, read) => { ms.Write(buffer, 0, read); });
+                var response = ProcessRequest(address, options, ms);
                 var http = response as HttpWebResponse;
                 if (http != null)
                 {
@@ -118,23 +123,84 @@ namespace BizArk.Core.Web
             return options.Encoding.GetString(data);
         }
 
-        private static WebRequest CreateRequest(Uri address, WebHelperOptions options)
+        /// <summary>
+        /// Upload values to the service.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="values">Sends all of the properties of the object to the server. Uses ConvertEx.ToString to convert the values to a string.</param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static byte[] UploadValues(string address, object values, WebHelperOptions options = null)
         {
+            return UploadValues(new Uri(address), values);
+        }
+
+        /// <summary>
+        /// Upload values to the service.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="values">Sends all of the properties of the object to the server. Uses ConvertEx.ToString to convert the values to a string, except for FileInfo and UploadFile values which are sent as file uploads.</param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static byte[] UploadValues(Uri address, object values, WebHelperOptions options = null)
+        {
+            options = options ?? DefaultOptions;
+            options.Method = options.Method.IfEmpty("POST").ToUpperInvariant();
+            if (options.Method == "POST" || options.Method == "PUT")
+            {
+
+            }
+            else
+            {
+                options.Values.Add(values); // Add the values to the collection.
+                if (options.Values.Files.Count > 0)
+                    throw new InvalidOperationException("Cannot upload files using {0} method".Fmt(options.Method));
+                if (options.Values.Binary.Count > 0)
+                    throw new InvalidOperationException("Cannot upload binary data using {0} method".Fmt(options.Method));
+                var sb = new StringBuilder();
+                sb.Append(address.ToString());
+                foreach(var param in options.Values.Values)
+                {
+                    if (sb.ToString().Contains("?"))
+                        sb.Append("&");
+                    else
+                        sb.Append("?");
+                    sb.Append(param.ToString());
+                }
+                address = new Uri(sb.ToString());
+            }
+            using (var ms = new MemoryStream())
+            {
+                ProcessRequest(address, options, ms);
+                ms.Position = 0;
+                return ms.ToArray();
+            }
+        }
+
+        private static WebRequest CreateRequest(Uri address, WebHelperOptions options, out ContentType contentType)
+        {
+            contentType = null; // make sure this is initialized.
+
             var request = WebRequest.Create(address);
-            var http = request as HttpWebRequest;
+
             request.Headers.Add(options.Headers);
             if (options.UseCompression)
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+            if (options.Proxy != DefaultProxy.Instance)
+                request.Proxy = options.Proxy;
 
+            var http = request as HttpWebRequest;
             if (http != null)
             {
                 http.Timeout = (int)options.Timeout.TotalMilliseconds;
                 if (!string.IsNullOrEmpty(options.UserAgent)) http.UserAgent = options.UserAgent;
                 http.KeepAlive = options.KeepAlive;
                 http.AllowAutoRedirect = options.AllowAutoRedirect;
-            }
 
-            //todo: prepare request based on content type.
+                // let the content type update the request.
+                contentType = ContentType.CreateContentType(options.Method, options.Values);
+                contentType.PrepareRequest(http, options);
+            }
 
             if (options.PrepareRequest != null)
                 options.PrepareRequest(request);
@@ -142,27 +208,49 @@ namespace BizArk.Core.Web
             return request;
         }
 
-        private static WebResponse ProcessRequest(Uri address, WebHelperOptions options, Action<byte[], int> processBytes)
+        private static WebResponse ProcessRequest(Uri address, WebHelperOptions options, Stream output)
         {
-            var request = CreateRequest(address, options);
+            //todo: check address.Scheme to determine appropriate method.
+            ContentType contentType;
+            var request = CreateRequest(address, options, out contentType);
             var requestTotal = new MemSize(request.ContentLength.Between(0, long.MaxValue));
             Report(options, RequestState.NotStarted, requestTotal, MemSize.Zero, MemSize.Zero, MemSize.Zero);
+
+            #region Handle the request
+
+            if (contentType != null)
+            {
+                var http = request as HttpWebRequest;
+                if (request == null) throw new InvalidOperationException(string.Format("Cannot upload values to a WebRequest type of '{0}'", request.GetType().Name));
+                contentType.SendRequest(http, options);
+            }
+            else
+            {
+                request.Method = options.Method;
+            }
+
+            #endregion
+
+            #region Handle the response
 
             var response = request.GetResponse();
             Report(options, RequestState.Receiving, requestTotal, MemSize.Zero, MemSize.Zero, MemSize.Zero);
 
-            var stream = response.GetResponseStream();
+            var resStream = response.GetResponseStream();
             var responseTotal = new MemSize(response.ContentLength.Between(0, long.MaxValue));
             var buffer = new byte[4096];
 
             int totalRead = 0;
             int read;
-            while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+            while ((read = resStream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 totalRead += read;
-                processBytes(buffer, read);
+                output.Write(buffer, 0, read);
                 Report(options, RequestState.Receiving, requestTotal, requestTotal, responseTotal, new MemSize(totalRead));
             }
+
+            #endregion
+
             responseTotal = new MemSize(totalRead); // make sure the final total is accurate.
             Report(options, RequestState.Complete, requestTotal, requestTotal, responseTotal, responseTotal);
 
@@ -197,11 +285,24 @@ namespace BizArk.Core.Web
             Timeout = TimeSpan.FromMinutes(2);
             Encoding = Encoding.Default;
             AllowAutoRedirect = true;
+            Proxy = DefaultProxy.Instance;
+            PartBoundary = String.Format("---------------------{0}", DateTime.Now.Ticks.ToString("x", NumberFormatInfo.InvariantInfo));
+            Values = new WebParameters();
         }
 
         #endregion
 
         #region Fields and Properties
+
+        /// <summary>
+        /// Gets the list of parameters to send in the request.
+        /// </summary>
+        public WebParameters Values { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the method for the request. If null or empty, the method is based on what is being sent and the protocol.
+        /// </summary>
+        public string Method { get; set; }
 
         /// <summary>
         /// Gets or sets the timeout for requests.
@@ -239,6 +340,16 @@ namespace BizArk.Core.Web
         public Encoding Encoding { get; set; }
 
         /// <summary>
+        /// Gets or sets the proxy to use. If not set, will use the default proxy (or you can explicity set to DefaultProxy.Instance).
+        /// </summary>
+        public IWebProxy Proxy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the default part boundary if we are uploading files.
+        /// </summary>
+        public string PartBoundary { get; set; }
+
+        /// <summary>
         /// Gets or sets a method that can do additional preparation of a request before it is submitted.
         /// </summary>
         public Action<WebRequest> PrepareRequest { get; set; }
@@ -250,6 +361,74 @@ namespace BizArk.Core.Web
 
         #endregion
 
+    }
+
+    /// <summary>
+    /// Use the default proxy settings for the request object.
+    /// </summary>
+    public class DefaultProxy : IWebProxy
+    {
+
+        #region Initialization and Destruction
+
+        private DefaultProxy()
+        {
+        }
+
+        private static DefaultProxy sInstance;
+        /// <summary>
+        /// Gets the one and only instance of this class.
+        /// </summary>
+        public static DefaultProxy Instance
+        {
+            get
+            {
+                if (sInstance == null)
+                    sInstance = new DefaultProxy();
+                return sInstance;
+            }
+        }
+
+        #endregion
+
+        #region IWebProxy Members
+
+        /// <summary>
+        /// Do not use, will throw an exception.
+        /// </summary>
+        public ICredentials Credentials
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Do not use, will throw an exception.
+        /// </summary>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        public Uri GetProxy(Uri destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Do not use, will throw an exception.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public bool IsBypassed(Uri host)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 
     /// <summary>
