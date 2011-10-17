@@ -1,6 +1,13 @@
 using System.Drawing;
 using System.Net;
 using System.Xml;
+using System.Xml.Linq;
+using System.IO;
+using System;
+using System.Text;
+using BizArk.Core.StringExt;
+using BizArk.Core.FormatExt;
+using System.Diagnostics;
 
 namespace BizArk.Core.Web
 {
@@ -21,63 +28,49 @@ namespace BizArk.Core.Web
         /// <param name="statusCode"></param>
         /// <param name="contentEncoding"></param>
         /// <param name="charSet"></param>
-        public WebHelperResponse(object result, string contentType, HttpStatusCode statusCode, string contentEncoding, string charSet)
+        public WebHelperResponse(object result, string contentType, HttpStatusCode statusCode, string contentEncoding, string charSet, WebHelperOptions options)
         {
-            mResult = result;
-            mContentType = contentType;
-            mStatusCode = statusCode;
-            mContentEncoding = contentEncoding;
-            mCharacterSet = charSet;
+            Result = result;
+            ContentType = contentType;
+            StatusCode = statusCode;
+            ContentEncoding = contentEncoding;
+            CharacterSet = charSet;
+            Options = options;
         }
 
         #endregion
 
         #region Fields and Properties
 
-        private object mResult;
         /// <summary>
         /// Gets the result. If not handled by the ProcessResponseStream event, this will be a byte[].
         /// </summary>
-        public object Result
-        {
-            get { return mResult; }
-        }
+        public object Result { get; private set; }
 
-        private string mContentType;
         /// <summary>
         /// Gets the content type that describes the response.
         /// </summary>
-        public string ContentType
-        {
-            get { return mContentType; }
-        }
+        public string ContentType { get; private set; }
 
-        private HttpStatusCode mStatusCode;
         /// <summary>
         /// Gets the status code for the response.
         /// </summary>
-        public HttpStatusCode StatusCode
-        {
-            get { return mStatusCode; }
-        }
+        public HttpStatusCode StatusCode { get; private set; }
 
-        private string mContentEncoding;
         /// <summary>
         /// Gets the encoding for the response.
         /// </summary>
-        public string ContentEncoding
-        {
-            get { return mContentEncoding; }
-        }
+        public string ContentEncoding { get; private set; }
 
-        private string mCharacterSet;
         /// <summary>
         /// Gets the character set for the response.
         /// </summary>
-        public string CharacterSet
-        {
-            get { return mCharacterSet; }
-        }
+        public string CharacterSet { get; private set; }
+
+        /// <summary>
+        /// Gets the options for the request.
+        /// </summary>
+        public WebHelperOptions Options { get; private set; }
 
         #endregion
 
@@ -89,7 +82,7 @@ namespace BizArk.Core.Web
         /// <returns></returns>
         public Image ResultToImage()
         {
-            return ConvertEx.ChangeType<Image>(mResult);
+            return ConvertEx.ChangeType<Image>(Result);
         }
 
         /// <summary>
@@ -105,12 +98,23 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
+        /// Converts the result to an xml document (the actual result should be an xml string).
+        /// </summary>
+        /// <returns></returns>
+        public XDocument ResultToXDoc()
+        {
+            var xml = ResultToString();
+            return XDocument.Parse(xml);
+        }
+
+        /// <summary>
         /// Converts the result to a string.
         /// </summary>
         /// <returns></returns>
         public string ResultToString()
         {
-            return ConvertEx.ToString(mResult);
+            var encoding = GetEncoding();
+            return encoding.GetString((byte[])Result);
         }
 
         /// <summary>
@@ -122,6 +126,75 @@ namespace BizArk.Core.Web
         {
             var result = ResultToString();
             return ConvertEx.ChangeType<T>(result);
+        }
+
+        private const int cBytesToRead = 1024;
+        /// <summary>
+        /// Saves the result to a file.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="mode"></param>
+        public void SaveFile(string fileName, FileMode mode)
+        {
+            var bytes = (byte[]) Result;
+            using (var fs = new FileStream(fileName, mode))
+            {
+                for(int i = 0; i < bytes.Length; )
+                {
+                    fs.Write(bytes, i, Math.Min(bytes.Length - i, cBytesToRead));
+                    i += cBytesToRead;
+                }
+                fs.Flush();
+            }
+        }
+
+        /// <summary>
+        /// Gets the character encoding for the response.
+        /// </summary>
+        /// <returns></returns>
+        public Encoding GetEncoding()
+        {
+            try
+            {
+                if (!ContentEncoding.IsEmpty())
+                    return Encoding.GetEncoding(ContentEncoding);
+                if (!CharacterSet.IsEmpty())
+                    return Encoding.GetEncoding(CharacterSet);
+
+                var meta = Encoding.ASCII.GetString((byte[])Result).Trim();
+                if (meta.StartsWith("<?xml"))
+                {
+                    var startPos = meta.IndexOf("encoding=\"");
+                    if (startPos > 0)
+                    {
+                        var endPos = meta.IndexOf("\"", startPos + 1);
+                        var charset = meta.Substring(startPos + 10, endPos - startPos + 1);
+                        charset = charset.TrimEnd(new Char[] { '>', '"', '?' });
+                        return Encoding.GetEncoding(charset);
+                    }
+                }
+                else
+                {
+                    var startPos = meta.IndexOf("charset=");
+                    if (startPos != -1)
+                    {
+                        var endPos = meta.IndexOf("\"", startPos);
+                        if (endPos != -1)
+                        {
+                            var start = startPos + 8;
+                            var charset = meta.Substring(start, endPos - start + 1);
+                            charset = charset.TrimEnd(new Char[] { '>', '"' });
+                            return Encoding.GetEncoding(charset);
+                        }
+                    }
+                }
+                return Options.ResponseEncoding;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error getting the encoding: {0}".Fmt(ex.Message));
+                return Options.ResponseEncoding;
+            }
         }
 
         #endregion

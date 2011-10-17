@@ -119,95 +119,61 @@ namespace BizArk.Core.Web
         /// </summary>
         /// <param name="bytesToSend"></param>
         /// <param name="bytesSent"></param>
-        /// <param name="pctSent"></param>
         /// <param name="bytesToReceive"></param>
         /// <param name="bytesReceived"></param>
-        /// <param name="pctReceived"></param>
         /// <param name="state"></param>
-        public WebHelperProgressChangedEventArgs(long bytesToSend, long bytesSent, int pctSent, long bytesToReceive, long bytesReceived, int pctReceived, object state)
+        public WebHelperProgressChangedEventArgs(long bytesToSend, long bytesSent, long? bytesToReceive, long? bytesReceived, object state)
         {
-            mBytesToSend = bytesToSend;
-            mBytesSent = bytesSent;
-            mSendProgressPercent = pctSent;
-            mBytesToReceive = bytesToReceive;
-            mBytesReceived = bytesReceived;
+            BytesToSend = bytesToSend;
+            BytesSent = bytesSent;
+            BytesToReceive = bytesToReceive;
+            BytesReceived = bytesReceived;
             mState = state;
+
+            Func<long, long, int> CalcPct = (a1, a2) =>
+            {
+                if (a1 >= a2 || a2 == 0)
+                    return 100;
+                else
+                    return (int)(a1 / a2);
+            };
+            SendProgressPercent = CalcPct(bytesToSend, bytesSent);
+            ResponseProgressPercent = CalcPct(bytesToReceive.GetValueOrDefault(0), bytesReceived.GetValueOrDefault(0));
         }
 
         #endregion
 
         #region Fields and Properties
 
-        private long mBytesToSend;
         /// <summary>
         /// Gets the number of bytes to send.
         /// </summary>
-        public long BytesToSend
-        {
-            get { return mBytesToSend; }
-        }
+        public long BytesToSend { get; private set; }
 
-        private long mBytesSent;
         /// <summary>
         /// Gets the number of bytes sent.
         /// </summary>
-        public long BytesSent
-        {
-            get { return mBytesSent; }
-        }
+        public long BytesSent { get; private set; }
 
-        private int mSendProgressPercent;
         /// <summary>
         /// Gets the progress for the request.
         /// </summary>
-        public int SendProgressPercent
-        {
-            get { return mSendProgressPercent; }
-        }
+        public int SendProgressPercent { get; private set; }
 
-        private long mBytesReceived;
         /// <summary>
         /// Gets the number of bytes received.
         /// </summary>
-        public long BytesReceived
-        {
-            get { return mBytesReceived; }
-        }
+        public long? BytesReceived { get; private set; }
 
-        private long mBytesToReceive;
         /// <summary>
         /// Gets the number of bytes in the response. If the response hasn't been sent yet, this is an estimate based on WebHelper.EstimatedResponseLength.
         /// </summary>
-        public long BytesToReceive
-        {
-            get { return mBytesToReceive; }
-        }
+        public long? BytesToReceive { get; private set; }
 
         /// <summary>
         /// Gets the progress for the response.
         /// </summary>
-        public int ResponseProgressPercent
-        {
-            get
-            {
-                if (mBytesReceived == 0) return 0;
-                if (mBytesToReceive == 0) return 0;
-                return (int)(((double)mBytesReceived / mBytesToReceive) * 100);
-            }
-        }
-
-        /// <summary>
-        /// Gets the progress for the entire request/response. If a response has not been sent yet, this is an estimate based on WebHelper.EstimatedResponseLength.
-        /// </summary>
-        public int TotalProgressPercent
-        {
-            get
-            {
-                var bytesMoved = mBytesSent + mBytesReceived;
-                var bytesToMove = mBytesToSend + mBytesToReceive;
-                return (int)(((double)bytesMoved / bytesToMove) * 100);
-            }
-        }
+        public int ResponseProgressPercent { get; private set; }
 
         private object mState;
         /// <summary>

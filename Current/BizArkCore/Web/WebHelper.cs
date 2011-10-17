@@ -22,16 +22,26 @@ namespace BizArk.Core.Web
         /// Creates an instance of WebHelper.
         /// </summary>
         public WebHelper(string url)
+            : this(new Uri(url))
         {
-            Parameters = new WebParameters();
+        }
+
+        /// <summary>
+        /// Creates an instance of WebHelper.
+        /// </summary>
+        public WebHelper(Uri url)
+        {
             Url = url;
-            Timeout = TimeSpan.FromSeconds(100);
-            Method = HttpMethod.Get;
-            Headers = new WebHeaderCollection();
-            UserAgent = "";
-            KeepAlive = true;
-            AllowAutoRedirect = true;
-            UseCompression = true;
+            Options = new WebHelperOptions()
+            {
+                Values = new WebParameters(),
+                Timeout = TimeSpan.FromSeconds(100),
+                Method = HttpMethod.Get,
+                UserAgent = "",
+                KeepAlive = true,
+                AllowAutoRedirect = true,
+                UseCompression = true
+            };
         }
 
         #endregion
@@ -46,58 +56,13 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Gets or sets the url for the web request.
         /// </summary>
-        public string Url { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the method for the web request. The default is GET but might be different based on the content type.
-        /// </summary>
-        public HttpMethod Method { get; set; }
-
-        /// <summary>
-        /// Gets or sets the timeout for the web request. If null, uses the default value for HttpWebRequest (100 seconds). For no timeout, set to TimeSpan.MaxValue.
-        /// </summary>
-        public TimeSpan Timeout { get; set; }
+        public Uri Url { get; private set; }
 
         /// <summary>
         /// Gets or sets the content type for the request. If null, will determine the content type based on what needs to be sent. ContentTypes are a one-use thing. If set, it will need to be set for each call.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         public ContentType ContentType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the parameters for the request. This can be an object with the properties as parameters (recommend anonymous object) or it can be a WebParameterDictionary. To upload files, use a UploadFile object.
-        /// </summary>
-        public dynamic Parameters { get; private set; }
-
-        /// <summary>
-        /// Gets the headers for the request.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public WebHeaderCollection Headers { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the user agent.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public string UserAgent { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value that determines if http keep-alives are used. The default is true.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public bool KeepAlive { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value that determines if redirects are followed. Default is false.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public bool AllowAutoRedirect { get; set; }
-
-        /// <summary>
-        /// Gets or sets the estimated length of the response in number of bytes. This is used to estimate the total progress percent until we can get the actual length of the response. If set to null, upload/download will be split 50/50.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public long? EstimatedResponseLength { get; set; }
 
         /// <summary>
         /// Gets a value that determines if an asynchronous request is already in progress.
@@ -119,16 +84,9 @@ namespace BizArk.Core.Web
         public bool CancellationPending { get; private set; }
 
         /// <summary>
-        /// Gets or sets the state object that will be sent through the events. The state object is not used internally.
+        /// Gets or sets the options to use for the request.
         /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public object State { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value that determines if compression should be used. The default is true.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public bool UseCompression { get; set; }
+        public WebHelperOptions Options { get; set; }
 
         #endregion
 
@@ -186,6 +144,9 @@ namespace BizArk.Core.Web
 
         private WebHelperResponse MakeRequest_Internal()
         {
+            // Make sure we have valid options.
+            if (Options == null) Options = new WebHelperOptions();
+
             CancellationPending = false;
 
             WebHelperResponse whResponse = null;
@@ -194,7 +155,8 @@ namespace BizArk.Core.Web
                 HttpWebRequest request = null;
                 bool sent = false;
 
-                using (var contentType = ContentType ?? ContentType.CreateContentType(Method, (WebParameters)Parameters))
+                var parameters = new WebParameters(Options.Values);
+                using (var contentType = ContentType ?? ContentType.CreateContentType(Options.Method, parameters))
                 {
                     request = CreateRequest(contentType);
                     sent = contentType.SendRequest(this, request);
@@ -204,7 +166,7 @@ namespace BizArk.Core.Web
                 if (!sent)
                 {
                     if (!CancellationPending) throw new InvalidOperationException("Unable to complete request. Unknown error.");
-                    completedArgs = new RequestCompletedEventArgs(State, true);
+                    completedArgs = new RequestCompletedEventArgs(Options.State, true);
                 }
                 else
                 {
@@ -213,9 +175,9 @@ namespace BizArk.Core.Web
 
                     // even if a cancellation is pending, if we recieved the response, complete the request as normal.
                     if (whResponse != null)
-                        completedArgs = new RequestCompletedEventArgs(whResponse, State, false);
+                        completedArgs = new RequestCompletedEventArgs(whResponse, Options.State, false);
                     else if (CancellationPending)
-                        completedArgs = new RequestCompletedEventArgs(whResponse, State, true);
+                        completedArgs = new RequestCompletedEventArgs(whResponse, Options.State, true);
                     else
                         throw new InvalidOperationException("Unable to receive response. Unknown error.");
                 }
@@ -228,7 +190,7 @@ namespace BizArk.Core.Web
             }
             catch (Exception ex)
             {
-                var completedArgs = new RequestCompletedEventArgs(ex, State, false);
+                var completedArgs = new RequestCompletedEventArgs(ex, Options.State, false);
                 Post((arg) =>
                 {
                     // Regardless of the outcome, RequestCompleted is guaranteed to be raised.
@@ -304,17 +266,12 @@ namespace BizArk.Core.Web
 
             using (var responseStream = response.GetResponseStream())
             {
-                var processArgs = new ProcessResponseStreamEventArgs(responseStream, response, State);
+                var processArgs = new ProcessResponseStreamEventArgs(responseStream, response, Options.State);
                 OnProcessResponseStream(processArgs);
                 if (processArgs.Handled)
-                    return new WebHelperResponse(processArgs.Result, response.ContentType, response.StatusCode, response.ContentEncoding, response.CharacterSet);
+                    return new WebHelperResponse(processArgs.Result, response.ContentType, response.StatusCode, response.ContentEncoding, response.CharacterSet, Options);
 
-                var ms = new MemoryStream();
-                var buffer = new byte[8192];
-                var bytesRead = 0;
-                int read;
                 Stream s;
-
                 if (response.ContentEncoding.ToLower().Contains("deflate"))
                     s = new DeflateStream(responseStream, CompressionMode.Decompress);
                 else if (response.ContentEncoding.ToLower().Contains("gzip"))
@@ -322,16 +279,21 @@ namespace BizArk.Core.Web
                 else
                     s = responseStream;
 
-                while ((read = s.Read(buffer, 0, buffer.Length)) > 0)
+                var buffer = new byte[Options.BufferSize];
+                var bytesRead = 0;
+                int read;
+                using (var ms = new MemoryStream())
                 {
-                    if (CancellationPending) return null;
+                    while ((read = s.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        if (CancellationPending) return null;
 
-                    ms.Write(buffer, 0, read);
-                    bytesRead += read;
-                    ReportResponseProgress(bytesRead);
+                        ms.Write(buffer, 0, read);
+                        bytesRead += read;
+                        ReportResponseProgress(bytesRead);
+                    }
+                    return new WebHelperResponse(ms.ToArray(), response.ContentType, response.StatusCode, response.ContentEncoding, response.CharacterSet, Options);
                 }
-
-                return new WebHelperResponse(ms.ToArray(), response.ContentType, response.StatusCode, response.ContentEncoding, response.CharacterSet);
             }
 
         }
@@ -345,19 +307,19 @@ namespace BizArk.Core.Web
         {
             var request = (HttpWebRequest)WebRequest.Create(contentType.GetUrl(this));
 
-            request.Timeout = (int)Timeout.TotalMilliseconds;
-            request.Headers = Headers;
-            if (UseCompression)
+            request.Timeout = (int)Options.Timeout.TotalMilliseconds;
+            request.Headers = Options.Headers;
+            if (Options.UseCompression)
                 request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
-            if (!string.IsNullOrEmpty(UserAgent)) request.UserAgent = UserAgent;
-            request.KeepAlive = KeepAlive;
-            request.AllowAutoRedirect = AllowAutoRedirect;
+            if (!string.IsNullOrEmpty(Options.UserAgent)) request.UserAgent = Options.UserAgent;
+            request.KeepAlive = Options.KeepAlive;
+            request.AllowAutoRedirect = Options.AllowAutoRedirect;
 
             // let the content type update the request.
             contentType.PrepareRequest(request, this);
 
             // let the request be customized.
-            OnPrepareRequest(new PrepareRequestEventArgs(request, State));
+            OnPrepareRequest(new PrepareRequestEventArgs(request, Options.State));
 
             if (request.ContentLength > 0)
                 // Used to determine progress
@@ -396,7 +358,7 @@ namespace BizArk.Core.Web
             if (mLastReqPct != pct)
             {
                 // Only raise the progress changed event if the progress percent changed. It can become a performance issue if you raise it every time you write a few bytes.
-                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, bytesSent, pct, EstimatedResponseLength ?? mRequestContentLength, 0, 0, State);
+                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, bytesSent, null, null, Options.State);
                 Post((arg) =>
                 {
                     OnProgressChanged((WebHelperProgressChangedEventArgs)arg);
@@ -417,13 +379,119 @@ namespace BizArk.Core.Web
             if (mLastResPct != pct)
             {
                 // Only raise the progress changed event if the progress percent changed. It can become a performance issue if you raise it every time you write a few bytes.
-                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, mRequestContentLength, 100, mResponseContentLength, bytesRead, pct, State);
+                var progressArgs = new WebHelperProgressChangedEventArgs(mRequestContentLength, mRequestContentLength, mResponseContentLength, bytesRead, Options.State);
                 Post((arg) =>
                 {
                     OnProgressChanged((WebHelperProgressChangedEventArgs)arg);
                 }, progressArgs);
                 mLastResPct = pct;
             }
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static WebHelperResponse MakeRequest(string url, object values = null)
+        {
+            return MakeRequest(new Uri(url), values);
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static WebHelperResponse MakeRequest(Uri url, object values = null)
+        {
+            var web = new WebHelper(url);
+            web.Options.Values = values;
+            return web.MakeRequest();
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static WebHelperResponse MakeRequest(string url, WebHelperOptions options)
+        {
+            return MakeRequest(new Uri(url), options);
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static WebHelperResponse MakeRequest(Uri url, WebHelperOptions options)
+        {
+            var web = new WebHelper(url);
+            web.Options = options;
+            return web.MakeRequest();
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fileName"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static WebHelperResponse DownloadFile(string url, string fileName, WebHelperOptions options = null)
+        {
+            return DownloadFile(new Uri(url), fileName, options);
+        }
+
+        /// <summary>
+        /// Simple and performant method to download files or any large amount of content.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fileName"></param>
+        /// <param name="options"></param>
+        /// <returns>The WebHelperResponse.Result contains a FileInfo object.</returns>
+        public static WebHelperResponse DownloadFile(Uri url, string fileName, WebHelperOptions options = null)
+        {
+            var web = new WebHelper(url);
+            if (options != null) web.Options = options;
+            web.ProcessResponseStream += (sender, e) =>
+            {
+                e.Handled = true;
+                var buffer = new byte[web.Options.BufferSize];
+                var bytesRead = 0;
+                int read;
+                Stream s;
+
+                if (e.Response.ContentEncoding.ToLower().Contains("deflate"))
+                    s = new DeflateStream(e.ResponseStream, CompressionMode.Decompress);
+                else if (e.Response.ContentEncoding.ToLower().Contains("gzip"))
+                    s = new GZipStream(e.ResponseStream, CompressionMode.Decompress);
+                else
+                    s = e.ResponseStream;
+
+                using (var fs = new FileStream(fileName, FileMode.CreateNew))
+                {
+                    while ((read = s.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        fs.Write(buffer, 0, read);
+                        bytesRead += read;
+                        web.ReportResponseProgress(bytesRead);
+                    }
+                    fs.Flush();
+                }
+
+                e.Result = new FileInfo(fileName);
+            };
+            return web.MakeRequest();
         }
 
         #endregion
@@ -447,6 +515,7 @@ namespace BizArk.Core.Web
         /// <param name="e"></param>
         protected virtual void OnPrepareRequest(PrepareRequestEventArgs e)
         {
+            if (Options.PrepareRequest != null) Options.PrepareRequest(this, e.Request);
             if (PrepareRequest == null) return;
             PrepareRequest(this, e);
         }
@@ -467,6 +536,7 @@ namespace BizArk.Core.Web
         /// <param name="e"></param>
         protected virtual void OnProgressChanged(WebHelperProgressChangedEventArgs e)
         {
+            if (Options.ReportProgress != null) Options.ReportProgress(this, e.BytesSent, e.BytesToSend, e.BytesReceived, e.BytesToReceive);
             if (ProgressChanged == null) return;
             ProgressChanged(this, e);
         }
@@ -508,6 +578,7 @@ namespace BizArk.Core.Web
         /// <param name="e"></param>
         protected virtual void OnRequestCompleted(RequestCompletedEventArgs e)
         {
+            if (Options.RequestComplete != null) Options.RequestComplete(this, e.Response, e.Error, e.Cancelled);
             if (RequestCompleted == null) return;
             RequestCompleted(this, e);
         }
