@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using BizArk.Core.ArrayExt;
 using BizArk.Core.AttributeExt;
+using BizArk.Core.FormatExt;
 
 namespace BizArk.Core.CmdLine
 {
@@ -205,8 +206,10 @@ namespace BizArk.Core.CmdLine
         /// <summary>
         /// Creates an instance of CmdLinePropertyList.
         /// </summary>
-        public CmdLinePropertyList(CmdLineObject obj)
+        public CmdLinePropertyList(CmdLineObject obj, StringComparison compare = StringComparison.OrdinalIgnoreCase)
         {
+            mCompare = compare;
+            mPropertyDictionary = CreateDictionary(compare);
             Object = obj;
             foreach (PropertyDescriptor prop in TypeDescriptor.GetProperties(obj))
             {
@@ -214,9 +217,30 @@ namespace BizArk.Core.CmdLine
                 if (claAtt == null) continue;
                 var cmdLineProp = new CmdLineProperty(obj, prop, claAtt);
                 mProperties.Add(cmdLineProp);
-                mPropertyDictionary.Add(prop.Name, cmdLineProp);
+                Add(prop.Name, cmdLineProp);
                 foreach (var alias in cmdLineProp.Aliases)
-                    mPropertyDictionary.Add(alias, cmdLineProp);
+                    Add(alias, cmdLineProp);
+            }
+        }
+
+        private Dictionary<string, CmdLineProperty> CreateDictionary(StringComparison compare)
+        {
+            switch (compare)
+            {
+                case StringComparison.CurrentCulture:
+                    return new Dictionary<string, CmdLineProperty>(StringComparer.CurrentCulture);
+                case StringComparison.CurrentCultureIgnoreCase:
+                    return new Dictionary<string, CmdLineProperty>(StringComparer.CurrentCultureIgnoreCase);
+                case StringComparison.InvariantCulture:
+                    return new Dictionary<string, CmdLineProperty>(StringComparer.InvariantCulture);
+                case StringComparison.InvariantCultureIgnoreCase:
+                    return new Dictionary<string, CmdLineProperty>(StringComparer.InvariantCultureIgnoreCase);
+                case StringComparison.Ordinal:
+                    return new Dictionary<string, CmdLineProperty>(StringComparer.Ordinal);
+                case StringComparison.OrdinalIgnoreCase:
+                    return new Dictionary<string, CmdLineProperty>(StringComparer.OrdinalIgnoreCase);
+                default:
+                    throw new ArgumentException("The comparison type '{0}' is not supported.".Fmt(compare));
             }
         }
 
@@ -224,8 +248,9 @@ namespace BizArk.Core.CmdLine
 
         #region Fields and Properties
 
+        private StringComparison mCompare;
         private List<CmdLineProperty> mProperties = new List<CmdLineProperty>();
-        private Dictionary<string, CmdLineProperty> mPropertyDictionary = new Dictionary<string, CmdLineProperty>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, CmdLineProperty> mPropertyDictionary;
 
         /// <summary>
         /// Gets the command-line property associated with this argument.
@@ -239,6 +264,7 @@ namespace BizArk.Core.CmdLine
             {
                 if (string.IsNullOrEmpty(argName)) return null;
 
+                // Honor exact matches.
                 if (mPropertyDictionary.ContainsKey(argName))
                     return mPropertyDictionary[argName];
 
@@ -246,10 +272,10 @@ namespace BizArk.Core.CmdLine
                 var foundProps = new List<CmdLineProperty>();
                 foreach (var prop in this)
                 {
-                    if (prop.Name.StartsWith(argName, StringComparison.InvariantCultureIgnoreCase))
+                    if (prop.Name.StartsWith(argName, mCompare))
                         if (!foundProps.Contains(prop)) foundProps.Add(prop);
-                    foreach(var alias in prop.Aliases)
-                        if (alias.StartsWith(argName, StringComparison.InvariantCultureIgnoreCase))
+                    foreach (var alias in prop.Aliases)
+                        if (alias.StartsWith(argName, mCompare))
                             if (!foundProps.Contains(prop)) foundProps.Add(prop);
                 }
 
@@ -273,6 +299,18 @@ namespace BizArk.Core.CmdLine
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Adds a command-line property to the list keyed to the given name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="prop"></param>
+        public void Add(string name, CmdLineProperty prop)
+        {
+            if (mPropertyDictionary.ContainsKey(name))
+                throw new CmdLineArgumentException("The command-line name '{0}' is already defined.".Fmt(name));
+            mPropertyDictionary.Add(name, prop);
+        }
 
         /// <summary>
         /// Gets the enumerator for the list.

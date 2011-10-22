@@ -28,6 +28,7 @@ namespace BizArk.Core.Web
         /// <param name="statusCode"></param>
         /// <param name="contentEncoding"></param>
         /// <param name="charSet"></param>
+        /// <param name="options"></param>
         public WebHelperResponse(object result, string contentType, HttpStatusCode statusCode, string contentEncoding, string charSet, WebHelperOptions options)
         {
             Result = result;
@@ -43,7 +44,7 @@ namespace BizArk.Core.Web
         #region Fields and Properties
 
         /// <summary>
-        /// Gets the result. If not handled by the ProcessResponseStream event, this will be a byte[].
+        /// Gets the result. This will be a byte[] unless set to something else by the ProcessResponseStream event.
         /// </summary>
         public object Result { get; private set; }
 
@@ -58,12 +59,12 @@ namespace BizArk.Core.Web
         public HttpStatusCode StatusCode { get; private set; }
 
         /// <summary>
-        /// Gets the encoding for the response.
+        /// Gets the encoding for the response from the content-encoding http header.
         /// </summary>
         public string ContentEncoding { get; private set; }
 
         /// <summary>
-        /// Gets the character set for the response.
+        /// Gets the character set for the response from the content-type http header if it contains a charset=[value].
         /// </summary>
         public string CharacterSet { get; private set; }
 
@@ -149,7 +150,7 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
-        /// Gets the character encoding for the response.
+        /// Gets the character encoding for the response. This will look at the content of the response if it is not set in the http headers.
         /// </summary>
         /// <returns></returns>
         public Encoding GetEncoding()
@@ -161,7 +162,10 @@ namespace BizArk.Core.Web
                 if (!CharacterSet.IsEmpty())
                     return Encoding.GetEncoding(CharacterSet);
 
-                var meta = Encoding.ASCII.GetString((byte[])Result).Trim();
+                var bytes = Result as byte[];
+                if (bytes == null) return Options.ResponseEncoding;
+
+                var meta = Encoding.ASCII.GetString(bytes).Trim();
                 if (meta.StartsWith("<?xml"))
                 {
                     var startPos = meta.IndexOf("encoding=\"");
@@ -190,8 +194,10 @@ namespace BizArk.Core.Web
                 }
                 return Options.ResponseEncoding;
             }
-            catch (Exception ex)
+            catch (ArgumentException ex)
             {
+                // The character encoding is not a valid code page name or the code page is not supported by the underlying platform.
+                // Just return the default encoding.
                 Debug.WriteLine("Error getting the encoding: {0}".Fmt(ex.Message));
                 return Options.ResponseEncoding;
             }

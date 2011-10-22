@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel;
 
 namespace BizArk.Core.Template
 {
@@ -111,6 +112,30 @@ namespace BizArk.Core.Template
         }
 
         /// <summary>
+        /// Returns the formatted string based on the values in the object.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public string ToString(object values)
+        {
+            foreach (PropertyDescriptor prop in TypeDescriptor.GetProperties(values))
+                this[prop.Name] = prop.GetValue(values);
+            return ToString();
+        }
+
+        /// <summary>
+        /// Format a string template with the given values.
+        /// </summary>
+        /// <param name="template"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static string Format(string template, object values)
+        {
+            var tmpl = new StringTemplate(template);
+            return tmpl.ToString(values);
+        }
+
+        /// <summary>
         /// Called from Format property to parse the template and create a format string.
         /// </summary>
         private void CreateFormat()
@@ -151,6 +176,7 @@ namespace BizArk.Core.Template
 
             while (position < template.Length && template[position] != '{')
             {
+                // Ignore escape char.
                 if (position < template.Length - 1
                     && template[position] == '\\'
                     && (template[position + 1] == '{' || template[position + 1] == '\\'))

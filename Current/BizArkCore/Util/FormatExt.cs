@@ -1,4 +1,6 @@
 ﻿
+using BizArk.Core.Template;
+using System.ComponentModel;
 namespace BizArk.Core.FormatExt
 {
     /// <summary>
@@ -177,6 +179,18 @@ namespace BizArk.Core.FormatExt
                 return string.Format("{0:N}", val);
             else
                 return string.Format("{0:N" + precision + "}", val);
+        }
+
+        /// <summary>
+        /// Uses a StringTemplate to replace the values in the string.
+        /// </summary>
+        /// <param name="template"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static string Tmpl(this string template, object values)
+        {
+            var tmpl = new StringTemplate(template);
+            return tmpl.ToString(values);
         }
 
     }

@@ -88,6 +88,17 @@ namespace TestBizArkCore
             Assert.AreEqual("$1,000.00", i.FmtCurrency());
             Assert.AreEqual("$1,000", i.FmtCurrency(0));
         }
+        
+        /// <summary>
+        ///A test for Tmpl
+        ///</summary>
+        [TestMethod()]
+        public void TmplTest()
+        {
+            var tmpl = "Hello {name}! You are {age:N0} years old.";
+            Assert.AreEqual("Hello Brian! You are 39 years old.", tmpl.Tmpl(new { name = "Brian", age = 39 }));
+            Assert.AreEqual("Hello King Tut! You are 3,345 years old.", tmpl.Tmpl(new { name = "King Tut", age = 3345 }));
+        }
 
     }
 }

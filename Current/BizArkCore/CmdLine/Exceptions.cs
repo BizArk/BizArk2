@@ -3,11 +3,47 @@ using System.Collections.Generic;
 
 namespace BizArk.Core.CmdLine
 {
+
+    /// <summary>
+    /// Base class for exceptions used for command-line parsing.
+    /// </summary>
+    public class CmdLineException : ApplicationException
+    {
+
+        /// <summary>
+        /// Creates an instance of CmdLineException.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
+        public CmdLineException(string message, Exception innerException = null)
+            : base(message, innerException)
+        {
+        }
+
+    }
+
+    /// <summary>
+    /// Exception thrown if there is a problem with a command line arugment definition.
+    /// </summary>
+    public class CmdLineArgumentException : CmdLineException
+    {
+
+        /// <summary>
+        /// Creates an instance of CmdLineArgumentException.
+        /// </summary>
+        /// <param name="message"></param>
+        public CmdLineArgumentException(string message)
+            : base(message)
+        {
+        }
+
+    }
+
     /// <summary>
     /// Exception thrown when multiple command-line properties match a given argument name.
     /// </summary>
     public class AmbiguousCmdLineNameException
-        : ApplicationException
+        : CmdLineException
     {
 
         /// <summary>

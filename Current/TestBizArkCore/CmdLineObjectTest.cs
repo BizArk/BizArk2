@@ -235,6 +235,13 @@ namespace TestBizArkCore
             Assert.AreEqual("Christine", cmdLine.StuffILike[0]);
         }
 
+
+		[TestMethod]
+		public void DuplicateArguments()
+		{
+			var cmdLine = new AliasesWithDifferentCaseTestCmdLineObject();
+            AssertEx.Throws(typeof(CmdLineArgumentException), () => { cmdLine.InitializeEmpty(); });
+		}
     }
 
     [CmdLineDefaultArg("Hello")]
@@ -274,4 +281,9 @@ namespace TestBizArkCore
         [CmdLineArg(Alias = "D")]
         public string Father { get; set; }
     }
+	internal class AliasesWithDifferentCaseTestCmdLineObject : CmdLineObject
+	{
+		[CmdLineArg(Aliases = new[] { "F", "f"} )]
+		public string Family { get; set; }
+	}
 }
