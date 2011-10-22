@@ -11,7 +11,11 @@ namespace BizArk.Core.Web
 {
 
     /// <summary>
-    /// This is a helper class to easily make web requests. It is intended as a replacement for WebClient. It includes the ability to upload multiple files, post form values, set a timeout, run asynchrounously, and reports progress.
+    /// This is a helper class to easily make web requests. 
+    /// It is intended as a replacement for WebClient. It 
+    /// includes the ability to upload multiple files, post 
+    /// form values, set a timeout, run asynchrounously, 
+    /// and reports progress.
     /// </summary>
     public class WebHelper
     {
@@ -21,6 +25,7 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Creates an instance of WebHelper.
         /// </summary>
+        /// <param name="url">The URL must be a valid http url.</param>
         public WebHelper(string url)
             : this(new Uri(url))
         {
@@ -29,6 +34,7 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Creates an instance of WebHelper.
         /// </summary>
+        /// <param name="url">The URL must be a valid http url.</param>
         public WebHelper(Uri url)
         {
             Url = url;
@@ -54,7 +60,7 @@ namespace BizArk.Core.Web
         private long mResponseContentLength = 0;
 
         /// <summary>
-        /// Gets or sets the url for the web request.
+        /// Gets the url for the web request.
         /// </summary>
         public Uri Url { get; private set; }
 

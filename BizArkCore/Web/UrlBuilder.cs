@@ -46,7 +46,7 @@ namespace BizArk.Core.Web
         public int? Port { get; set; }
 
         /// <summary>
-        /// Gets the host:port (e.g. www.tourfactory.com:8080).
+        /// Gets or sets the host:port (e.g. www.redwerb.com:8080).
         /// </summary>
         public string Authority
         {
@@ -154,6 +154,7 @@ namespace BizArk.Core.Web
         }
 
         #endregion
+
     }
 
 }

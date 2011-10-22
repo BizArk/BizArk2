@@ -36,6 +36,7 @@ namespace TestBizArkCore
             try
             {
                 action();
+                Assert.Fail("Expected exception '{0}' not thrown.", exceptionType.Name);
             }
             catch (Exception ex)
             {

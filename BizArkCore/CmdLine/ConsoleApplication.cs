@@ -17,8 +17,8 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         /// <typeparam name="TArgs">The type for the CmdLineObject to use. Must have a default constructor.</typeparam>
         /// <param name="run">The method to run once the arguments are initialized. Will not be called if the help flag is set or the args aren't valid.</param>
-        public static void RunProgram<TArgs>(Run<TArgs> run) where TArgs : CmdLineObject
-        {
+		public static void RunProgram<TArgs>(Run<TArgs> run) where TArgs : CmdLineObject, new() 
+		{ 
             var args = Activator.CreateInstance<TArgs>();
             args.Initialize();
 
