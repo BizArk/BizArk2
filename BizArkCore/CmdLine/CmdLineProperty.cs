@@ -5,6 +5,12 @@ using System.ComponentModel;
 using BizArk.Core.ArrayExt;
 using BizArk.Core.AttributeExt;
 using BizArk.Core.FormatExt;
+using System.Diagnostics;
+using BizArk.Core.ExceptionExt;
+using BizArk.Core.TypeExt;
+using BizArk.Core.StringExt;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace BizArk.Core.CmdLine
 {
@@ -58,6 +64,9 @@ namespace BizArk.Core.CmdLine
                 AllowSave = claAtt.AllowSave;
                 Aliases = claAtt.Aliases;
             }
+
+            var reqAtt = prop.GetAttribute<RequiredAttribute>();
+            if (reqAtt != null) Required = true;
         }
 
         #endregion
@@ -140,9 +149,39 @@ namespace BizArk.Core.CmdLine
                 if (strs != null)
                 {
                     if (mProperty.PropertyType.IsArray)
-                        value = strs.Convert(PropertyType.GetElementType());
+                    {
+                        try
+                        {
+                            value = strs.Convert(PropertyType.GetElementType());
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.GetDetails());
+                            Error = "[{0}] is not valid. The value must be able to convert to an array of {2}.".Fmt(strs.Join(", "), Name, PropertyType.GetElementType().GetCSharpName());
+                            return;
+                        }
+                    }
                     else
-                        value = ConvertEx.ChangeType(strs[0], PropertyType);
+                    {
+                        try
+                        {
+                            value = ConvertEx.ChangeType(strs[0], PropertyType);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine(ex.GetDetails());
+                            if (PropertyType.IsEnum)
+                            {
+                                Error = "'{0}' is not valid. The argument must be one of these values: [{2}].".Fmt(strs[0], Name, Enum.GetValues(PropertyType).Join(", "));
+                            }
+                            else
+                            {
+                                var typeName = PropertyType.GetCSharpName();
+                                Error = "'{0}' is not valid. The argument must be a{2} {3}.".Fmt(strs[0], Name, typeName[0].IsVowel() ? "n" : "", typeName);
+                            }
+                            return;
+                        }
+                    }
                 }
                 mProperty.SetValue(Object, ConvertEx.ChangeType(value, PropertyType));
                 PropertySet = true;
@@ -159,37 +198,37 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         public bool AllowSave { get; set; }
 
+        /// <summary>
+        /// Gets any errors associated with this property.
+        /// </summary>
+        public string Error { get; private set; }
+
         #endregion
 
         #region Methods
 
-        ///// <summary>
-        ///// Sets the command-line property.
-        ///// </summary>
-        ///// <param name="obj"></param>
-        ///// <param name="values"></param>
-        //internal void SetValue(CmdLineObject obj, params string[] values)
-        //{
-        //    object value;
-        //    if (mProperty.PropertyType.IsArray)
-        //        value = values.Convert(PropertyType.GetElementType());
-        //    else
-        //        value = ConvertEx.ChangeType(values[0], PropertyType);
-
-        //    mProperty.SetValue(obj, value);
-        //    PropertySet = true;
-        //}
-
-        ///// <summary>
-        ///// Sets the command-line property.
-        ///// </summary>
-        ///// <param name="obj"></param>
-        ///// <param name="value"></param>
-        //public void SetValue(CmdLineObject obj, bool value)
-        //{
-        //    mProperty.SetValue(obj, value);
-        //    PropertySet = true;
-        //}
+        /// <summary>
+        /// Gets the textual representation of this command-line object.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var value = new StringBuilder();
+            var vals = Value as IEnumerable;
+            if (vals != null)
+            {
+                var first = true;
+                foreach (var val in vals)
+                {
+                    if (!first) value.Append(", ");
+                    first = false;
+                    value.Append(ConvertEx.ToString(val));
+                }
+            }
+            else
+                value.Append(ConvertEx.ToString(Value));
+            return "{0}=[{1}]".Fmt(Name, value);
+        }
 
         #endregion
 

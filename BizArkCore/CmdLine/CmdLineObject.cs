@@ -8,7 +8,9 @@ using System.Xml;
 using BizArk.Core.ArrayExt;
 using BizArk.Core.AttributeExt;
 using BizArk.Core.StringExt;
+using BizArk.Core.FormatExt;
 using BizArk.Core.Web;
+using BizArk.Core.Template;
 
 namespace BizArk.Core.CmdLine
 {
@@ -42,14 +44,52 @@ namespace BizArk.Core.CmdLine
         /// Instantiates CmdLineObject.
         /// </summary>
         public CmdLineObject()
+            : this(null)
         {
-            ArgumentPrefix = "/";
-            Caption = "Command-line Help";
+        }
+
+        /// <summary>
+        /// Instantiates CmdLineObject.
+        /// </summary>
+        /// <param name="options"></param>
+        public CmdLineObject(CmdLineOptions options)
+        {
+            IsInitialized = false;
+
+            Options = options ?? new CmdLineOptions();
+
+            if (Options.ArgumentPrefix.IsEmpty())
+                Options.ArgumentPrefix = "/";
+            if (Options.Title == null)
+                Options.Title = string.Format("{0} ver. {1}", Application.Title, Application.Version);
+
+            if (Options.Description == null)
+            {
+                var att = this.GetAttribute<DescriptionAttribute>(true);
+                if (att == null)
+                    Options.Description = Application.Description;
+                else
+                    Options.Description = att.Description;
+            }
+
+            if (Options.DefaultArgNames == null)
+            {
+                var att = this.GetType().GetAttribute<CmdLineDefaultArgAttribute>(false);
+                if (att != null)
+                    Options.DefaultArgNames = new string[] { att.DefaultArgName };
+            }
         }
 
         #endregion
 
         #region Fields and Properties
+
+        /// <summary>
+        /// Gets the options used for the handling the command-line object.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [Browsable(false)]
+        public CmdLineOptions Options { get; private set; }
 
         /// <summary>
         /// Gets or sets a value that determines if help should be displayed.
@@ -61,33 +101,13 @@ namespace BizArk.Core.CmdLine
         public bool Help { get; set; }
 
         /// <summary>
-        /// Gets or sets the caption associated with these command-line arguments. Used in the command-line help dialog.
-        /// </summary>
-        [Browsable(false)]
-        public string Caption { get; set; }
-
-        /// <summary>
         /// Gets the list of command-line properties.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         [Browsable(false)]
         public CmdLinePropertyList Properties { get; private set; }
 
-        /// <summary>
-        /// Gets or sets the default property for the command-line.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        [Browsable(false)]
-        public CmdLineProperty DefaultProperty { get; set; }
-
-        /// <summary>
-        /// Gets or sets the string used to identify argument names.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        [Browsable(false)]
-        protected string ArgumentPrefix { get; set; }
-
-        private List<string> mErrors;
+        private string[] mErrors;
         /// <summary>
         /// Gets the error text for the command-line object.
         /// </summary>
@@ -97,37 +117,19 @@ namespace BizArk.Core.CmdLine
         {
             get
             {
-                return string.Join(Environment.NewLine, mErrors.ToArray());
+                return string.Join(Environment.NewLine, mErrors);
             }
         }
 
         /// <summary>
-        /// Makes sure the command-line object is valid. 
-        /// </summary>
-        /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        [Browsable(false)]
-        public bool IsValid()
-        {
-            if (Properties == null) throw new InvalidOperationException("The command-line object has not been initialized yet.");
-            mErrors.Clear();
-
-            mErrors.AddRange(Validate());
-
-            if (mErrors.Count == 0)
-                return true;
-            else
-                return false;
-        }
-
-        private bool mIsInitialized = false;
-        /// <summary>
         /// Gets a value that determines if the CmdLineObject is ready to use.
         /// </summary>
-        public bool IsInitialized
-        {
-            get { return mIsInitialized; }
-        }
+        public bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Gets the default properties for the command-line.
+        /// </summary>
+        public CmdLineProperty[] DefaultProperties { get; private set; }
 
         #endregion
 
@@ -138,8 +140,6 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         private void Initialize_Internal()
         {
-            mErrors = new List<string>();
-
             if (Properties == null)
             {
                 // Get the list of properties that can be set from the command-line.
@@ -148,13 +148,16 @@ namespace BizArk.Core.CmdLine
                 Properties = new CmdLinePropertyList(this);
             }
 
-            if (DefaultProperty == null)
-            {
-                var att = this.GetType().GetAttribute<CmdLineDefaultArgAttribute>(false);
-                if (att != null)
-                    DefaultProperty = Properties[att.DefaultArgName];
-            }
+            if (Options.Usage == null)
+                Options.Usage = CreateUsage();
 
+            if (Options.DefaultArgNames != null)
+            {
+                var props = new List<CmdLineProperty>();
+                foreach (var argName in Options.DefaultArgNames)
+                    props.Add(Properties[argName]);
+                DefaultProperties = props.ToArray();
+            }
         }
 
         /// <summary>
@@ -236,16 +239,22 @@ namespace BizArk.Core.CmdLine
             if (args.Length == 0) return;
 
             int startIndex = 0;
-            if (DefaultProperty != null && !args[0].StartsWith(ArgumentPrefix))
+            if (DefaultProperties != null && DefaultProperties.Length > 0 && !args[0].StartsWith(Options.ArgumentPrefix))
             {
                 var argValues = GetArgValues(args);
-                DefaultProperty.Value = argValues;
+                if (DefaultProperties.Length == 1)
+                    DefaultProperties[0].Value = argValues;
+                else
+                {
+                    for (int i = 0; i < argValues.Length && i < DefaultProperties.Length; i++)
+                        DefaultProperties[i].Value = argValues[i];
+                }
                 startIndex = argValues.Length; // We already took care of the first set of arguments so start with the next.
             }
 
             for (int i = startIndex; i < args.Length; i++)
             {
-                if (!args[i].StartsWith(ArgumentPrefix)) continue;
+                if (!args[i].StartsWith(Options.ArgumentPrefix)) continue;
 
                 string argName = args[i].Substring(1);
                 if (argName == "") continue;
@@ -301,19 +310,15 @@ namespace BizArk.Core.CmdLine
 
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i].StartsWith(ArgumentPrefix)) return argValues.ToArray();
+                if (args[i].StartsWith(Options.ArgumentPrefix)) return argValues.ToArray();
                 argValues.Add(args[i]);
             }
 
             return argValues.ToArray();
         }
 
-        private void SetValue(PropertyDescriptor prop, string argName, params string[] argValues)
-        {
-        }
-
         /// <summary>
-        /// This method is intended to be overwritten in order to perform cmd-line validation.
+        /// Override this method to perform cmd-line validation. It is recommended to call the base method.
         /// </summary>
         /// <returns></returns>
         protected virtual string[] Validate()
@@ -321,95 +326,62 @@ namespace BizArk.Core.CmdLine
             var errors = new List<string>();
             foreach (CmdLineProperty prop in Properties)
             {
+                if (!prop.Error.IsEmpty())
+                    errors.Add(string.Format("{0} has an error: {1}", prop.Name, prop.Error));
                 if (prop.Required && !prop.PropertySet)
                     errors.Add(string.Format("{0} is required.", prop.Name));
             }
 
-            return errors.ToArray();
+            var results = ObjectExt.ObjectExt.Validate(this);
+            foreach (var result in results)
+            {
+                if (result.ErrorMessage.HasValue())
+                    errors.Add(result.ErrorMessage);
+            }
+
+            mErrors = errors.ToArray();
+            return mErrors;
         }
 
         /// <summary>
-        /// Gets the usage for the given property. If prop is null, gets the usage for the application.
+        /// Makes sure the command-line object is valid. 
         /// </summary>
         /// <returns></returns>
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public virtual string GetUsage()
+        [Browsable(false)]
+        public bool IsValid()
         {
-            var usage = new StringBuilder();
-            usage.Append(Application.ExeName);
+            if (Properties == null) throw new InvalidOperationException("The command-line object has not been initialized yet.");
+            Validate();
 
-            if (DefaultProperty != null)
-                usage.Append(" <" + (string.IsNullOrEmpty(DefaultProperty.Usage) ? DefaultProperty.Name : DefaultProperty.Usage) + ">");
-
-            // Display all the required properties first.
-            foreach (CmdLineProperty prop in Properties)
-            {
-                if (prop.Required && prop.ShowInUsage != DefaultBoolean.False)
-                    usage.Append(" " + GetPropertyUsage(prop));
-            }
-
-            // Display all the non-required properties after the required properties.
-            foreach (CmdLineProperty prop in Properties)
-            {
-                if (!prop.Required && prop.ShowInUsage == DefaultBoolean.True)
-                    usage.Append(" [" + GetPropertyUsage(prop) + "]");
-            }
-
-            return usage.ToString();
-        }
-
-        private string GetPropertyUsage(CmdLineProperty prop)
-        {
-            object id;
-            if (prop.Aliases.Length == 0)
-                id = prop.Name;
+            if (mErrors.Length == 0)
+                return true;
             else
-                id = prop.Aliases[0];
-
-            if (!string.IsNullOrEmpty(prop.Usage))
-                return string.Format("{0}{1}=<{2}>", ArgumentPrefix, id, prop.Usage);
-
-            if (prop.PropertyType == typeof(bool))
-                return string.Format("{0}{1}[-]", ArgumentPrefix, id, prop.Name);
-            else
-                return string.Format("{0}{1}=<{2}>", ArgumentPrefix, id, prop.Name);
-        }
-
-        /// <summary>
-        /// Gets the title associated with this command-line.
-        /// </summary>
-        /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public virtual string GetTitle()
-        {
-            var title = Application.Title;
-            var version = Application.Version;
-            var copyright = Application.Copyright;
-
-            return string.Format("{0}, {1} - {2}", title, version, copyright);
+                return false;
         }
 
         /// <summary>
         /// Gets the full description for the command-line arguments.
         /// </summary>
+        /// <param name="maxWidth">Determines the number of characters per line. Set this to Console.Width.</param>
         /// <returns></returns>
-        public string GetHelpText(int maxWidth)
+        public virtual string GetHelpText(int maxWidth)
         {
             if (Properties == null) throw new InvalidOperationException("The command-line object has not been initialized yet.");
 
             var desc = new StringBuilder();
 
-            if (mErrors != null && mErrors.Count > 0)
+            if (mErrors != null && mErrors.Length > 0)
             {
                 desc.AppendLine(("ERROR: " + mErrors[0]).Wrap(maxWidth));
-                for (int i = 1; i < mErrors.Count; i++)
+                for (int i = 1; i < mErrors.Length; i++)
                     desc.AppendLine(mErrors[i].Wrap(maxWidth, "    "));
                 desc.AppendLine();
             }
 
-            desc.AppendLine(GetTitle());
-            desc.AppendLine(GetAppDescription().Wrap(maxWidth));
-            desc.AppendLine("Usage: " + GetUsage());
+            desc.AppendLine(Options.Title);
+            desc.AppendLine(Options.Description.Wrap(maxWidth));
+            desc.AppendLine("Usage: " + Options.Usage);
             desc.AppendLine();
 
             var maxNameWidth = GetMaxNameLength() + 6; // Add extra for ' (S): '
@@ -443,22 +415,34 @@ namespace BizArk.Core.CmdLine
                 if (prop.Required)
                     desc.AppendLine(new string(' ', maxNameWidth) + "REQUIRED");
                 else if (prop.ShowDefaultValue)
-                    desc.AppendLine(new string(' ', maxNameWidth) + string.Format("Default Value: {0}", prop.DefaultValue));
+                {
+                    var dflt = prop.DefaultValue;
+                    if (!ConvertEx.IsEmpty(dflt))
+                    {
+                        var arr = dflt as Array;
+                        if (arr != null)
+                        {
+                            var strs = arr.Convert<string>();
+                            if (dflt.GetType().GetElementType() == typeof(string))
+                                dflt = "[\"{0}\"]".Fmt(strs.Join("\", \""));
+                            else
+                                dflt = "[{0}]".Fmt(strs.Join(", "));
+                        }
+                        desc.AppendLine(new string(' ', maxNameWidth) + string.Format("Default Value: {0}", dflt));
+                    }
+                }
 
+                if (prop.PropertyType.IsEnum)
+                {
+                    var enumVals = new StringBuilder();
+                    var enumNames = prop.PropertyType.GetEnumNames();
+                    enumVals.AppendFormat(new string(' ', maxNameWidth) + "Possible Values: [{0}]", enumNames.Join(", "));
+                    if (enumVals.Length < maxWidth)
+                        desc.AppendLine(enumVals.ToString());
+                }
             }
 
             return desc.ToString();
-        }
-
-        /// <summary>
-        /// Override to provide a description of the application in the help text. The preferred method of providing a description is applying the DescriptionAttribute to the class.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual string GetAppDescription()
-        {
-            var att = this.GetAttribute<DescriptionAttribute>(true);
-            if (att == null) return "";
-            return att.Description;
         }
 
         private int GetMaxNameLength()
@@ -582,29 +566,84 @@ namespace BizArk.Core.CmdLine
 
         private void EndInit()
         {
-            mIsInitialized = true;
+            if (!Options.WaitArgName.IsEmpty())
+            {
+                var wait = Properties[Options.WaitArgName];
+                if (wait == null)
+                    throw new CmdLineException("The Wait property '{0}' was not found.".Fmt(Options.WaitArgName));
+                if (wait.PropertyType != typeof(bool))
+                    throw new CmdLineException("The Wait property must be a boolean.");
+                Options.Wait = (bool)wait.Value;
+            }
+
+            IsInitialized = true;
             Initialized();
         }
 
         /// <summary>
-        /// This method is called after initialization is complete to allow for any validation.
+        /// This method is called after initialization is complete to allow for any additional intialization.
         /// </summary>
         protected virtual void Initialized()
         {
         }
 
         /// <summary>
-        /// Determines if the application should wait for a key before exiting. Override this method to allow it to be true.
+        /// Gets the usage for this command-line object.
         /// </summary>
         /// <returns></returns>
-        protected internal virtual bool WaitForAnyKey()
+        public override string ToString()
         {
-            return false;
+            return Options.Usage;
+        }
+
+        private string CreateUsage()
+        {
+            var usage = new StringBuilder();
+            usage.Append(Application.ExeName);
+
+            if (DefaultProperties != null && DefaultProperties.Length > 0)
+            {
+                foreach (var prop in DefaultProperties)
+                    usage.Append(" <" + (string.IsNullOrEmpty(prop.Usage) ? prop.Name : prop.Usage) + ">");
+            }
+
+            // Display all the required properties first.
+            foreach (CmdLineProperty prop in Properties)
+            {
+                if (prop.Required && prop.ShowInUsage != DefaultBoolean.False)
+                    usage.Append(" " + GetPropertyUsage(prop));
+            }
+
+            // Display all the non-required properties after the required properties.
+            foreach (CmdLineProperty prop in Properties)
+            {
+                if (!prop.Required && prop.ShowInUsage == DefaultBoolean.True)
+                    usage.Append(" [" + GetPropertyUsage(prop) + "]");
+            }
+
+            return usage.ToString();
+        }
+
+        private string GetPropertyUsage(CmdLineProperty prop)
+        {
+            object id;
+            if (prop.Aliases.Length == 0)
+                id = prop.Name;
+            else
+                id = prop.Aliases[0];
+
+            if (!string.IsNullOrEmpty(prop.Usage))
+                return string.Format("{0}{1}=<{2}>", Options.ArgumentPrefix, id, prop.Usage);
+
+            if (prop.PropertyType == typeof(bool))
+                return string.Format("{0}{1}[-]", Options.ArgumentPrefix, id, prop.Name);
+            else
+                return string.Format("{0}{1}=<{2}>", Options.ArgumentPrefix, id, prop.Name);
         }
 
         #endregion
 
-        #region Support
+        #region Arg support class
 
         private class Arg
         {

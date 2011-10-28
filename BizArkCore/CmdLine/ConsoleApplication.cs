@@ -40,7 +40,7 @@ namespace BizArk.Core.CmdLine
             }
             finally
             {
-                if (args.WaitForAnyKey())
+                if (args.Options.Wait)
                 {
                     Console.WriteLine();
                     var prompt = "* Press any key to continue. *";

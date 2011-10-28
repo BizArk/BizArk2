@@ -5,6 +5,9 @@ using BizArk.Core.StringExt;
 using BizArk.Core.WebExt;
 using BizArk.Core.Util;
 using System.IO;
+using System.Drawing;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace TestBizArkCore
 {
@@ -117,6 +120,32 @@ namespace TestBizArkCore
             expected = new string[] { "Brian", "Christine", "Abrian", "Brooke" };
             AssertEx.AreEqual(expected, target.Family);
             Assert.AreEqual("Brian", target.Father);
+        }
+
+        [TestMethod()]
+        public void MultipleDefaultPropTest()
+        {
+            MyTestCmdLineObject4 target;
+            string[] args;
+            string[] expected;
+
+            target = new MyTestCmdLineObject4();
+            args = new string[] { "Brian", "Christine", "/c", "Abrian", "Brooke" };
+            target.InitializeFromCmdLine(args);
+            Assert.AreEqual("Christine", target.Mother);
+            Assert.AreEqual("Brian", target.Father);
+            expected = new string[] { "Abrian", "Brooke" };
+            AssertEx.AreEqual(expected, target.Children);
+
+            target = new MyTestCmdLineObject4();
+            args = new string[] { "Brian", "/c", "Abrian", "Brooke" };
+            target.InitializeFromCmdLine(args);
+            Assert.AreEqual(null, target.Mother);
+            Assert.AreEqual("Brian", target.Father);
+            expected = new string[] { "Abrian", "Brooke" };
+            AssertEx.AreEqual(expected, target.Children);
+
+            Debug.WriteLine(target.GetHelpText(200));
         }
 
         /// <summary>
@@ -235,19 +264,64 @@ namespace TestBizArkCore
             Assert.AreEqual("Christine", cmdLine.StuffILike[0]);
         }
 
-
-		[TestMethod]
-		public void DuplicateArguments()
-		{
-			var cmdLine = new AliasesWithDifferentCaseTestCmdLineObject();
+        [TestMethod]
+        public void DuplicateArgumentsTest()
+        {
+            var cmdLine = new AliasesWithDifferentCaseTestCmdLineObject();
             AssertEx.Throws(typeof(CmdLineArgumentException), () => { cmdLine.InitializeEmpty(); });
-		}
+        }
+
+        [TestMethod]
+        public void ArgumentValidationTest()
+        {
+            var args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/NumberOfScoops", "2");
+            Assert.AreEqual(2, args.NumberOfScoops);
+            Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/NumberOfScoops", "chocolate");
+            Assert.AreEqual(1, args.NumberOfScoops);
+            Assert.IsFalse(args.IsValid());
+            Debug.WriteLine(args.GetHelpText(200));
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/FavoriteNumbers", "1", "2", "3");
+            Assert.AreEqual(3, args.FavoriteNumbers.Length);
+            Assert.AreEqual(1, args.FavoriteNumbers[0]);
+            Assert.AreEqual(2, args.FavoriteNumbers[1]);
+            Assert.AreEqual(3, args.FavoriteNumbers[2]);
+            Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/FavoriteNumbers", "Red", "Green", "Blue");
+            Assert.AreEqual(1, args.NumberOfScoops);
+            Assert.IsFalse(args.IsValid());
+            Debug.WriteLine(args.GetHelpText(200));
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/FavoriteCar", "Ford");
+            Assert.IsFalse(args.IsValid());
+            Debug.WriteLine(args.GetHelpText(200));
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/NumberOfScoops", "5");
+            Assert.IsFalse(args.IsValid());
+            Debug.WriteLine(args.GetHelpText(200));
+        }
+
     }
 
     [CmdLineDefaultArg("Hello")]
     internal class MyTestCmdLineObject
         : CmdLineObject
     {
+
+        public MyTestCmdLineObject()
+        {
+            NumberOfScoops = 1;
+        }
+
         [CmdLineArg(Alias = "H")]
         [System.ComponentModel.Description("Says hello to user.")]
         public string Hello { get; set; }
@@ -259,6 +333,16 @@ namespace TestBizArkCore
         [CmdLineArg(Alias = "I")]
         [System.ComponentModel.Description("Determines whether user likes ice cream or not.")]
         public bool DoesLikeIceCream { get; set; }
+
+        [CmdLineArg()]
+        [Range(1, 3)]
+        public int NumberOfScoops { get; set; }
+
+        [CmdLineArg()]
+        public int[] FavoriteNumbers { get; set; }
+
+        [CmdLineArg()]
+        public Car FavoriteCar { get; set; }
 
         [CmdLineArg(Aliases = new string[] { "S", "Stuff", "Crap" })]
         [System.ComponentModel.Description("List of things the user likes.")]
@@ -281,9 +365,37 @@ namespace TestBizArkCore
         [CmdLineArg(Alias = "D")]
         public string Father { get; set; }
     }
-	internal class AliasesWithDifferentCaseTestCmdLineObject : CmdLineObject
-	{
-		[CmdLineArg(Aliases = new[] { "F", "f"} )]
-		public string Family { get; set; }
-	}
+
+    internal class MyTestCmdLineObject4
+        : CmdLineObject
+    {
+        public MyTestCmdLineObject4()
+        {
+            Options.DefaultArgNames = new string[] { "F", "M" };
+        }
+
+        [CmdLineArg(Alias = "M")]
+        public string Mother { get; set; }
+
+        [CmdLineArg(Alias = "F")]
+        public string Father { get; set; }
+
+        [CmdLineArg(Alias = "C")]
+        public string[] Children { get; set; }
+
+    }
+
+    internal class AliasesWithDifferentCaseTestCmdLineObject : CmdLineObject
+    {
+        [CmdLineArg(Aliases = new[] { "F", "f" })]
+        public string Family { get; set; }
+    }
+
+    internal enum Car
+    {
+        Tesla,
+        Ferrari,
+        Lamborghini,
+        Kia
+    }
 }

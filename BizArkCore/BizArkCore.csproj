@@ -74,6 +74,7 @@
     <Compile Include="Application.cs" />
     <Compile Include="CmdLine\CmdLineArgAttribute.cs" />
     <Compile Include="CmdLine\CmdLineDefaultArgAttribute.cs" />
+    <Compile Include="CmdLine\CmdLineOptions.cs" />
     <Compile Include="CmdLine\ConsoleApplication.cs" />
     <Compile Include="CmdLine\CmdLineObject.cs" />
     <Compile Include="CmdLine\CmdLineProperty.cs" />
