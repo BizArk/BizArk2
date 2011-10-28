@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BizArk.Core.ArrayExt;
 
 namespace BizArk.Core.StringExt
 {
@@ -113,6 +114,16 @@ namespace BizArk.Core.StringExt
         public static bool IsEmpty(this string str)
         {
             return ConvertEx.IsEmpty(str);
+        }
+
+        /// <summary>
+        /// Shortcut for !ConvertEx.IsEmpty. Works because this is an extension method, not a real method.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static bool HasValue(this string str)
+        {
+            return !ConvertEx.IsEmpty(str);
         }
 
         /// <summary>
@@ -235,6 +246,21 @@ namespace BizArk.Core.StringExt
         {
             if (str.IsEmpty()) return dflt;
             return str;
+        }
+
+        /// <summary>
+        /// Vowels. Used for IsVowel.
+        /// </summary>
+        public static char[] Vowels = { 'a', 'e', 'i', 'o', 'u' };
+
+        /// <summary>
+        /// Determines if the character is a vowel.
+        /// </summary>
+        /// <param name="ch"></param>
+        /// <returns></returns>
+        public static bool IsVowel(this char ch)
+        {
+            return Vowels.Contains(ch);
         }
 
     }

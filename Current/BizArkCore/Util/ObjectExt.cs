@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
 using BizArk.Core.Util;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace BizArk.Core.ObjectExt
 {
@@ -115,6 +117,18 @@ namespace BizArk.Core.ObjectExt
         public static string GetPropertyName<TObject>(this TObject type, Expression<Func<TObject, object>> propertyRefExpr)
         {
             return PropertyUtil.GetNameCore(propertyRefExpr.Body);
+        }
+
+        /// <summary>
+        /// Uses DataAnnotations to validate the properties of the object.
+        /// </summary>
+        /// <param name="obj"></param>
+        public static ValidationResult[] Validate(this object obj)
+        {
+            var ctx = new ValidationContext(obj, null, null);
+            var results = new List<ValidationResult>();
+            Validator.TryValidateObject(obj, ctx, results, true);
+            return results.ToArray();            
         }
 
     }

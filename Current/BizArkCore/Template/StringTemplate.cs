@@ -37,6 +37,8 @@ namespace BizArk.Core.Template
         // performance a small amount by not requiring iterating over the name array to find the index
         // when setting and retrieving values.
 
+        private string mFormat = null;
+
         private Dictionary<string, int> mArgIndices = new Dictionary<string, int>();
         /// <summary>
         /// Gets or sets the named argument. Ignores invalid arguments.
@@ -87,15 +89,6 @@ namespace BizArk.Core.Template
         public string[] ArgNames
         {
             get { return mArgNames; }
-        }
-
-        private string mFormat = null;
-        /// <summary>
-        /// Gets the format for the template.
-        /// </summary>
-        private string Format
-        {
-            get { return mFormat; }
         }
 
         #endregion

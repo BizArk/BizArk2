@@ -61,7 +61,7 @@ namespace BizArk.Core
         private Application() { }
 
         /// <summary>
-        /// Gets the title of the executing assembly.
+        /// Gets the title of the executing assembly from AssemblyTitleAttribute.
         /// </summary>
         public static string Title { get; private set; }
 
@@ -71,27 +71,27 @@ namespace BizArk.Core
         public static Version Version { get; private set; }
 
         /// <summary>
-        /// Gets the description of the executing assembly.
+        /// Gets the description of the executing assembly from AssemblyDescriptionAttribute.
         /// </summary>
         public static string Description { get; private set; }
 
         /// <summary>
-        /// Gets the company name of the executing assembly.
+        /// Gets the company name of the executing assembly from AssemblyCompanyAttribute.
         /// </summary>
         public static string Company { get; private set; }
 
         /// <summary>
-        /// Gets the product name of the executing assembly.
+        /// Gets the product name of the executing assembly from AssemblyProductAttribute.
         /// </summary>
         public static string Product { get; private set; }
 
         /// <summary>
-        /// Gets the copyright of the executing assembly.
+        /// Gets the copyright of the executing assembly from AssemblyCopyrightAttribute.
         /// </summary>
         public static string Copyright { get; private set; }
 
         /// <summary>
-        /// Gets the trademark of the executing assembly.
+        /// Gets the trademark of the executing assembly from AssemblyTrademarkAttribute.
         /// </summary>
         public static string Trademark { get; private set; }
 
