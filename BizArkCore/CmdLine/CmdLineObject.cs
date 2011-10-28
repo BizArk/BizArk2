@@ -58,11 +58,6 @@ namespace BizArk.Core.CmdLine
 
             Options = options ?? new CmdLineOptions();
 
-            if (Options.ArgumentPrefix.IsEmpty())
-                Options.ArgumentPrefix = "/";
-            if (Options.Title == null)
-                Options.Title = string.Format("{0} ver. {1}", Application.Title, Application.Version);
-
             if (Options.Description == null)
             {
                 var att = this.GetAttribute<DescriptionAttribute>(true);

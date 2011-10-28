@@ -245,10 +245,10 @@ namespace BizArk.Core.CmdLine
         /// <summary>
         /// Creates an instance of CmdLinePropertyList.
         /// </summary>
-        public CmdLinePropertyList(CmdLineObject obj, StringComparison compare = StringComparison.OrdinalIgnoreCase)
+        public CmdLinePropertyList(CmdLineObject obj)
         {
-            mCompare = compare;
-            mPropertyDictionary = CreateDictionary(compare);
+            mCompare = obj.Options.Comparer;
+            mPropertyDictionary = CreateDictionary(obj.Options.Comparer);
             Object = obj;
             foreach (PropertyDescriptor prop in TypeDescriptor.GetProperties(obj))
             {
