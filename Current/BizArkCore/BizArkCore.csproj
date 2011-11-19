@@ -78,6 +78,7 @@
     <Compile Include="CmdLine\ConsoleApplication.cs" />
     <Compile Include="CmdLine\CmdLineObject.cs" />
     <Compile Include="CmdLine\CmdLineProperty.cs" />
+    <Compile Include="CmdLine\CmdLineOptionsAttribute.cs" />
     <Compile Include="Collections\HashList.cs" />
     <Compile Include="Convert\ConvertEx.cs" />
     <Compile Include="Convert\ConvertStrategyMgr.cs" />

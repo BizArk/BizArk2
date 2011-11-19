@@ -56,7 +56,7 @@ namespace BizArk.Core.CmdLine
         {
             IsInitialized = false;
 
-            Options = options ?? new CmdLineOptions();
+            Options = options ?? CreateOptions();
 
             if (Options.Description == null)
             {
@@ -73,6 +73,15 @@ namespace BizArk.Core.CmdLine
                 if (att != null)
                     Options.DefaultArgNames = new string[] { att.DefaultArgName };
             }
+        }
+
+        private CmdLineOptions CreateOptions()
+        {
+            var att = this.GetType().GetAttribute<CmdLineOptionsAttribute>(false);
+            if (att != null)
+                return att.CreateOptions();
+            else
+                return new CmdLineOptions();
         }
 
         #endregion
@@ -251,7 +260,7 @@ namespace BizArk.Core.CmdLine
             {
                 if (!args[i].StartsWith(Options.ArgumentPrefix)) continue;
 
-                string argName = args[i].Substring(1);
+                string argName = args[i].Substring(Options.ArgumentPrefix.Length);
                 if (argName == "") continue;
 
                 var prop = Properties[argName.TrimEnd('-')];
@@ -334,8 +343,7 @@ namespace BizArk.Core.CmdLine
                     errors.Add(result.ErrorMessage);
             }
 
-            mErrors = errors.ToArray();
-            return mErrors;
+            return errors.ToArray();
         }
 
         /// <summary>
@@ -347,7 +355,7 @@ namespace BizArk.Core.CmdLine
         public bool IsValid()
         {
             if (Properties == null) throw new InvalidOperationException("The command-line object has not been initialized yet.");
-            Validate();
+            mErrors = Validate();
 
             if (mErrors.Length == 0)
                 return true;
