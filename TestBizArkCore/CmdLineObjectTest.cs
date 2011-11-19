@@ -8,6 +8,7 @@ using System.IO;
 using System.Drawing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.Linq;
 
 namespace TestBizArkCore
 {
@@ -310,6 +311,38 @@ namespace TestBizArkCore
             Debug.WriteLine(args.GetHelpText(200));
         }
 
+        [TestMethod]
+        public void OptionsAttTest()
+        {
+            var args = new MyTestCmdLineObject5();
+            Assert.AreEqual("+", args.Options.ArgumentPrefix);
+            args.InitializeFromCmdLine("+D", "Brian");
+            Assert.AreEqual("Brian", args.Father);
+        }
+
+        [TestMethod]
+        public void LongArgPrefixTest()
+        {
+            var args = new MyTestCmdLineObject6();
+            Assert.AreEqual("--", args.Options.ArgumentPrefix);
+            args.InitializeFromCmdLine("--D", "Brian");
+            Assert.AreEqual("Brian", args.Father);
+        }
+
+        [TestMethod]
+        public void OverrideValidationTest()
+        {
+            var args1 = new MyTestCmdLineObject7();
+            args1.InitializeFromCmdLine("/v", "true");
+            Assert.AreEqual(true, args1.IsValidProp);
+            Assert.IsTrue(args1.IsValid());
+
+            var args2 = new MyTestCmdLineObject7();
+            args2.InitializeFromCmdLine("/v", "false");
+            Assert.AreEqual(false, args2.IsValidProp);
+            Assert.IsTrue(!args2.IsValid());
+        }
+
     }
 
     [CmdLineDefaultArg("Hello")]
@@ -383,6 +416,45 @@ namespace TestBizArkCore
         [CmdLineArg(Alias = "C")]
         public string[] Children { get; set; }
 
+    }
+
+    [CmdLineOptions(DefaultArgName = "F", ArgumentPrefix = "+")]
+    internal class MyTestCmdLineObject5
+        : CmdLineObject
+    {
+        [CmdLineArg(Alias = "F")]
+        public string[] Family { get; set; }
+
+        [CmdLineArg(Alias = "D")]
+        public string Father { get; set; }
+    }
+
+    [CmdLineOptions(DefaultArgName = "F", ArgumentPrefix = "--")]
+    internal class MyTestCmdLineObject6
+        : CmdLineObject
+    {
+        [CmdLineArg(Alias = "F")]
+        public string[] Family { get; set; }
+
+        [CmdLineArg(Alias = "D")]
+        public string Father { get; set; }
+    }
+
+    internal class MyTestCmdLineObject7
+    : CmdLineObject
+    {
+        [CmdLineArg(Alias = "v")]
+        public bool IsValidProp { get; set; }
+
+        protected override string[] Validate()
+        {
+            var baseValidation = base.Validate().ToList();
+
+            if (!IsValidProp)
+                baseValidation.Add("Not IsValidProp!");
+
+            return baseValidation.ToArray();
+        }
     }
 
     internal class AliasesWithDifferentCaseTestCmdLineObject : CmdLineObject
