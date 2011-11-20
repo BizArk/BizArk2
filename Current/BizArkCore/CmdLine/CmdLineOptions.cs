@@ -24,6 +24,7 @@ namespace BizArk.Core.CmdLine
         {
             ArgumentPrefix = "/";
             Title = string.Format("{0} ver. {1}", Application.Title, Application.Version);
+            ApplicationName = Application.ExeName;
             Comparer = StringComparison.OrdinalIgnoreCase;
         }
 
@@ -35,6 +36,11 @@ namespace BizArk.Core.CmdLine
         /// Gets or sets the title for the application. Shown at the top of the help text. Defaults to {AssemblyTitleAttribute} ver. {EntryAssembly.Version}
         /// </summary>
         public string Title { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the application for use in the usage text. Defaults to the name of the exe that is running.
+        /// </summary>
+        public string ApplicationName { get; set; }
 
         /// <summary>
         /// Gets or sets the text that shows how to use the command-line. Shown in help.

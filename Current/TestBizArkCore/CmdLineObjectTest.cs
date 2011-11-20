@@ -9,6 +9,7 @@ using System.Drawing;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Linq;
+using BizArk.Core;
 
 namespace TestBizArkCore
 {
@@ -172,10 +173,18 @@ namespace TestBizArkCore
             foreach (string line in lines)
                 Debug.WriteLine(line);
 
-            MyTestCmdLineObject target;
-            target = new MyTestCmdLineObject();
-            target.InitializeEmpty();
-            Debug.WriteLine(target.GetHelpText(50));
+            var args = new MyTestCmdLineObject();
+            args.InitializeEmpty();
+            Debug.WriteLine(args.GetHelpText(50));
+        }
+
+        [TestMethod()]
+        public void UsageTest()
+        {
+            var args = new MyTestCmdLineObject();
+            args.InitializeEmpty();
+            Debug.WriteLine(args.Options.Usage);
+            Assert.AreEqual("TESTAPP [/H <Hello>] [/?[-]]", args.Options.Usage);
         }
 
         [TestMethod()]
@@ -345,7 +354,7 @@ namespace TestBizArkCore
 
     }
 
-    [CmdLineDefaultArg("Hello")]
+    [CmdLineOptions(DefaultArgName = "Hello", ApplicationName = "TESTAPP")]
     internal class MyTestCmdLineObject
         : CmdLineObject
     {
@@ -355,7 +364,7 @@ namespace TestBizArkCore
             NumberOfScoops = 1;
         }
 
-        [CmdLineArg(Alias = "H")]
+        [CmdLineArg(Alias = "H", ShowInUsage = DefaultBoolean.True)]
         [System.ComponentModel.Description("Says hello to user.")]
         public string Hello { get; set; }
 

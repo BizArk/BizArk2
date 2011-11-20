@@ -184,7 +184,7 @@ namespace BizArk.Core.CmdLine
             else
             {
                 var args = Environment.GetCommandLineArgs();
-                args = args.Shrink(1);
+                args = args.Shrink(1); // the first parameter is the name of the application.
                 InitializeFromCmdLine(args);
             }
         }
@@ -602,7 +602,7 @@ namespace BizArk.Core.CmdLine
         private string CreateUsage()
         {
             var usage = new StringBuilder();
-            usage.Append(Application.ExeName);
+            usage.Append(Options.ApplicationName);
 
             if (DefaultProperties != null && DefaultProperties.Length > 0)
             {
@@ -636,12 +636,12 @@ namespace BizArk.Core.CmdLine
                 id = prop.Aliases[0];
 
             if (!string.IsNullOrEmpty(prop.Usage))
-                return string.Format("{0}{1}=<{2}>", Options.ArgumentPrefix, id, prop.Usage);
+                return string.Format("{0}{1} <{2}>", Options.ArgumentPrefix, id, prop.Usage);
 
             if (prop.PropertyType == typeof(bool))
                 return string.Format("{0}{1}[-]", Options.ArgumentPrefix, id, prop.Name);
             else
-                return string.Format("{0}{1}=<{2}>", Options.ArgumentPrefix, id, prop.Name);
+                return string.Format("{0}{1} <{2}>", Options.ArgumentPrefix, id, prop.Name);
         }
 
         #endregion
