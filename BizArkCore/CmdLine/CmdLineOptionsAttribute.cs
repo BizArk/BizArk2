@@ -17,6 +17,11 @@ namespace BizArk.Core.CmdLine
         public string Title { get; set; }
 
         /// <summary>
+        /// Gets or sets the name of the application for use in the usage text. Defaults to the name of the exe that is running.
+        /// </summary>
+        public string ApplicationName { get; set; }
+
+        /// <summary>
         /// Gets or sets the text that shows how to use the command-line. Shown in help.
         /// </summary>
         public string Usage { get; set; }
@@ -27,12 +32,24 @@ namespace BizArk.Core.CmdLine
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the name/alias of the default property for the command-line. Do not set this if using DefaultArgNames.
+        /// Gets or sets the name/alias of the default property for the command-line. Setting this overwrites DefaultArgNames.
         /// </summary>
-        public string DefaultArgName { get; set; }
+        public string DefaultArgName 
+        {
+            get
+            {
+                if (DefaultArgNames == null) return "";
+                if (DefaultArgNames.Length == 0) return "";
+                return DefaultArgNames[0];
+            }
+            set
+            {
+                DefaultArgNames = new string[] { value };
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the names/aliases of the default properties for the command-line. If set, overrides DefaultArgName.
+        /// Gets or sets the names/aliases of the default properties for the command-line. Setting this overwrites DefaultArgName.
         /// </summary>
         public string[] DefaultArgNames { get; set; }
 
@@ -56,21 +73,24 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         public StringComparison Comparer { get; set; }
 
-        public CmdLineOptions CreateOptions()
+        /// <summary>
+        /// Creates the options object.
+        /// </summary>
+        /// <returns></returns>
+        internal CmdLineOptions CreateOptions()
         {
             var options = new CmdLineOptions();
 
-            if (DefaultArgNames != null)
-                options.DefaultArgNames = DefaultArgNames;
-            else if (DefaultArgName.HasValue())
-                options.DefaultArgNames = new string[] { DefaultArgName };
-
             if (Title != null)
                 options.Title = Title;
+            if (ApplicationName != null)
+                options.ApplicationName = ApplicationName;
             if (Usage != null)
                 options.Usage = Usage;
             if (Description != null)
                 options.Description = Description;
+            if (DefaultArgNames != null)
+                options.DefaultArgNames = DefaultArgNames;
             if (ArgumentPrefix != null)
                 options.ArgumentPrefix = ArgumentPrefix;
             if (WaitArgName != null)
