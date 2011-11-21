@@ -38,22 +38,14 @@ namespace BizArk.Core.Web
         public WebHelper(Uri url)
         {
             Url = url;
-            Options = new WebHelperOptions()
-            {
-                Values = new WebParameters(),
-                Timeout = TimeSpan.FromSeconds(100),
-                Method = HttpMethod.Get,
-                UserAgent = "",
-                KeepAlive = true,
-                AllowAutoRedirect = true,
-                UseCompression = true
-            };
+            Options = new WebHelperOptions();
         }
 
         #endregion
 
         #region Fields and Properties
 
+        private ManualResetEvent mWait;
         private AsyncOperation mAsyncOperation = null;
         private Thread mRequestThread = null;
         private long mRequestContentLength = 0;
@@ -120,6 +112,7 @@ namespace BizArk.Core.Web
                 }
             }
             mRequestThread = null;
+            mWait = null;
 
             return MakeRequest_Internal();
         }
@@ -127,25 +120,18 @@ namespace BizArk.Core.Web
         /// <summary>
         /// Makes the web request asynchronously.
         /// </summary>
-        public void MakeRequestAsync()
-        {
-            MakeRequestAsync(null);
-        }
-
-        /// <summary>
-        /// Makes the web request asynchronously.
-        /// </summary>
-        /// <param name="state"></param>
-        public void MakeRequestAsync(object state)
+        public WaitHandle MakeRequestAsync()
         {
             if (IsBusy) throw new InvalidOperationException("An asynchronous request is already in progress. WebHelper only supports a single request at a time.");
 
-            mAsyncOperation = AsyncOperationManager.CreateOperation(state);
+            mWait = new ManualResetEvent(false);
+            mAsyncOperation = AsyncOperationManager.CreateOperation(null);
             mRequestThread = new Thread(() =>
             {
                 MakeRequest_Internal();
             });
             mRequestThread.Start();
+            return mWait;
         }
 
         private WebHelperResponse MakeRequest_Internal()
@@ -214,7 +200,7 @@ namespace BizArk.Core.Web
             {
                 if (mAsyncOperation != null)
                 {
-                    using (ManualResetEvent done = new ManualResetEvent(false))
+                    using (var done = new ManualResetEvent(false))
                     {
                         // Use the ManualResetEvent to ensure that the operation completes before
                         // we exit the method. 
@@ -241,23 +227,28 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
-        /// Waits for the request to complete.
+        /// Waits for the request to complete or until the timeout, whichever comes first.
         /// </summary>
-        public void Wait()
+        /// <param name="timeout">Number of milliseconds to wait for the request to complete. Set to null to wait indefinitely.</param>
+        /// <returns>True if the request has completed, false if the timeout was reached.</returns>
+        public bool Wait(int? timeout = null)
         {
-            if (mRequestThread == null) return;
-            mRequestThread.Join();
+            var wait = mWait; // grab the instance so we don't have any problems with it disapearing.
+            if (wait == null) return true;
+            if (timeout == null)
+                return wait.WaitOne();
+            else
+                return wait.WaitOne(timeout.Value);
         }
 
         /// <summary>
         /// Waits for the request to complete or until the timeout, whichever comes first.
         /// </summary>
-        /// <param name="timeout"></param>
+        /// <param name="timeout">How long to wait for the request to complete.</param>
         /// <returns>True if the request has completed, false if the timeout was reached.</returns>
-        public bool Wait(int timeout)
+        public bool Wait(TimeSpan timeout)
         {
-            if (mRequestThread == null) return true;
-            return mRequestThread.Join(timeout);
+            return Wait((int)timeout.TotalMilliseconds);
         }
 
         /// <summary>
@@ -410,6 +401,17 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
+        /// Simple method for making an asynchronous request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="values"></param>
+        /// <returns>The WaitHandle that can be used to determine when the request is complete.</returns>
+        public static WaitHandle MakeRequestAsync(string url, object values = null)
+        {
+            return MakeRequestAsync(new Uri(url), values);
+        }
+
+        /// <summary>
         /// Simple method for making a request using WebHelper.
         /// </summary>
         /// <param name="url"></param>
@@ -423,6 +425,19 @@ namespace BizArk.Core.Web
         }
 
         /// <summary>
+        /// Simple method for making an asynchronous request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="values"></param>
+        /// <returns>The WaitHandle that can be used to determine when the request is complete.</returns>
+        public static WaitHandle MakeRequestAsync(Uri url, object values = null)
+        {
+            var web = new WebHelper(url);
+            web.Options.Values = values;
+            return web.MakeRequestAsync();
+        }
+
+        /// <summary>
         /// Simple method for making a request using WebHelper.
         /// </summary>
         /// <param name="url"></param>
@@ -431,6 +446,17 @@ namespace BizArk.Core.Web
         public static WebHelperResponse MakeRequest(string url, WebHelperOptions options)
         {
             return MakeRequest(new Uri(url), options);
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="options"></param>
+        /// <returns>The WaitHandle that can be used to determine when the request is complete.</returns>
+        public static WaitHandle MakeRequestAsync(string url, WebHelperOptions options)
+        {
+            return MakeRequestAsync(new Uri(url), options);
         }
 
         /// <summary>
@@ -450,12 +476,37 @@ namespace BizArk.Core.Web
         /// Simple method for making a request using WebHelper.
         /// </summary>
         /// <param name="url"></param>
+        /// <param name="options"></param>
+        /// <returns>The WaitHandle that can be used to determine when the request is complete.</returns>
+        public static WaitHandle MakeRequestAsync(Uri url, WebHelperOptions options)
+        {
+            var web = new WebHelper(url);
+            web.Options = options;
+            return web.MakeRequestAsync();
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
         /// <param name="fileName"></param>
         /// <param name="options"></param>
         /// <returns></returns>
         public static WebHelperResponse DownloadFile(string url, string fileName, WebHelperOptions options = null)
         {
             return DownloadFile(new Uri(url), fileName, options);
+        }
+
+        /// <summary>
+        /// Simple method for making a request using WebHelper.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fileName"></param>
+        /// <param name="options"></param>
+        /// <returns>The WaitHandle that can be used to determine when the request is complete.</returns>
+        public static WaitHandle DownloadFileAsync(string url, string fileName, WebHelperOptions options = null)
+        {
+            return DownloadFileAsync(new Uri(url), fileName, options);
         }
 
         /// <summary>
@@ -469,35 +520,52 @@ namespace BizArk.Core.Web
         {
             var web = new WebHelper(url);
             if (options != null) web.Options = options;
-            web.ProcessResponseStream += (sender, e) =>
-            {
-                e.Handled = true;
-                var buffer = new byte[web.Options.BufferSize];
-                var bytesRead = 0;
-                int read;
-                Stream s;
-
-                if (e.Response.ContentEncoding.ToLower().Contains("deflate"))
-                    s = new DeflateStream(e.ResponseStream, CompressionMode.Decompress);
-                else if (e.Response.ContentEncoding.ToLower().Contains("gzip"))
-                    s = new GZipStream(e.ResponseStream, CompressionMode.Decompress);
-                else
-                    s = e.ResponseStream;
-
-                using (var fs = new FileStream(fileName, FileMode.CreateNew))
-                {
-                    while ((read = s.Read(buffer, 0, buffer.Length)) > 0)
-                    {
-                        fs.Write(buffer, 0, read);
-                        bytesRead += read;
-                        web.ReportResponseProgress(bytesRead);
-                    }
-                    fs.Flush();
-                }
-
-                e.Result = new FileInfo(fileName);
-            };
+            web.ProcessResponseStream += (sender, e) => { ProcessFileResponse((WebHelper)sender, e, fileName); };
             return web.MakeRequest();
+        }
+
+        /// <summary>
+        /// Simple and performant method to download files or any large amount of content.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="fileName"></param>
+        /// <param name="options"></param>
+        /// <returns>The WaitHandle that can be used to determine when the request is complete.</returns>
+        public static WaitHandle DownloadFileAsync(Uri url, string fileName, WebHelperOptions options = null)
+        {
+            var web = new WebHelper(url);
+            if (options != null) web.Options = options;
+            web.ProcessResponseStream += (sender, e) => { ProcessFileResponse((WebHelper)sender, e, fileName); };
+            return web.MakeRequestAsync();
+        }
+
+        private static void ProcessFileResponse(WebHelper web, ProcessResponseStreamEventArgs e, string fileName)
+        {
+            e.Handled = true;
+            var buffer = new byte[web.Options.BufferSize];
+            var bytesRead = 0;
+            int read;
+            Stream s;
+
+            if (e.Response.ContentEncoding.ToLower().Contains("deflate"))
+                s = new DeflateStream(e.ResponseStream, CompressionMode.Decompress);
+            else if (e.Response.ContentEncoding.ToLower().Contains("gzip"))
+                s = new GZipStream(e.ResponseStream, CompressionMode.Decompress);
+            else
+                s = e.ResponseStream;
+
+            using (var fs = new FileStream(fileName, FileMode.CreateNew))
+            {
+                while ((read = s.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    fs.Write(buffer, 0, read);
+                    bytesRead += read;
+                    web.ReportResponseProgress(bytesRead);
+                }
+                fs.Flush();
+            }
+
+            e.Result = new FileInfo(fileName);
         }
 
         #endregion
@@ -584,9 +652,17 @@ namespace BizArk.Core.Web
         /// <param name="e"></param>
         protected virtual void OnRequestCompleted(RequestCompletedEventArgs e)
         {
-            if (Options.RequestComplete != null) Options.RequestComplete(this, e.Response, e.Error, e.Cancelled);
-            if (RequestCompleted == null) return;
-            RequestCompleted(this, e);
+            try
+            {
+                if (Options.RequestComplete != null) Options.RequestComplete(this, e.Response, e.Error, e.Cancelled);
+                if (RequestCompleted == null) return;
+                RequestCompleted(this, e);
+            }
+            finally
+            {
+                if (mWait != null)
+                    mWait.Set();
+            }
         }
 
         #endregion
