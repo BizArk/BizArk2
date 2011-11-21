@@ -163,11 +163,14 @@ namespace TestBizArkCore
                 url.Protocol = "https";
                 url.Host = "chart.googleapis.com";
                 url.Path.Add("chart");
-                url.Parameters.Add("chs", "150x150");
-                url.Parameters.Add("cht", "qr");
-                url.Parameters.Add("chl", "http://bizark.codeplex.com");
-                url.Parameters.Add("choe", "UTF-8");
-                var response = WebHelper.DownloadFile(url.ToUri(), tmp);
+                url.Parameters.AddRange(new
+                {
+                    chs = "150x150",
+                    cht = "qr",
+                    chl = "http://bizark.codeplex.com",
+                    choe = "UTF-8"
+                });
+                WebHelper.DownloadFile(url.ToUri(), tmp);
 
                 var fi = new FileInfo(tmp);
                 Assert.IsTrue(fi.Exists);
@@ -229,6 +232,30 @@ namespace TestBizArkCore
                 var str = result.ResultToString();
                 Assert.AreEqual("123 ABC [TEST]", str);
             }
+        }
+
+        [TestMethod]
+        public void MakeRequestAsyncTest()
+        {
+            var handled = false;
+            var done = WebHelper.MakeRequestAsync("http://www.google.com", new WebHelperOptions()
+                {
+                    RequestComplete = (web, response, ex, cancelled) =>
+                    {
+                        if (ex != null)
+                        {
+                            // handle error
+                        }
+                        if (cancelled) return;
+
+                        handled = true;
+                        var str = response.ResultToString();
+                        Assert.IsFalse(string.IsNullOrWhiteSpace(str));
+                    }
+                });
+            done.WaitOne();
+
+            Assert.IsTrue(handled);
         }
 
         private void Garb()

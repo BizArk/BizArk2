@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using BizArk.Core.ArrayExt;
 using BizArk.Core.WebExt;

@@ -24,6 +24,13 @@ namespace BizArk.Core.Web
             Headers = new WebHeaderCollection();
             ResponseEncoding = Encoding.Default;
             BufferSize = 1024;
+            Values = new WebParameters();
+            Timeout = TimeSpan.FromSeconds(100);
+            Method = HttpMethod.Get;
+            UserAgent = "";
+            KeepAlive = true;
+            AllowAutoRedirect = true;
+            UseCompression = true;
         }
 
         #endregion
