@@ -71,7 +71,7 @@ namespace BizArk.Core.CmdLine
         /// <summary>
         /// Gets or sets the rule for comparing the names/aliases. By default this is set to 
         /// </summary>
-        public StringComparison Comparer { get; set; }
+        public StringComparison? Comparer { get; set; }
 
         /// <summary>
         /// Creates the options object.
@@ -98,7 +98,7 @@ namespace BizArk.Core.CmdLine
             if (Wait != null)
                 options.Wait = (bool)Wait;
             if (Comparer != null)
-                options.Comparer = Comparer;
+                options.Comparer = Comparer.Value;
 
             return options;
         }
