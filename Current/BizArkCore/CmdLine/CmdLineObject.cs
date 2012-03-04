@@ -334,6 +334,12 @@ namespace BizArk.Core.CmdLine
                     errors.Add(string.Format("{0} has an error: {1}", prop.Name, prop.Error));
                 if (prop.Required && !prop.PropertySet)
                     errors.Add(string.Format("{0} is required.", prop.Name));
+
+                foreach (var validator in prop.Validators)
+                {
+                    if (!validator.IsValid(prop.Value))
+                        errors.Add(validator.FormatErrorMessage(prop.Name));
+                }
             }
 
             var results = ObjectExt.ObjectExt.Validate(this);

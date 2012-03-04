@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using BizArk.Core;
 using BizArk.Core.DataAnnotations;
+using System;
 
 namespace TestBizArkCore
 {
@@ -370,9 +371,18 @@ namespace TestBizArkCore
             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor", "Blue");
+            Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor", "purple");
             Assert.IsFalse(args.IsValid());
             Debug.WriteLine(args.ErrorText);
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor2", "pink");
+            args.Properties["SampleColor2"].Validators.Add(new SetAttribute("pink"));
+            Assert.IsTrue(args.IsValid());
         }
     }
 
@@ -415,8 +425,11 @@ namespace TestBizArkCore
 
         // ValidateSet: http://msdn.microsoft.com/en-us/library/windows/desktop/ms714432(v=vs.85).aspx
         [CmdLineArg()]
-        [Set("red", "green", "blue")]
+        [Set(true, "red", "green", "blue")]
         public string SampleColor { get; set; }
+
+        [CmdLineArg()]
+        public string SampleColor2 { get; set; }
     }
 
     [CmdLineDefaultArg("g")]

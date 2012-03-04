@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using BizArk.Core.StringExt;
 using BizArk.Core.FormatExt;
 using BizArk.Core.ArrayExt;
+using System.Collections;
 
 namespace BizArk.Core.DataAnnotations
 {
@@ -23,15 +24,42 @@ namespace BizArk.Core.DataAnnotations
         /// Creates an instance of SetAttribute.
         /// </summary>
         /// <param name="values"></param>
-        public SetAttribute(params object[] values) : base("set")
+        public SetAttribute(params object[] values)
+            : this(null, values)
         {
+        }
+
+        /// <summary>
+        /// Creates an instance of SetAttribute.
+        /// </summary>
+        /// <param name="comparer">The comparer to use to compare the values.</param>
+        /// <param name="values"></param>
+        public SetAttribute(IEqualityComparer comparer, params object[] values)
+            : base("set")
+        {
+            Comparer = comparer;
             ErrorMessage = "The field {0} must be one of these values [{1}].";
             Values = values;
+        }
+
+        /// <summary>
+        /// Creates an instance of SetAttribute.
+        /// </summary>
+        /// <param name="ignoreCase"></param>
+        /// <param name="values"></param>
+        public SetAttribute(bool ignoreCase, params string[] values)
+            : this(ignoreCase ? StringComparer.InvariantCultureIgnoreCase : null, values)
+        {
         }
 
         #endregion
 
         #region Fields and Properties
+
+        /// <summary>
+        /// Gets the comparer to use to compare the values. If not set, uses Values[x].Equals(value).
+        /// </summary>
+        public IEqualityComparer Comparer { get; private set; }
 
         /// <summary>
         /// Gets the set of valid values.
@@ -64,7 +92,12 @@ namespace BizArk.Core.DataAnnotations
 
             foreach (var validVal in Values)
             {
-                if (validVal.Equals(value)) 
+                if (Comparer != null)
+                {
+                    if (Comparer.Equals(validVal, value))
+                        return true;
+                }
+                else if (validVal.Equals(value)) 
                     return true;
             }
             return false;
