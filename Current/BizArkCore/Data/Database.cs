@@ -118,7 +118,6 @@ namespace BizArk.Core.Data
         /// <param name="sql">Parameterized sql string.</param>
         /// <param name="parameters">Object that contains parameters. Property names must match parameters in sql.</param>
         /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public T ExecuteScalar<T>(string sql, object parameters = null)
         {
             var cmd = CreateCommand(sql, parameters);
@@ -131,7 +130,6 @@ namespace BizArk.Core.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public T ExecuteScalar<T>(DbCommand cmd)
         {
             var dflt = (T)ConvertEx.GetDefaultEmptyValue(typeof(T));
@@ -145,7 +143,6 @@ namespace BizArk.Core.Data
         /// <param name="cmd"></param>
         /// <param name="dflt">The value to return if the database value is DBNull.</param>
         /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public T ExecuteScalar<T>(DbCommand cmd, T dflt)
         {
             T value = dflt;
@@ -166,7 +163,6 @@ namespace BizArk.Core.Data
         /// <param name="sql">Parameterized sql string.</param>
         /// <param name="parameters">Object that contains parameters. Property names must match parameters in sql.</param>
         /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public int ExecuteNonQuery(string sql, object parameters = null)
         {
             var cmd = CreateCommand(sql, parameters);
@@ -178,7 +174,6 @@ namespace BizArk.Core.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public int ExecuteNonQuery(DbCommand cmd)
         {
             int count = 0;
@@ -196,7 +191,6 @@ namespace BizArk.Core.Data
         /// <param name="sql">Parameterized sql string.</param>
         /// <param name="parameters">Object that contains parameters. Property names must match parameters in sql.</param>
         /// <param name="processRow">void ProcessDataRow(SqlDataReader dr)</param>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void ExecuteDataReader(string sql, object parameters, Action<IDataReader> processRow)
         {
             var cmd = CreateCommand(sql, parameters);
@@ -208,7 +202,6 @@ namespace BizArk.Core.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="processRow">void ProcessDataRow(SqlDataReader dr)</param>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void ExecuteDataReader(DbCommand cmd, Action<IDataReader> processRow)
         {
             ExecuteCommand(cmd, () =>

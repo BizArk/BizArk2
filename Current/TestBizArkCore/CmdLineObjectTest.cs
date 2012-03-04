@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Linq;
 using BizArk.Core;
+using BizArk.Core.DataAnnotations;
 
 namespace TestBizArkCore
 {
@@ -352,6 +353,27 @@ namespace TestBizArkCore
             Assert.IsTrue(!args2.IsValid());
         }
 
+        [TestMethod]
+        public void ValidateSetTest()
+        {
+            var args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor", "red");
+            Assert.IsTrue(args.IsValid());
+            Assert.AreEqual("red", args.SampleColor);
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor", "green");
+            Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor", "blue");
+            Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor", "purple");
+            Assert.IsFalse(args.IsValid());
+            Debug.WriteLine(args.ErrorText);
+        }
     }
 
     [CmdLineOptions(DefaultArgName = "Hello", ApplicationName = "TESTAPP")]
@@ -362,6 +384,7 @@ namespace TestBizArkCore
         public MyTestCmdLineObject()
         {
             NumberOfScoops = 1;
+            SampleColor = "blue";
         }
 
         [CmdLineArg(Alias = "H", ShowInUsage = DefaultBoolean.True)]
@@ -389,6 +412,11 @@ namespace TestBizArkCore
         [CmdLineArg(Aliases = new string[] { "S", "Stuff", "Crap" })]
         [System.ComponentModel.Description("List of things the user likes.")]
         public string[] StuffILike { get; set; }
+
+        // ValidateSet: http://msdn.microsoft.com/en-us/library/windows/desktop/ms714432(v=vs.85).aspx
+        [CmdLineArg()]
+        [Set("red", "green", "blue")]
+        public string SampleColor { get; set; }
     }
 
     [CmdLineDefaultArg("g")]
