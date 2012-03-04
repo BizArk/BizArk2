@@ -95,6 +95,7 @@
     <Compile Include="Convert\Strategies\StaticMethodConversionStrategy.cs" />
     <Compile Include="Convert\Strategies\StringToBoolConversionStrategy.cs" />
     <Compile Include="Convert\Strategies\TypeConverterConversionStrategy.cs" />
+    <Compile Include="DataAnnotations\SetAttribute.cs" />
     <Compile Include="Data\IDbInfo.cs" />
     <Compile Include="Data\Database.cs">
       <SubType>Code</SubType>
@@ -183,6 +184,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
