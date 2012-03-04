@@ -383,6 +383,12 @@ namespace TestBizArkCore
             args.InitializeFromCmdLine("/SampleColor2", "pink");
             args.Properties["SampleColor2"].Validators.Add(new SetAttribute("pink"));
             Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/SampleColor2", "pink");
+            // Uses a custom equality comparer (a BizArk class).
+            args.Properties["SampleColor2"].Validators.Add(new SetAttribute(new EqualityComparer((a, b) => { return a == b; }), "pink"));
+            Assert.IsTrue(args.IsValid());
         }
     }
 
