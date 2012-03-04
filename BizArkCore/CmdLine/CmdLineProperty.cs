@@ -43,6 +43,7 @@ namespace BizArk.Core.CmdLine
             Object = obj;
             mProperty = prop;
             DefaultValue = Value;
+            Validators = new List<ValidationAttribute>();
             if (prop.PropertyType == typeof(string))
                 ShowDefaultValue = !string.IsNullOrEmpty((string)Value);
             else
@@ -202,6 +203,11 @@ namespace BizArk.Core.CmdLine
         /// Gets any errors associated with this property.
         /// </summary>
         public string Error { get; private set; }
+
+        /// <summary>
+        /// Additional custom validators. Useful for adding validation outside of attributes.
+        /// </summary>
+        public IList<ValidationAttribute> Validators { get; private set; }
 
         #endregion
 
