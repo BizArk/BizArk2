@@ -381,8 +381,9 @@ namespace TestBizArkCore
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor2", "pink");
-            args.Properties["SampleColor2"].Validators.Add(new SetAttribute("pink"));
+            args.Properties["SampleColor2"].Validators.Add(new SetAttribute("pink", "purple", "puce"));
             Assert.IsTrue(args.IsValid());
+            Debug.WriteLine(args.GetHelpText(200));
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor2", "pink");
