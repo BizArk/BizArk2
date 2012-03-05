@@ -38,7 +38,7 @@ namespace BizArk.Core.DataAnnotations
             : base("set")
         {
             Comparer = comparer;
-            ErrorMessage = "The field {0} must be one of these values [{1}].";
+            ErrorMessage = "The field {0} must be one of these values: {1}.";
             Values = values;
         }
 

@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Reflection;
 using BizArk.Core.TypeExt;
+using System.Collections.Generic;
 
 namespace BizArk.Core.AttributeExt
 {
@@ -24,6 +25,24 @@ namespace BizArk.Core.AttributeExt
                 if (tAtt != null) return tAtt;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Gets the specified attributes from the PropertyDescriptor.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static T[] GetAttributes<T>(this PropertyDescriptor prop) where T : Attribute
+        {
+            var atts = new List<T>();
+            foreach (Attribute att in prop.Attributes)
+            {
+                var tAtt = att as T;
+                if (tAtt != null) 
+                    atts.Add(tAtt);
+            }
+            return atts.ToArray();
         }
 
         /// <summary>

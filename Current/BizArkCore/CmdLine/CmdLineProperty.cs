@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Text;
 using BizArk.Core.ArrayExt;
 using BizArk.Core.AttributeExt;
-using BizArk.Core.FormatExt;
-using System.Diagnostics;
 using BizArk.Core.ExceptionExt;
-using BizArk.Core.TypeExt;
+using BizArk.Core.FormatExt;
 using BizArk.Core.StringExt;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+using BizArk.Core.TypeExt;
 
 namespace BizArk.Core.CmdLine
 {
@@ -234,6 +234,16 @@ namespace BizArk.Core.CmdLine
             else
                 value.Append(ConvertEx.ToString(Value));
             return "{0}=[{1}]".Fmt(Name, value);
+        }
+
+        internal ValidationAttribute[] GetAllValidators()
+        {
+            var validators = new List<ValidationAttribute>();
+
+            validators.AddRange(mProperty.GetAttributes<ValidationAttribute>());
+            validators.AddRange(Validators);
+
+            return validators.ToArray();
         }
 
         #endregion

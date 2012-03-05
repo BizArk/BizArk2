@@ -395,6 +395,7 @@ namespace BizArk.Core.CmdLine
 
             var maxNameWidth = GetMaxNameLength() + 6; // Add extra for ' (S): '
             var maxDescWidth = maxWidth - maxNameWidth;
+            var indent = new string(' ', maxNameWidth);
 
             foreach (CmdLineProperty prop in Properties)
             {
@@ -414,7 +415,7 @@ namespace BizArk.Core.CmdLine
                 {
                     desc.AppendLine(lines[0]);
                     for (int i = 1; i < lines.Length; i++)
-                        desc.AppendLine(new string(' ', maxNameWidth) + lines[i]);
+                        desc.AppendLine(indent + lines[i]);
                 }
                 else
                 {
@@ -422,7 +423,7 @@ namespace BizArk.Core.CmdLine
                     desc.AppendLine();
                 }
                 if (prop.Required)
-                    desc.AppendLine(new string(' ', maxNameWidth) + "REQUIRED");
+                    desc.AppendLine(indent + "REQUIRED");
                 else if (prop.ShowDefaultValue)
                 {
                     var dflt = prop.DefaultValue;
@@ -437,7 +438,7 @@ namespace BizArk.Core.CmdLine
                             else
                                 dflt = "[{0}]".Fmt(strs.Join(", "));
                         }
-                        desc.AppendLine(new string(' ', maxNameWidth) + string.Format("Default Value: {0}", dflt));
+                        desc.AppendLine(indent + string.Format("Default Value: {0}", dflt));
                     }
                 }
 
@@ -445,10 +446,13 @@ namespace BizArk.Core.CmdLine
                 {
                     var enumVals = new StringBuilder();
                     var enumNames = prop.PropertyType.GetEnumNames();
-                    enumVals.AppendFormat(new string(' ', maxNameWidth) + "Possible Values: [{0}]", enumNames.Join(", "));
+                    enumVals.AppendFormat(indent + "Possible Values: [{0}]", enumNames.Join(", "));
                     if (enumVals.Length < maxWidth)
                         desc.AppendLine(enumVals.ToString());
                 }
+
+                foreach (var validator in prop.GetAllValidators())
+                    desc.AppendLine(indent + validator.FormatErrorMessage(prop.Name));
             }
 
             return desc.ToString();
