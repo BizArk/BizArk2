@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using BizArk.Core;
 using BizArk.Core.DataAnnotations;
+using BizArk.Core.ArrayExt;
 using System;
 
 namespace TestBizArkCore
@@ -381,14 +382,20 @@ namespace TestBizArkCore
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor2", "pink");
-            args.Properties["SampleColor2"].Validators.Add(new SetAttribute("pink", "purple", "puce"));
+            args.Properties["SampleColor2"].Validators.Add(new SetValidator<string>("pink", "purple", "puce"));
             Assert.IsTrue(args.IsValid());
-            Debug.WriteLine(args.GetHelpText(200));
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor2", "pink");
             // Uses a custom equality comparer (a BizArk class).
-            args.Properties["SampleColor2"].Validators.Add(new SetAttribute(new EqualityComparer((a, b) => { return a == b; }), "pink"));
+            args.Properties["SampleColor2"].Validators.Add(new SetValidator<string>(new EqualityComparer((a, b) => { return a == b; }), "pink"));
+            Assert.IsTrue(args.IsValid());
+
+            args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine("/NumberOfScoops", "2");
+            var vals = new int[] { 1, 2 };
+            args.Properties["NumberOfScoops"].Validators.Add(new SetValidator<int>(vals));
+            Debug.WriteLine(args.GetHelpText(200));
             Assert.IsTrue(args.IsValid());
         }
     }
