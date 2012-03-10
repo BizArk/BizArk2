@@ -395,7 +395,7 @@ namespace TestBizArkCore
             args.InitializeFromCmdLine("/NumberOfScoops", "2");
             var vals = new int[] { 1, 2 };
             args.Properties["NumberOfScoops"].Validators.Add(new SetValidator<int>(vals));
-            Debug.WriteLine(args.GetHelpText(200));
+            Debug.WriteLine(args.GetHelpText(75));
             Assert.IsTrue(args.IsValid());
         }
     }
@@ -430,7 +430,7 @@ namespace TestBizArkCore
         [CmdLineArg()]
         public int[] FavoriteNumbers { get; set; }
 
-        [CmdLineArg()]
+        [CmdLineArg(ShowInUsage= DefaultBoolean.True)]
         public Car FavoriteCar { get; set; }
 
         [CmdLineArg(Aliases = new string[] { "S", "Stuff", "Crap" })]

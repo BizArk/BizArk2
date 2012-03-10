@@ -452,9 +452,17 @@ namespace BizArk.Core.CmdLine
                 }
 
                 foreach (var validator in prop.GetValidationAtts())
-                    desc.AppendLine(indent + validator.FormatErrorMessage(prop.Name));
+                {
+                    var message = validator.FormatErrorMessage(prop.Name).Wrap(maxDescWidth);
+                    foreach (var line in message.Lines())
+                        desc.AppendLine(indent + line);
+                }
                 foreach (var validator in prop.Validators)
-                    desc.AppendLine(indent + validator.FormatErrorMessage(prop.Name));
+                {
+                    var message = validator.FormatErrorMessage(prop.Name).Wrap(maxDescWidth);
+                    foreach (var line in message.Lines())
+                        desc.AppendLine(indent + line);
+                }
             }
 
             return desc.ToString();
