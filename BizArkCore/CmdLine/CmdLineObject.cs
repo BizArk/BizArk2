@@ -451,7 +451,9 @@ namespace BizArk.Core.CmdLine
                         desc.AppendLine(enumVals.ToString());
                 }
 
-                foreach (var validator in prop.GetAllValidators())
+                foreach (var validator in prop.GetValidationAtts())
+                    desc.AppendLine(indent + validator.FormatErrorMessage(prop.Name));
+                foreach (var validator in prop.Validators)
                     desc.AppendLine(indent + validator.FormatErrorMessage(prop.Name));
             }
 
