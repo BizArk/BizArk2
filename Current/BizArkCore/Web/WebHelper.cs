@@ -17,7 +17,7 @@ namespace BizArk.Core.Web
     /// form values, set a timeout, run asynchrounously, 
     /// and reports progress.
     /// </summary>
-    public class WebHelper
+    public class WebHelper : IDisposable
     {
 
         #region Initialization and Destruction
@@ -41,6 +41,32 @@ namespace BizArk.Core.Web
             Options = new WebHelperOptions();
         }
 
+        /// <summary>
+        /// Deletes the temp file if it exists.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            // Use SupressFinalize in case a subclass
+            // of this type implements a finalizer.
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Deletes the temp file if it exists.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed) return;
+            if (mWait != null)
+            {
+                mWait.Dispose();
+                mWait = null;
+            }
+            Disposed = true;
+        }
+
         #endregion
 
         #region Fields and Properties
@@ -50,6 +76,11 @@ namespace BizArk.Core.Web
         private Thread mRequestThread = null;
         private long mRequestContentLength = 0;
         private long mResponseContentLength = 0;
+
+        /// <summary>
+        /// Gets a flag that determines if the temp file has been disposed.
+        /// </summary>
+        public bool Disposed { get; private set; }
 
         /// <summary>
         /// Gets the url for the web request.

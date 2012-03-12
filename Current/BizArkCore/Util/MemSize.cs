@@ -204,11 +204,11 @@ namespace BizArk.Core.Util
                     else if (mTotalBytes < (cNumBytesInMegabyte / 1.5))
                         return string.Format("{0:0.0} {1}", TotalKibibytes, useSIFormat ? "KB" : "KiB");
                     else if (mTotalBytes < (cNumBytesInGigabyte / 1.5))
-                        return string.Format("{0:0.0} MiB", TotalMebibytes, useSIFormat ? "MB" : "MiB");
+                        return string.Format("{0:0.0} {1}", TotalMebibytes, useSIFormat ? "MB" : "MiB");
                     else if (mTotalBytes < (cNumBytesInTerabyte / 1.5))
-                        return string.Format("{0:0.0} GiB", TotalGibibytes, useSIFormat ? "GB" : "GiB");
+                        return string.Format("{0:0.0} {1}", TotalGibibytes, useSIFormat ? "GB" : "GiB");
                     else
-                        return string.Format("{0:0.0} TiB", TotalTebibytes, useSIFormat ? "TB" : "TiB");
+                        return string.Format("{0:0.0} {1}", TotalTebibytes, useSIFormat ? "TB" : "TiB");
                 case "SI":
                     if (mTotalBytes < (cNumBytesInKilobyte / 1.5))
                         return string.Format("{0} bytes", mTotalBytes);
@@ -221,13 +221,13 @@ namespace BizArk.Core.Util
                     else
                         return string.Format("{0:0.0} TB", TotalTerabytes);
                 case "KIB":
-                    return string.Format("{0:0.0} KiB", TotalKibibytes, useSIFormat ? "KB" : "KiB");
+                    return string.Format("{0:0.0} {1}", TotalKibibytes, useSIFormat ? "KB" : "KiB");
                 case "MIB":
-                    return string.Format("{0:0.0} MiB", TotalMebibytes, useSIFormat ? "MB" : "MiB");
+                    return string.Format("{0:0.0} {1}", TotalMebibytes, useSIFormat ? "MB" : "MiB");
                 case "GIB":
-                    return string.Format("{0:0.0} GiB", TotalGibibytes, useSIFormat ? "GB" : "GiB");
+                    return string.Format("{0:0.0} {1}", TotalGibibytes, useSIFormat ? "GB" : "GiB");
                 case "TIB":
-                    return string.Format("{0:0.0} TiB", TotalTebibytes, useSIFormat ? "TB" : "TiB");
+                    return string.Format("{0:0.0} {1}", TotalTebibytes, useSIFormat ? "TB" : "TiB");
                 case "KB":
                     return string.Format("{0:0.0} KB", TotalKilobytes);
                 case "MB":

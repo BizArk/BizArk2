@@ -567,6 +567,7 @@ namespace BizArk.Core.CmdLine
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         private string GetXml(string path)
         {
             try
@@ -659,7 +660,7 @@ namespace BizArk.Core.CmdLine
                 return string.Format("{0}{1} <{2}>", Options.ArgumentPrefix, id, prop.Usage);
 
             if (prop.PropertyType == typeof(bool))
-                return string.Format("{0}{1}[-]", Options.ArgumentPrefix, id, prop.Name);
+                return string.Format("{0}{1}[-]", Options.ArgumentPrefix, id);
             else
                 return string.Format("{0}{1} <{2}>", Options.ArgumentPrefix, id, prop.Name);
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using BizArk.Core.ArrayExt;
+using BizArk.Core.FormatExt;
+using System.Text.RegularExpressions;
 
 namespace BizArk.Core.StringExt
 {
@@ -25,54 +27,54 @@ namespace BizArk.Core.StringExt
         /// </summary>
         /// <param name="str">The string to wrap.</param>
         /// <param name="maxLength">The maximum number of characters per line.</param>
-        /// <param name="prefix">Adds this string to the beginning of each line.</param>
+        /// <param name="prefix">Adds this string to the beginning of each line that has been broken (used for indenting text).</param>
         /// <returns></returns>
         public static string Wrap(this string str, int maxLength, string prefix)
         {
             if (string.IsNullOrEmpty(str)) return "";
-            if (maxLength <= 0) return prefix + str;
+            if (maxLength <= 0) return str;
 
             var lines = new List<string>();
-            var first = true;
-            // breaking the string into lines makes it easier to process.
+            var re = new Regex("^(?<start>[ \t]+)?(?<text>.*)$");
             foreach (string line in str.Lines())
             {
-                var remainingLine = line;
-                if (!first)
+                var m = re.Match(line);
+                var start = m.Groups["start"].Value;
+                var text = m.Groups["text"].Value;
+                if (text.Trim().IsEmpty())
                 {
-                    // Preserve whitespace for the first line
-                    remainingLine = remainingLine.Trim();
-                    first = false;
+                    // Empty line. ignore whitespace.
+                    lines.Add("");
+                    continue;
                 }
+
+                var textMaxLen = maxLength - start.Length;
+                var i = 0;
                 do
                 {
-                    var newLine = GetLine(remainingLine, maxLength - prefix.Length);
-                    lines.Add(newLine);
-                    remainingLine = remainingLine.Substring(newLine.Length).Trim();
-                    // Keep iterating as int as we've got words remaining 
-                    // in the line.
-                } while (remainingLine.Length > 0);
+                    string partial;
+                    var e = i + textMaxLen;
+                    if (e > text.Length)
+                        partial = text.Substring(i);
+                    else
+                    {
+                        while (!char.IsWhiteSpace(text[e]) && e > i) e--;
+                        if (e <= i)
+                            partial = text.Substring(i, textMaxLen);
+                        else
+                            partial = text.Substring(i, e - i);
+                    }
+
+                    if (i == 0)
+                        lines.Add(start + partial.Trim());
+                    else
+                        lines.Add(prefix + start + partial.Trim());
+
+                    i = e;
+                } while (i < text.Length);
             }
 
-            return string.Join("\n" + prefix, lines.ToArray());
-        }
-
-        private static string GetLine(string str, int maxLength)
-        {
-            // The string is less than the max length so just return it.
-            if (str.Length <= maxLength) return str;
-
-            // Search backwords in the string for a whitespace char
-            // starting with the char one after the maximum length
-            // (if the next char is a whitespace, the last word fits).
-            for (int i = maxLength; i >= 0; i--)
-            {
-                if (char.IsWhiteSpace(str[i]))
-                    return str.Substring(0, i).TrimEnd();
-            }
-
-            // No whitespace chars, just break the word at the maxlength.
-            return str.Substring(0, maxLength);
+            return string.Join("\n", lines.ToArray());
         }
 
         /// <summary>
@@ -164,7 +166,7 @@ namespace BizArk.Core.StringExt
                 throw new FormatException(string.Format("Cannot convert value '{0}'", vals[i]), ex);
             }
         }
-		
+
         /// <summary>
         /// Gets the string up to the maximum number of characters. If ellipses is true and the string is longer than the max, the last 3 chars will be ellipses.
         /// </summary>
