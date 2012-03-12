@@ -45,12 +45,31 @@ namespace BizArk.Core.Util
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            // Use SupressFinalize in case a subclass
+            // of this type implements a finalizer.
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Deletes the temp file if it exists.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed) return;
             Delete();
+            Disposed = true;
         }
 
         #endregion
 
         #region Fields and Properties
+
+        /// <summary>
+        /// Gets a flag that determines if the temp file has been disposed.
+        /// </summary>
+        public bool Disposed { get; private set; }
 
         private string mTempPath;
         /// <summary>

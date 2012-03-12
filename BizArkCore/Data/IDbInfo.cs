@@ -73,6 +73,7 @@ namespace BizArk.Core.Data
         /// <param name="sql">The T-SQL for the command.</param>
         /// <param name="parameters">An object that contains properties to use as parameters for the command. The property name must match a parameter in the sql or it will be ignored.</param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2100:Review SQL queries for security vulnerabilities")]
         public DbCommand CreateCommand(string sql = null, object parameters = null)
         {
             var cmd = new SqlCommand();

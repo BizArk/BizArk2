@@ -395,9 +395,20 @@ namespace TestBizArkCore
             args.InitializeFromCmdLine("/NumberOfScoops", "2");
             var vals = new int[] { 1, 2 };
             args.Properties["NumberOfScoops"].Validators.Add(new SetValidator<int>(vals));
-            Debug.WriteLine(args.GetHelpText(75));
+            Debug.WriteLine(args.GetHelpText(50));
             Assert.IsTrue(args.IsValid());
         }
+
+        [TestMethod]
+        public void HelpTextWrappingTest()
+        {
+            var args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine();
+            var vals = new int[] { 1, 2 };
+            Debug.WriteLine(args.GetHelpText(40));
+            Assert.IsTrue(args.IsValid());
+        }
+
     }
 
     [CmdLineOptions(DefaultArgName = "Hello", ApplicationName = "TESTAPP")]

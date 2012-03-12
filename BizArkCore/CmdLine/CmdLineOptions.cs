@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using BizArk.Core.AttributeExt;
 using BizArk.Core.Template;
+using BizArk.Core.StringExt;
 
 namespace BizArk.Core.CmdLine
 {
@@ -23,7 +24,12 @@ namespace BizArk.Core.CmdLine
         public CmdLineOptions()
         {
             ArgumentPrefix = "/";
-            Title = string.Format("{0} ver. {1}", Application.Title, Application.Version);
+            if (Application.Title.IsEmpty())
+                Title = "Command-line options.";
+            else if (Application.Version == null)
+                Title = Application.Title;
+            else
+                Title = string.Format("{0} ver. {1}", Application.Title, Application.Version);
             ApplicationName = Application.ExeName;
             Comparer = StringComparison.OrdinalIgnoreCase;
         }

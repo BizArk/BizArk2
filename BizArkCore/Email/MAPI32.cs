@@ -147,7 +147,7 @@ namespace BizArk.Core.Email
             return recipients.ToArray();
         }
 
-        [DllImport("MAPI32.DLL")]
+        [DllImport("MAPI32.DLL", CharSet = CharSet.Unicode)]
         static extern int MAPISendMail(IntPtr sess, IntPtr hwnd, MapiMessage message, int flg, int rsv);
     }
 
@@ -162,7 +162,7 @@ namespace BizArk.Core.Email
         Cancel
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     internal class MapiMessage
     {
         /// <summary>

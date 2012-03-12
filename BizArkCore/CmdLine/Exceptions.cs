@@ -7,6 +7,7 @@ namespace BizArk.Core.CmdLine
     /// <summary>
     /// Base class for exceptions used for command-line parsing.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2237:MarkISerializableTypesWithSerializable")]
     public class CmdLineException : ApplicationException
     {
 

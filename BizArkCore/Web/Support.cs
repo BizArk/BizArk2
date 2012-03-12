@@ -152,6 +152,7 @@ namespace BizArk.Core.Web
         /// </summary>
         /// <param name="values"></param>
         /// <returns>The list of new UrlParam objects.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         public UrlParam[] AddRange(object values)
         {
             var paramList = new List<UrlParam>();
