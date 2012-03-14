@@ -17,8 +17,8 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         /// <typeparam name="TArgs">The type for the CmdLineObject to use. Must have a default constructor.</typeparam>
         /// <param name="run">The method to run once the arguments are initialized. Will not be called if the help flag is set or the args aren't valid.</param>
-		public static void RunProgram<TArgs>(Run<TArgs> run) where TArgs : CmdLineObject, new() 
-		{ 
+        public static void RunProgram<TArgs>(Run<TArgs> run) where TArgs : CmdLineObject, new()
+        {
             var args = Activator.CreateInstance<TArgs>();
             args.Initialize();
 
@@ -82,14 +82,20 @@ namespace BizArk.Core.CmdLine
             var sr = new StringReader(msg);
             var line = sr.ReadLine();
             var re = new Regex(@"^(\s+)?.*");
-            while(line != null)
+            while (line != null)
             {
                 var m = re.Match(line);
                 var whitespace = "";
                 if (m.Groups.Count > 1)
                     whitespace = m.Groups[1].Value;
-                var newLine = line.Wrap(Console.WindowWidth, whitespace + prefix);
-                Console.WriteLine(newLine);
+                var wrappedLines = line.WrappedLines(Console.WindowWidth, whitespace + prefix);
+                for (int i = 0; i < wrappedLines.Length; i++)
+                {
+                    if (wrappedLines[i].Length == Console.WindowWidth)
+                        Console.Write(wrappedLines[i]);
+                    else
+                        Console.WriteLine(wrappedLines[i]);
+                }
                 line = sr.ReadLine();
             }
         }

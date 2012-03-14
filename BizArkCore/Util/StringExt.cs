@@ -31,8 +31,21 @@ namespace BizArk.Core.StringExt
         /// <returns></returns>
         public static string Wrap(this string str, int maxLength, string prefix)
         {
-            if (string.IsNullOrEmpty(str)) return "";
-            if (maxLength <= 0) return str;
+            var lines = WrappedLines(str, maxLength, prefix);
+            return string.Join("\n", lines);
+        }
+
+        /// <summary>
+        /// Forces the string to word wrap so that each line doesn't exceed the maxLineLength.
+        /// </summary>
+        /// <param name="str">The string to wrap.</param>
+        /// <param name="maxLength">The maximum number of characters per line.</param>
+        /// <param name="prefix">Adds this string to the beginning of each line that has been broken (used for indenting text).</param>
+        /// <returns></returns>
+        public static string[] WrappedLines(this string str, int maxLength, string prefix)
+        {
+            if (string.IsNullOrEmpty(str)) return new string[] { };
+            if (maxLength <= 0) return new string[] { str };
 
             var lines = new List<string>();
             var re = new Regex("^(?<start>[ \t]+)?(?<text>.*)$");
@@ -54,18 +67,19 @@ namespace BizArk.Core.StringExt
                 {
                     string partial;
                     var e = i + textMaxLen;
-                    if (e > text.Length)
+                    if (e >= text.Length)
                         partial = text.Substring(i);
                     else
                     {
                         while (!char.IsWhiteSpace(text[e]) && e > i) e--;
                         if (e <= i)
-                            partial = text.Substring(i, textMaxLen);
-                        else
-                            partial = text.Substring(i, e - i);
+                            // No whitespace characters. Just break the line at the max length.
+                            e = i + textMaxLen;
+                        partial = text.Substring(i, e - i);
                     }
 
                     if (i == 0)
+                        // First line, no prefix.
                         lines.Add(start + partial.Trim());
                     else
                         lines.Add(prefix + start + partial.Trim());
@@ -74,7 +88,7 @@ namespace BizArk.Core.StringExt
                 } while (i < text.Length);
             }
 
-            return string.Join("\n", lines.ToArray());
+            return lines.ToArray();
         }
 
         /// <summary>
