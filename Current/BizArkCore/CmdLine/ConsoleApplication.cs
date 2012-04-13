@@ -28,7 +28,9 @@ namespace BizArk.Core.CmdLine
                 // in order to prevent displaying errors when they request help.
                 if (args.Help || !args.IsValid())
                 {
-                    Console.WriteLine(args.GetHelpText(Console.WindowWidth));
+                    // Subtract 1 from the console width so that we can prevent 
+                    // end-of-line issues.
+                    Console.WriteLine(args.GetHelpText(Console.WindowWidth-1));
                     return;
                 }
 
