@@ -1,18 +1,13 @@
 ﻿using System.Diagnostics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BizArk.Core.CmdLine;
 using BizArk.Core.StringExt;
 using BizArk.Core.WebExt;
 using BizArk.Core.Util;
 using System.IO;
-using System.Drawing;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 using System.Linq;
 using BizArk.Core;
 using BizArk.Core.DataAnnotations;
-using BizArk.Core.ArrayExt;
-using System;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
@@ -21,14 +16,14 @@ namespace TestBizArkCore
     ///This is a test class for CmdLineObjectTest and is intended
     ///to contain all CmdLineObjectTest Unit Tests
     ///</summary>
-    [TestClass()]
+[TestFixture]
     public class CmdLineObjectTest
     {
 
         /// <summary>
         ///A test for Initialize
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void InitializeTest()
         {
             MyTestCmdLineObject target;
@@ -37,67 +32,67 @@ namespace TestBizArkCore
             target = new MyTestCmdLineObject();
             args = new string[] { };
             target.InitializeFromCmdLine(args);
-            Assert.IsNull(target.Hello);
-            Assert.IsNull(target.Goodbye);
+             Assert.IsNull(target.Hello);
+             Assert.IsNull(target.Goodbye);
 
             target = new MyTestCmdLineObject();
-            args = new string[] { "/H", "Hi Brian!" };
+            args = new[] { "/H", "Hi Brian!" };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.IsNull(target.Goodbye);
+             Assert.That(target.Hello, Is.EqualTo("Hi Brian!"));
+             Assert.IsNull(target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = new string[] { "/h", "Hi Brian!" };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.IsNull(target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.IsNull(target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = new string[] { "/h", "Hi Brian!", "/G", "Goodbye Christine." };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.AreEqual<string>("Goodbye Christine.", target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.AreEqual("Goodbye Christine.", target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = new string[] { "Hi Brian!", "/G", "Goodbye Christine." };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.AreEqual<string>("Goodbye Christine.", target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.AreEqual("Goodbye Christine.", target.Goodbye);
 
             target = new MyTestCmdLineObject2();
             args = new string[] { "Goodbye Christine." };
             target.InitializeFromCmdLine(args);
-            Assert.IsNull(target.Hello);
-            Assert.AreEqual<string>("Goodbye Christine.", target.Goodbye);
+             Assert.IsNull(target.Hello);
+             Assert.AreEqual("Goodbye Christine.", target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = new string[] { "TEST", "/h", "Hi Brian!", "/G", "Goodbye Christine.", "TEST" };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.AreEqual<string>("Goodbye Christine.", target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.AreEqual("Goodbye Christine.", target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = new string[] { "/I" };
             target.InitializeFromCmdLine(args);
-            Assert.IsTrue(target.DoesLikeIceCream);
+             Assert.IsTrue(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
-            args = new string[] { "/I-" };
+            args = new[] { "/I-" };
             target.InitializeFromCmdLine(args);
-            Assert.IsFalse(target.DoesLikeIceCream);
+             Assert.IsFalse(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
-            args = new string[] { "/I", "Yes" };
+            args = new[] { "/I", "Yes" };
             target.InitializeFromCmdLine(args);
-            Assert.IsTrue(target.DoesLikeIceCream);
+             Assert.IsTrue(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
-            args = new string[] { "/I", "No" };
+            args = new[] { "/I", "No" };
             target.InitializeFromCmdLine(args);
-            Assert.IsFalse(target.DoesLikeIceCream);
+             Assert.IsFalse(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
-            args = new string[] { "/S", "Cars", "Computers", "Food" };
+            args = new[] { "/S", "Cars", "Computers", "Food" };
             target.InitializeFromCmdLine(args);
             string[] expectedStuff = new string[] { "Cars", "Computers", "Food" };
             AssertEx.AreEqual(expectedStuff, target.StuffILike);
@@ -106,7 +101,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Initialize
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void DefaultPropTest()
         {
             MyTestCmdLineObject3 target;
@@ -124,10 +119,10 @@ namespace TestBizArkCore
             target.InitializeFromCmdLine(args);
             expected = new string[] { "Brian", "Christine", "Abrian", "Brooke" };
             AssertEx.AreEqual(expected, target.Family);
-            Assert.AreEqual("Brian", target.Father);
+             Assert.AreEqual("Brian", target.Father);
         }
 
-        [TestMethod()]
+        [Test]
         public void MultipleDefaultPropTest()
         {
             MyTestCmdLineObject4 target;
@@ -137,16 +132,16 @@ namespace TestBizArkCore
             target = new MyTestCmdLineObject4();
             args = new string[] { "Brian", "Christine", "/c", "Abrian", "Brooke" };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual("Christine", target.Mother);
-            Assert.AreEqual("Brian", target.Father);
+             Assert.AreEqual("Christine", target.Mother);
+             Assert.AreEqual("Brian", target.Father);
             expected = new string[] { "Abrian", "Brooke" };
             AssertEx.AreEqual(expected, target.Children);
 
             target = new MyTestCmdLineObject4();
             args = new string[] { "Brian", "/c", "Abrian", "Brooke" };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual(null, target.Mother);
-            Assert.AreEqual("Brian", target.Father);
+             Assert.AreEqual(null, target.Mother);
+             Assert.AreEqual("Brian", target.Father);
             expected = new string[] { "Abrian", "Brooke" };
             AssertEx.AreEqual(expected, target.Children);
 
@@ -156,7 +151,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Initialize
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void PartialNameTest()
         {
             MyTestCmdLineObject target;
@@ -165,10 +160,10 @@ namespace TestBizArkCore
             target = new MyTestCmdLineObject();
             args = new string[] { "/Hell", "Hi Brian" };
             target.InitializeFromCmdLine(args);
-            Assert.AreEqual("Hi Brian", target.Hello);
+             Assert.AreEqual("Hi Brian", target.Hello);
         }
 
-        [TestMethod()]
+        [Test]
         public void CmdLineDescriptionTest()
         {
             string test = "This is a test\ntest  test test";
@@ -181,16 +176,16 @@ namespace TestBizArkCore
             Debug.WriteLine(args.GetHelpText(50));
         }
 
-        [TestMethod()]
+        [Test]
         public void UsageTest()
         {
             var args = new MyTestCmdLineObject();
             args.InitializeEmpty();
             Debug.WriteLine(args.Options.Usage);
-            Assert.AreEqual("TESTAPP [/H <Hello>] [/?[-]]", args.Options.Usage);
+             Assert.AreEqual("TESTAPP [/H <Hello>] [/FavoriteCar <FavoriteCar>] [/?[-]]", args.Options.Usage);
         }
 
-        [TestMethod()]
+        [Test]
         public void SaveAndRestoreTest()
         {
             var settingsPath = @"C:\garb\Test.xml";
@@ -198,21 +193,21 @@ namespace TestBizArkCore
                 Directory.CreateDirectory(@"C:\garb");
             var cmdLine = new MyTestCmdLineObject();
             var stuffILike = new string[] { "Cookies", "Candy", "Ice Cream" };
-            Assert.AreNotEqual("Hi", cmdLine.Hello);
+             Assert.AreNotEqual("Hi", cmdLine.Hello);
             cmdLine.InitializeFromCmdLine("/H", "Hi", "/S", "Cookies", "Candy", "Ice Cream");
-            Assert.AreEqual("Hi", cmdLine.Hello);
+             Assert.AreEqual("Hi", cmdLine.Hello);
             AssertEx.AreEqual(stuffILike, cmdLine.StuffILike);
             cmdLine.SaveToXml(settingsPath);
-            Assert.IsTrue(System.IO.File.Exists(settingsPath));
+             Assert.IsTrue(System.IO.File.Exists(settingsPath));
 
             cmdLine = new MyTestCmdLineObject();
-            Assert.AreNotEqual("Hi", cmdLine.Hello);
+             Assert.AreNotEqual("Hi", cmdLine.Hello);
             cmdLine.RestoreFromXml(settingsPath);
-            Assert.AreEqual("Hi", cmdLine.Hello);
+             Assert.AreEqual("Hi", cmdLine.Hello);
             AssertEx.AreEqual(stuffILike, cmdLine.StuffILike);
         }
 
-        [TestMethod]
+[Test]
         public void QueryStringTest()
         {
             MyTestCmdLineObject target;
@@ -221,192 +216,192 @@ namespace TestBizArkCore
             target = new MyTestCmdLineObject();
             args = "";
             target.InitializeFromQueryString(args);
-            Assert.IsNull(target.Hello);
-            Assert.IsNull(target.Goodbye);
+             Assert.IsNull(target.Hello);
+             Assert.IsNull(target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = string.Format("H={0}", "Hi Brian!".UrlEncode());
             target.InitializeFromQueryString(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.IsNull(target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.IsNull(target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = string.Format("h={0}", "Hi Brian!".UrlEncode());
             target.InitializeFromQueryString(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.IsNull(target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.IsNull(target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = string.Format("h={0}&G={1}", "Hi Brian!".UrlEncode(), "Goodbye Christine.".UrlEncode());
             target.InitializeFromQueryString(args);
-            Assert.AreEqual<string>("Hi Brian!", target.Hello);
-            Assert.AreEqual<string>("Goodbye Christine.", target.Goodbye);
+             Assert.AreEqual("Hi Brian!", target.Hello);
+             Assert.AreEqual("Goodbye Christine.", target.Goodbye);
 
             target = new MyTestCmdLineObject();
             args = "i=true";
             target.InitializeFromQueryString(args);
-            Assert.IsTrue(target.DoesLikeIceCream);
+             Assert.IsTrue(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
             args = "I=false";
             target.InitializeFromQueryString(args);
-            Assert.IsFalse(target.DoesLikeIceCream);
+             Assert.IsFalse(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
             args = "i=Yes";
             target.InitializeFromQueryString(args);
-            Assert.IsTrue(target.DoesLikeIceCream);
+             Assert.IsTrue(target.DoesLikeIceCream);
 
             target = new MyTestCmdLineObject();
             args = "i=No";
             target.InitializeFromQueryString(args);
-            Assert.IsFalse(target.DoesLikeIceCream);
+             Assert.IsFalse(target.DoesLikeIceCream);
         }
 
-        [TestMethod]
+[Test]
         public void AliasTest()
         {
             // full alias
             var cmdLine = new MyTestCmdLineObject();
             cmdLine.InitializeFromCmdLine(new string[] { "/crap", "Christine" });
-            Assert.AreEqual("Christine", cmdLine.StuffILike[0]);
+             Assert.AreEqual("Christine", cmdLine.StuffILike[0]);
 
             // partial alias
             cmdLine = new MyTestCmdLineObject();
             cmdLine.InitializeFromCmdLine(new string[] { "/c", "Christine" });
-            Assert.AreEqual("Christine", cmdLine.StuffILike[0]);
+             Assert.AreEqual("Christine", cmdLine.StuffILike[0]);
         }
 
-        [TestMethod]
+[Test]
         public void DuplicateArgumentsTest()
         {
             var cmdLine = new AliasesWithDifferentCaseTestCmdLineObject();
             AssertEx.Throws(typeof(CmdLineArgumentException), () => { cmdLine.InitializeEmpty(); });
         }
 
-        [TestMethod]
+[Test]
         public void ArgumentValidationTest()
         {
             var args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/NumberOfScoops", "2");
-            Assert.AreEqual(2, args.NumberOfScoops);
-            Assert.IsTrue(args.IsValid());
+             Assert.AreEqual(2, args.NumberOfScoops);
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/NumberOfScoops", "chocolate");
-            Assert.AreEqual(1, args.NumberOfScoops);
-            Assert.IsFalse(args.IsValid());
+             Assert.AreEqual(1, args.NumberOfScoops);
+             Assert.IsFalse(args.IsValid());
             Debug.WriteLine(args.GetHelpText(200));
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/FavoriteNumbers", "1", "2", "3");
-            Assert.AreEqual(3, args.FavoriteNumbers.Length);
-            Assert.AreEqual(1, args.FavoriteNumbers[0]);
-            Assert.AreEqual(2, args.FavoriteNumbers[1]);
-            Assert.AreEqual(3, args.FavoriteNumbers[2]);
-            Assert.IsTrue(args.IsValid());
+             Assert.AreEqual(3, args.FavoriteNumbers.Length);
+             Assert.AreEqual(1, args.FavoriteNumbers[0]);
+             Assert.AreEqual(2, args.FavoriteNumbers[1]);
+             Assert.AreEqual(3, args.FavoriteNumbers[2]);
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/FavoriteNumbers", "Red", "Green", "Blue");
-            Assert.AreEqual(1, args.NumberOfScoops);
-            Assert.IsFalse(args.IsValid());
+             Assert.AreEqual(1, args.NumberOfScoops);
+             Assert.IsFalse(args.IsValid());
             Debug.WriteLine(args.GetHelpText(200));
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/FavoriteCar", "Ford");
-            Assert.IsFalse(args.IsValid());
+             Assert.IsFalse(args.IsValid());
             Debug.WriteLine(args.GetHelpText(200));
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/NumberOfScoops", "5");
-            Assert.IsFalse(args.IsValid());
+             Assert.IsFalse(args.IsValid());
             Debug.WriteLine(args.GetHelpText(200));
         }
 
-        [TestMethod]
+[Test]
         public void OptionsAttTest()
         {
             var args = new MyTestCmdLineObject5();
-            Assert.AreEqual("+", args.Options.ArgumentPrefix);
+             Assert.AreEqual("+", args.Options.ArgumentPrefix);
             args.InitializeFromCmdLine("+D", "Brian");
-            Assert.AreEqual("Brian", args.Father);
+             Assert.AreEqual("Brian", args.Father);
         }
 
-        [TestMethod]
+[Test]
         public void LongArgPrefixTest()
         {
             var args = new MyTestCmdLineObject6();
-            Assert.AreEqual("--", args.Options.ArgumentPrefix);
+             Assert.AreEqual("--", args.Options.ArgumentPrefix);
             args.InitializeFromCmdLine("--D", "Brian");
-            Assert.AreEqual("Brian", args.Father);
+             Assert.AreEqual("Brian", args.Father);
         }
 
-        [TestMethod]
+[Test]
         public void OverrideValidationTest()
         {
             var args1 = new MyTestCmdLineObject7();
             args1.InitializeFromCmdLine("/v", "true");
-            Assert.AreEqual(true, args1.IsValidProp);
-            Assert.IsTrue(args1.IsValid());
+             Assert.AreEqual(true, args1.IsValidProp);
+             Assert.IsTrue(args1.IsValid());
 
             var args2 = new MyTestCmdLineObject7();
             args2.InitializeFromCmdLine("/v", "false");
-            Assert.AreEqual(false, args2.IsValidProp);
-            Assert.IsTrue(!args2.IsValid());
+             Assert.AreEqual(false, args2.IsValidProp);
+             Assert.IsTrue(!args2.IsValid());
         }
 
-        [TestMethod]
+[Test]
         public void ValidateSetTest()
         {
             var args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor", "red");
-            Assert.IsTrue(args.IsValid());
-            Assert.AreEqual("red", args.SampleColor);
+             Assert.IsTrue(args.IsValid());
+             Assert.AreEqual("red", args.SampleColor);
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor", "green");
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor", "blue");
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor", "Blue");
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor", "purple");
-            Assert.IsFalse(args.IsValid());
+             Assert.IsFalse(args.IsValid());
             Debug.WriteLine(args.ErrorText);
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor2", "pink");
             args.Properties["SampleColor2"].Validators.Add(new SetValidator<string>("pink", "purple", "puce"));
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/SampleColor2", "pink");
             // Uses a custom equality comparer (a BizArk class).
             args.Properties["SampleColor2"].Validators.Add(new SetValidator<string>(new EqualityComparer((a, b) => { return a == b; }), "pink"));
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
 
             args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/NumberOfScoops", "2");
             var vals = new int[] { 1, 2 };
             args.Properties["NumberOfScoops"].Validators.Add(new SetValidator<int>(vals));
             Debug.WriteLine(args.GetHelpText(50));
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
         }
 
-        [TestMethod]
+[Test]
         public void HelpTextWrappingTest()
         {
             var args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine();
             var vals = new int[] { 1, 2 };
             Debug.WriteLine(args.GetHelpText(40));
-            Assert.IsTrue(args.IsValid());
+             Assert.IsTrue(args.IsValid());
         }
 
     }
@@ -435,7 +430,7 @@ namespace TestBizArkCore
         public bool DoesLikeIceCream { get; set; }
 
         [CmdLineArg()]
-        [Range(1, 3)]
+        [System.ComponentModel.DataAnnotations.Range(1, 3)]
         public int NumberOfScoops { get; set; }
 
         [CmdLineArg()]

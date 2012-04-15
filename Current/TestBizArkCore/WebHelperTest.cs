@@ -1,17 +1,11 @@
 ﻿using BizArk.Core.Web;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Dynamic;
-using System.Collections.Generic;
-using BizArk.Core;
-using Microsoft.CSharp.RuntimeBinder;
 using System.IO;
-using System.Diagnostics;
 using System.Net;
 using System.Drawing;
-using System.Text;
 using BizArk.Core.Util;
 using System.Threading;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
@@ -21,7 +15,7 @@ namespace TestBizArkCore
     ///This is a test class for NoContentTypeTest and is intended
     ///to contain all NoContentTypeTest Unit Tests
     ///</summary>
-    [TestClass()]
+	[TestFixture]
     public class WebHelperTest
     {
 
@@ -51,7 +45,7 @@ namespace TestBizArkCore
         //    Assert.AreEqual(9, binParam.Data[9]);
         //}
 
-        //[TestMethod()]
+        //[Test]
         //public void NoContentTypeUrlTest()
         //{
         //    var contentType = new NoContentType(new WebParameters());
@@ -71,7 +65,7 @@ namespace TestBizArkCore
         //    Assert.AreEqual("http://redwerb.com?hello=world&Test=hello", url);
         //}
 
-        //[TestMethod()]
+        //[Test]
         //public void ContentTypeUrlTest()
         //{
         //    var helper = new WebHelper("http://redwerb.com");
@@ -131,7 +125,7 @@ namespace TestBizArkCore
         //    }
         //}
 
-        [TestMethod]
+[Test]
         public void MakeRequestStringTest()
         {
             var response = WebHelper.MakeRequest("http://www.google.com");
@@ -145,7 +139,7 @@ namespace TestBizArkCore
             Assert.IsTrue(str.IndexOf("日本") > 0); // I don't read japanese, but I think that this says "Google".
         }
 
-        [TestMethod]
+[Test]
         public void MakeRequestXmlTest()
         {
             var response = WebHelper.MakeRequest("http://www.w3schools.com/xml/note.xml");
@@ -153,7 +147,7 @@ namespace TestBizArkCore
             Assert.IsNotNull(doc);
         }
 
-        [TestMethod]
+[Test]
         public void DownloadFileTest()
         {
             var tmp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".png");
@@ -191,7 +185,7 @@ namespace TestBizArkCore
             }
         }
 
-        [TestMethod]
+[Test]
         public void MakeRequestDataTest()
         {
             var url = new UrlBuilder();
@@ -214,7 +208,8 @@ namespace TestBizArkCore
             }
         }
 
-        [TestMethod]
+		[Test]
+		[Ignore]
         public void MakeRequestUploadValuesTest()
         {
             var result = WebHelper.MakeRequest("http://localhost:89/Test/UploadValues", new { intVal = 123, strVal = "ABC" });
@@ -222,7 +217,8 @@ namespace TestBizArkCore
             Assert.AreEqual("123 ABC", str);
         }
 
-        [TestMethod]
+		[Test]
+		[Ignore]
         public void MakeRequestUploadFileTest()
         {
             using (var tmp = new TempFile("txt"))
@@ -234,7 +230,7 @@ namespace TestBizArkCore
             }
         }
 
-        [TestMethod]
+[Test]
         public void MakeRequestAsyncTest()
         {
             var handled = false;

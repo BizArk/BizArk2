@@ -567,7 +567,6 @@ namespace BizArk.Core.CmdLine
             return true;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         private string GetXml(string path)
         {
             try

@@ -1,6 +1,6 @@
 ﻿using BizArk.Core.ArrayExt;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
@@ -10,11 +10,11 @@ namespace TestBizArkCore
     ///This is a test class for StringArrayExtTest and is intended
     ///to contain all StringArrayExtTest Unit Tests
     ///</summary>
-    [TestClass()]
+[TestFixture]
     public class ArrayExtTest
     {
 
-        [TestMethod()]
+        [Test]
         public void StandardConvertTest()
         {
             string[] arr = new string[] { "1", "2", "3" };
@@ -25,7 +25,7 @@ namespace TestBizArkCore
             AssertEx.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
+        [Test]
         public void GenericConvertTest()
         {
             string[] arr = new string[] { "1", "2", "3" };
@@ -39,7 +39,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Shrink
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void ShrinkTest()
         {
             string[] test;
@@ -67,7 +67,7 @@ namespace TestBizArkCore
             AssertEx.AreEqual(expected, actual);
         }
 
-        [TestMethod()]
+        [Test]
         public void RemoveEmptiesTest()
         {
             string[] test;

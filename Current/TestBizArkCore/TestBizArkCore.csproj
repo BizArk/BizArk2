@@ -37,7 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
@@ -78,18 +80,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
+    <None Include="packages.config" />
     <None Include="Resources\TestImg.png" />
     <Content Include="Resources\ValidRpcFaultResponse.xml" />
     <Content Include="Resources\ValidRpcParamsResponse.xml" />
     <Content Include="Resources\XmlRpcInvokeTest.xml" />
     <Content Include="Resources\XmlRpcTest.xml" />
     <None Include="Resources\TextTemplateTest.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BizArkCore\BizArkCore.csproj">
-      <Project>{8D3E6472-7E47-4266-947B-659F17F641F1}</Project>
-      <Name>BizArkCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Shadow Include="Test References\Redwerb.BizArk.Core.accessor" />
@@ -99,6 +96,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BizArkCore\BizArkCore.csproj">
+      <Project>{8D3E6472-7E47-4266-947B-659F17F641F1}</Project>
+      <Name>BizArkCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

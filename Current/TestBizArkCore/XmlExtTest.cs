@@ -1,7 +1,7 @@
 ﻿using BizArk.Core.XmlExt;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System.Diagnostics;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
@@ -11,7 +11,7 @@ namespace TestBizArkCore
     ///This is a test class for XmlExtTest and is intended
     ///to contain all XmlExtTest Unit Tests
     ///</summary>
-    [TestClass()]
+[TestFixture]
     public class XmlExtTest
     {
         private TestContext testContextInstance;
@@ -65,7 +65,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for SetAttributeValue
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void SetAttributeValueTest()
         {
             var xml = new XmlDocument();
@@ -85,7 +85,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for SetElementValue
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void SetElementValueTest()
         {
             var xml = new XmlDocument();

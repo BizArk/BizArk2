@@ -1,8 +1,8 @@
 ﻿using BizArk.Core.Convert.Strategies;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Drawing;
 using BizArk.Core;
+using NUnit.Framework;
 using My = TestBizArkCore.Properties;
 using System.Threading;
 using System.Data;
@@ -10,11 +10,11 @@ using System.Data;
 namespace TestBizArkCore
 {
 
-    [TestClass()]
+	[TestFixture]
     public class ConversionStrategyTest
     {
 
-        [TestMethod()]
+        [Test]
         public void ByteArrayImageConversionStrategyTest()
         {
             var strategy = new ByteArrayImageConversionStrategy();
@@ -33,7 +33,7 @@ namespace TestBizArkCore
             Assert.AreEqual(My.Resources.TestImg.Height, img.Height);
         }
 
-        [TestMethod]
+        [Test]
         public void ByteArrayStringConversionStrategyTest()
         {
             var strategy = new ByteArrayStringConversionStrategy();
@@ -50,7 +50,7 @@ namespace TestBizArkCore
             Assert.AreEqual("hello", str);
         }
 
-        [TestMethod]
+        [Test]
         public void ConvertibleConversionStrategyTest()
         {
             var strategy = new ConvertibleConversionStrategy();
@@ -75,7 +75,7 @@ namespace TestBizArkCore
             Assert.AreEqual("5", strVal);
         }
 
-        [TestMethod]
+[Test]
         public void ConvertMethodConversionStrategyTest()
         {
             var strategy = new ConvertMethodConversionStrategy();
@@ -88,7 +88,7 @@ namespace TestBizArkCore
             Assert.AreEqual(42, val);
         }
 
-        [TestMethod]
+[Test]
         public void CtorConversionStrategyTest()
         {
             var strategy = new CtorConversionStrategy();
@@ -102,7 +102,7 @@ namespace TestBizArkCore
             Assert.AreEqual(42, val.Value);
         }
 
-        [TestMethod]
+[Test]
         public void DefaultValueConversionStrategyTest()
         {
             var strategy = new DefaultValueConversionStrategy();
@@ -125,7 +125,7 @@ namespace TestBizArkCore
             Assert.IsNull(val);
         }
 
-        [TestMethod]
+[Test]
         public void EnumConversionStrategyTest()
         {
             var strategy = new EnumConversionStrategy();
@@ -150,7 +150,7 @@ namespace TestBizArkCore
             Assert.AreEqual(ConvertEnumTest.Two, val);
         }
 
-        [TestMethod]
+[Test]
         public void NoConvertConversionStrategyTest()
         {
             var strategy = new NoConvertConversionStrategy();
@@ -162,7 +162,7 @@ namespace TestBizArkCore
             // No further tests necessary, the Convert method always returns the value sent in.
         }
 
-        [TestMethod]
+[Test]
         public void SqlDBTypeConversionStrategyTest()
         {
             var strategy = new SqlDBTypeConversionStrategy();
@@ -178,7 +178,7 @@ namespace TestBizArkCore
             Assert.AreEqual(SqlDbType.Int, val);
         }
 
-        [TestMethod]
+[Test]
         public void StaticMethodConversionStrategyTest()
         {
             var strategy = new StaticMethodConversionStrategy();
@@ -204,7 +204,7 @@ namespace TestBizArkCore
             Assert.AreEqual(42, cval2.Value);
         }
 
-        [TestMethod]
+[Test]
         public void StringToBoolConversionStrategyTest()
         {
             var strategy = new StringToBoolConversionStrategy();
@@ -229,7 +229,7 @@ namespace TestBizArkCore
             Assert.AreEqual(true, val);
         }
 
-        [TestMethod]
+[Test]
         public void TypeConverterConversionStrategyTest()
         {
             var strategy = new TypeConverterConversionStrategy();

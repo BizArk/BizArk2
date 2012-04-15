@@ -1,6 +1,5 @@
 ﻿using BizArk.Core.Collections;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
@@ -10,11 +9,11 @@ namespace TestBizArkCore
     ///This is a test class for HashListTest and is intended
     ///to contain all HashListTest Unit Tests
     ///</summary>
-    [TestClass()]
+[TestFixture]
     public class HashListTest
     {
 
-        [TestMethod]
+[Test]
         public void AddTest()
         {
             var lst = GetTestList();
@@ -32,7 +31,7 @@ namespace TestBizArkCore
             Assert.AreSame(lst[5], lst["Test5"]);
         }
 
-        [TestMethod]
+[Test]
         public void RemoveTest()
         {
             var lst = GetTestList();
@@ -70,7 +69,7 @@ namespace TestBizArkCore
 
         }
 
-        [TestMethod]
+[Test]
         public void InsertTest()
         {
             var lst = GetTestList();
@@ -95,7 +94,7 @@ namespace TestBizArkCore
             Assert.AreEqual(10, lst.IndexOf("Test9"));
         }
 
-        [TestMethod]
+[Test]
         public void ClearTest()
         {
             var lst = GetTestList();
@@ -104,7 +103,7 @@ namespace TestBizArkCore
             Assert.AreEqual(0, lst.Count);
         }
 
-        [TestMethod]
+[Test]
         public void IndexerTest()
         {
             var lst = GetTestList();
@@ -147,7 +146,7 @@ namespace TestBizArkCore
             Assert.AreEqual(lst["Test9"], lst[9]);
         }
 
-        [TestMethod]
+[Test]
         public void GetValueTest()
         {
             var lst = GetTestList();
@@ -159,7 +158,7 @@ namespace TestBizArkCore
             Assert.IsNull(val);
         }
 
-        [TestMethod]
+[Test]
         public void EnumeratorTest()
         {
             var lst = GetTestList();

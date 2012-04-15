@@ -1,6 +1,5 @@
 ﻿using BizArk.Core.FormatExt;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
@@ -10,14 +9,14 @@ namespace TestBizArkCore
     ///This is a test class for FormatExtTest and is intended
     ///to contain all FormatExtTest Unit Tests
     ///</summary>
-    [TestClass()]
+[TestFixture]
     public class FormatExtTest
     {
         
         /// <summary>
         ///A test for Fmt
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void FmtIntTest()
         {
             Assert.AreEqual("1", 1.Fmt());
@@ -27,7 +26,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Fmt
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void FmtNullIntTest()
         {
             int? i = null;
@@ -41,7 +40,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Fmt
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void FmtDecimalTest()
         {
             Assert.AreEqual("1.00", 1M.Fmt());
@@ -52,7 +51,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Fmt
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void FmtNullDecimalTest()
         {
             decimal? i = null;
@@ -66,7 +65,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Fmt
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void FmtCurrencyTest()
         {
             Assert.AreEqual("$1.00", 1M.FmtCurrency());
@@ -77,7 +76,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Fmt
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void FmtNullCurrencyTest()
         {
             decimal? i = null;
@@ -92,7 +91,7 @@ namespace TestBizArkCore
         /// <summary>
         ///A test for Tmpl
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void TmplTest()
         {
             var tmpl = "Hello {name}! You are {age:N0} years old.";

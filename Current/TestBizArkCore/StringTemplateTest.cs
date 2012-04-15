@@ -1,17 +1,16 @@
 ﻿using BizArk.Core.Template;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using NUnit.Framework;
 
 namespace TestBizArkCore
 {
 
-    [TestClass()]
+	[TestFixture]
     public class StringTemplateTest
     {
 
-        [TestMethod()]
+        [Test]
         public void EvalTemplateTest()
         {
             var template = new StringTemplate("Hello {name}");
@@ -24,66 +23,65 @@ namespace TestBizArkCore
             Assert.AreEqual("Hello World", template.ToString());
         }
 
-        [TestMethod()]
-        [DeploymentItem("BizArk.Core.dll")]
-        public void GetArgNameTest()
-        {
-            var template = "Hello {name}".ToCharArray();
-            int position = 6;
-            var name = StringTemplate_Accessor.GetArgName(template, ref position);
-            var format = StringTemplate_Accessor.GetArgFormat(template, ref position);
-            Assert.AreEqual(12, position);
-            Assert.AreEqual("name", name);
-            Assert.AreEqual("", format);
+		//[Test]
+		////[DeploymentItem("BizArk.Core.dll")]
+		//public void GetArgNameTest()
+		//{
+		//    var template = "Hello {name}".ToCharArray();
+		//    int position = 6;
+		//    var name = StringTemplate_Accessor.GetArgName(template, ref position);
+		//    var format = StringTemplate_Accessor.GetArgFormat(template, ref position);
+		//    Assert.AreEqual(12, position);
+		//    Assert.AreEqual("name", name);
+		//    Assert.AreEqual("", format);
 
-            template = "Hello {name:test}!".ToCharArray();
-            position = 6;
-            name = StringTemplate_Accessor.GetArgName(template, ref position);
-            format = StringTemplate_Accessor.GetArgFormat(template, ref position);
-            Assert.AreEqual(17, position);
-            Assert.AreEqual("name", name);
-            Assert.AreEqual(":test", format);
-            var literal = StringTemplate_Accessor.GetLiteral(template, ref position);
-            Assert.AreEqual("!", literal);
+		//    template = "Hello {name:test}!".ToCharArray();
+		//    position = 6;
+		//    name = StringTemplate_Accessor.GetArgName(template, ref position);
+		//    format = StringTemplate_Accessor.GetArgFormat(template, ref position);
+		//    Assert.AreEqual(17, position);
+		//    Assert.AreEqual("name", name);
+		//    Assert.AreEqual(":test", format);
+		//    var literal = StringTemplate_Accessor.GetLiteral(template, ref position);
+		//    Assert.AreEqual("!", literal);
 
-            try
-            {
-                template = "Hello {name".ToCharArray();
-                position = 6;
-                name = StringTemplate_Accessor.GetArgName(template, ref position);
-                Assert.Fail("Expected FormatException");
-            }
-            catch (FormatException)
-            {
-                // expected
-            }
-        }
+		//    try
+		//    {
+		//        template = "Hello {name".ToCharArray();
+		//        position = 6;
+		//        name = StringTemplate_Accessor.GetArgName(template, ref position);
+		//        Assert.Fail("Expected FormatException");
+		//    }
+		//    catch (FormatException)
+		//    {
+		//        // expected
+		//    }
+		//}
 
-        [TestMethod()]
-        [DeploymentItem("BizArk.Core.dll")]
-        public void GetLiteralSegmentTest()
-        {
-            var template = "Hello {name}".ToCharArray();
-            int position = 0;
-            var literal = StringTemplate_Accessor.GetLiteral(template, ref position);
-            Assert.AreEqual(6, position);
-            Assert.AreEqual("Hello ", literal);
+		//[Test]
+		////[DeploymentItem("BizArk.Core.dll")]
+		//public void GetLiteralSegmentTest()
+		//{
+		//    var template = "Hello {name}".ToCharArray();
+		//    int position = 0;
+		//    var literal = StringTemplate_Accessor.GetLiteral(template, ref position);
+		//    Assert.AreEqual(6, position);
+		//    Assert.AreEqual("Hello ", literal);
 
-            template = @"Hello \{name}".ToCharArray();
-            position = 0;
-            literal = StringTemplate_Accessor.GetLiteral(template, ref position);
-            Assert.AreEqual(13, position);
-            Assert.AreEqual("Hello {name}", literal);
+		//    template = @"Hello \{name}".ToCharArray();
+		//    position = 0;
+		//    literal = StringTemplate_Accessor.GetLiteral(template, ref position);
+		//    Assert.AreEqual(13, position);
+		//    Assert.AreEqual("Hello {name}", literal);
 
-            template = @"Hello \{name}\".ToCharArray();
-            position = 0;
-            literal = StringTemplate_Accessor.GetLiteral(template, ref position);
-            Assert.AreEqual(14, position);
-            Assert.AreEqual(@"Hello {name}\", literal);
-        }
+		//    template = @"Hello \{name}\".ToCharArray();
+		//    position = 0;
+		//    literal = StringTemplate_Accessor.GetLiteral(template, ref position);
+		//    Assert.AreEqual(14, position);
+		//    Assert.AreEqual(@"Hello {name}\", literal);
+		//}
 
-        [TestMethod()]
-        [DeploymentItem("BizArk.Core.dll")]
+        [Test]
         public void DateFormatTest()
         {
             var template = new StringTemplate("Test date: {date:d}");
@@ -93,7 +91,7 @@ namespace TestBizArkCore
             Assert.AreEqual(string.Format("Test date: {0:d}", dt), actual);
         }
 
-        //[TestMethod()] // This can take a little bit to run so take it out
+        //[Test] // This can take a little bit to run so take it out
         public void PerfTest()
         {
             var count = 1000000;
@@ -153,7 +151,7 @@ namespace TestBizArkCore
             public string Name { get; set; }
         }
 
-        [TestMethod]
+[Test]
         public void StringReplaceExample()
         {
             var str = "{greeting} {name}!";
@@ -162,7 +160,7 @@ namespace TestBizArkCore
             Debug.WriteLine(str);
         }
 
-        [TestMethod]
+[Test]
         public void StringTemplateExample()
         {
             var template = new StringTemplate("{greeting} {name} on {date:dddd, MMMM dd, yyyy}!");
