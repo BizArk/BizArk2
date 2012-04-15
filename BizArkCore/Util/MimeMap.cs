@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using BizArk.Core.StringExt;
@@ -31,7 +32,7 @@ namespace BizArk.Core.Util
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Failed to initialize MimeMap from the Registry. Error: {0}", ex.Message);
+                Debug.WriteLine("Failed to initialize MimeMap from the Registry. Error: {0}", ex.Message);
             }
 
             Initialize(My.Resources.Mime_Types);

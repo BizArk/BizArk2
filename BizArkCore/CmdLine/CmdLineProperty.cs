@@ -308,7 +308,6 @@ namespace BizArk.Core.CmdLine
         /// <param name="argName">This can be the shortcut, full property name, or a partial property name that is unique.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">Thrown when the command-line property cannot be found.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public CmdLineProperty this[string argName]
         {
             get
