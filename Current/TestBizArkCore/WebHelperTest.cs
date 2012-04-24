@@ -136,7 +136,7 @@ namespace TestBizArkCore
             response = WebHelper.MakeRequest("http://www.google.co.jp/");
             str = response.ResultToString();
             Assert.IsFalse(string.IsNullOrWhiteSpace(str));
-            Assert.IsTrue(str.IndexOf("日本") > 0); // I don't read japanese, but I think that this says "Google".
+			Assert.IsTrue(str.IndexOf(@"広告掲載") > 0); // I don't read japanese, but I saw these characters on the web page
         }
 
 [Test]
