@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using BizArk.Core.WebExt;
-using BizArk.Core.StringExt;
+using BizArk.Core.Extensions.StringExt;
+using BizArk.Core.Extensions.WebExt;
 
 namespace BizArk.Core.Web
 {
@@ -152,6 +152,7 @@ namespace BizArk.Core.Web
         /// </summary>
         /// <param name="values"></param>
         /// <returns>The list of new UrlParam objects.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1061:DoNotHideBaseClassMethods")]
         public UrlParam[] AddRange(object values)
         {
             var paramList = new List<UrlParam>();

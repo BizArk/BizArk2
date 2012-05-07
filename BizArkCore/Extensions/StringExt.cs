@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using BizArk.Core.ArrayExt;
-using BizArk.Core.FormatExt;
+using BizArk.Core.Extensions.ArrayExt;
+using BizArk.Core.Extensions.FormatExt;
 using System.Text.RegularExpressions;
 
-namespace BizArk.Core.StringExt
+namespace BizArk.Core.Extensions.StringExt
 {
     /// <summary>
     /// Provides extension methods for strings.

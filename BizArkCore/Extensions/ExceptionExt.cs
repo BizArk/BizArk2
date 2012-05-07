@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace BizArk.Core.ExceptionExt
+namespace BizArk.Core.Extensions.ExceptionExt
 {
 
     /// <summary>

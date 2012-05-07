@@ -1,4 +1,4 @@
-﻿using BizArk.Core.ArrayExt;
+﻿using BizArk.Core.Extensions.ArrayExt;
 using System;
 using NUnit.Framework;
 

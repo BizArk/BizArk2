@@ -5,7 +5,7 @@ using BizArk.Core.Util;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
-namespace BizArk.Core.ObjectExt
+namespace BizArk.Core.Extensions.ObjectExt
 {
     /// <summary>
     /// Extends the Object class.

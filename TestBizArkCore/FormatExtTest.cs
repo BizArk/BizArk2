@@ -1,4 +1,4 @@
-﻿using BizArk.Core.FormatExt;
+﻿using BizArk.Core.Extensions.FormatExt;
 using NUnit.Framework;
 
 namespace TestBizArkCore

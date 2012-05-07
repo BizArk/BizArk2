@@ -32,6 +32,10 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -97,10 +101,8 @@
     <Compile Include="Convert\Strategies\StringToBoolConversionStrategy.cs" />
     <Compile Include="Convert\Strategies\TypeConverterConversionStrategy.cs" />
     <Compile Include="DataAnnotations\SetAttribute.cs" />
+    <Compile Include="Data\Database.cs" />
     <Compile Include="Data\IDbInfo.cs" />
-    <Compile Include="Data\Database.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Email\Message.cs" />
     <Compile Include="Email\MAPI32.cs" />
     <Compile Include="Enums.cs" />
@@ -118,33 +120,33 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Template\StringTemplate.cs" />
-    <Compile Include="Util\ArrayExt.cs" />
-    <Compile Include="Util\AttributeExt.cs" />
+    <Compile Include="Extensions\ArrayExt.cs" />
+    <Compile Include="Extensions\AttributeExt.cs" />
     <Compile Include="Util\Bitmask.cs" />
     <Compile Include="Util\Cache.cs" />
     <Compile Include="Util\ClassFactory.cs" />
     <Compile Include="Util\EqualityComparer.cs" />
     <Compile Include="Util\FontUtil.cs" />
-    <Compile Include="Util\FormatExt.cs" />
-    <Compile Include="Util\DataExt.cs" />
-    <Compile Include="Util\DateExt.cs" />
-    <Compile Include="Util\MathExt.cs" />
+    <Compile Include="Extensions\FormatExt.cs" />
+    <Compile Include="Extensions\DataExt.cs" />
+    <Compile Include="Extensions\DateExt.cs" />
+    <Compile Include="Extensions\MathExt.cs" />
     <Compile Include="Util\MemSize.cs" />
     <Compile Include="Util\MimeMap.cs" />
     <Compile Include="Util\PropertyUtil.cs" />
     <Compile Include="Util\StringWriterEx.cs" />
     <Compile Include="Util\TempFile.cs" />
-    <Compile Include="Util\WebExt.cs" />
+    <Compile Include="Extensions\WebExt.cs" />
     <Compile Include="Util\WebUtil.cs" />
-    <Compile Include="Util\XmlExt.cs" />
-    <Compile Include="Util\DrawingExt.cs">
+    <Compile Include="Extensions\XmlExt.cs" />
+    <Compile Include="Extensions\DrawingExt.cs">
     </Compile>
-    <Compile Include="Util\ExceptionExt.cs" />
+    <Compile Include="Extensions\ExceptionExt.cs" />
     <Compile Include="Util\FileUtil.cs" />
-    <Compile Include="Util\ImageExt.cs" />
-    <Compile Include="Util\ObjectExt.cs" />
-    <Compile Include="Util\StringExt.cs" />
-    <Compile Include="Util\TypeExt.cs" />
+    <Compile Include="Extensions\ImageExt.cs" />
+    <Compile Include="Extensions\ObjectExt.cs" />
+    <Compile Include="Extensions\StringExt.cs" />
+    <Compile Include="Extensions\TypeExt.cs" />
     <Compile Include="Web\ContentType.cs" />
     <Compile Include="Web\MimePart.cs" />
     <Compile Include="Web\Support.cs" />

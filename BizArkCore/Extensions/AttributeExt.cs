@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
-using BizArk.Core.TypeExt;
+using BizArk.Core.Extensions.TypeExt;
 using System.Collections.Generic;
 
-namespace BizArk.Core.AttributeExt
+namespace BizArk.Core.Extensions.AttributeExt
 {
     /// <summary>
     /// Provides extension methods for PropertyDescriptor.

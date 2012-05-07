@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BizArk.Core.FormatExt;
-using BizArk.Core.ArrayExt;
-using System.Collections;
+﻿using System.Collections;
+using BizArk.Core.Extensions.ArrayExt;
+using BizArk.Core.Extensions.FormatExt;
 
 namespace BizArk.Core.CmdLine
 {

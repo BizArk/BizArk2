@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace BizArk.Core.DataExt
+namespace BizArk.Core.Extensions.DataExt
 {
     /// <summary>
     /// Provides extension methods for string arrays.

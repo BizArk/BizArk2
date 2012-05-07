@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using BizArk.Core.TypeExt;
+using BizArk.Core.Extensions.TypeExt;
 
 namespace BizArk.Core.Convert.Strategies
 {

@@ -50,7 +50,7 @@ namespace BizArk.Core.Util
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public bool Equals(object x, object y)
+        public new bool Equals(object x, object y)
         {
             return Comparer(x, y);
         }

@@ -1,4 +1,4 @@
-﻿using BizArk.Core.XmlExt;
+﻿using BizArk.Core.Extensions.XmlExt;
 using System.Xml;
 using System.Diagnostics;
 using NUnit.Framework;

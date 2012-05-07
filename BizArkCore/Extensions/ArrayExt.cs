@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BizArk.Core.ArrayExt
+namespace BizArk.Core.Extensions.ArrayExt
 {
     /// <summary>
     /// Provides extension methods for string arrays.

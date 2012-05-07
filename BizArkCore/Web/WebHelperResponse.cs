@@ -1,13 +1,13 @@
+using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Net;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using System.IO;
-using System;
-using System.Text;
-using BizArk.Core.StringExt;
-using BizArk.Core.FormatExt;
-using System.Diagnostics;
+using BizArk.Core.Extensions.FormatExt;
+using BizArk.Core.Extensions.StringExt;
 
 namespace BizArk.Core.Web
 {

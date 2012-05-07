@@ -1,5 +1,5 @@
 ﻿
-namespace BizArk.Core.MathExt
+namespace BizArk.Core.Extensions.MathExt
 {
 
     /// <summary>
