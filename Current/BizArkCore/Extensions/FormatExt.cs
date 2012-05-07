@@ -1,7 +1,8 @@
 ﻿
 using BizArk.Core.Template;
 using System.ComponentModel;
-namespace BizArk.Core.FormatExt
+
+namespace BizArk.Core.Extensions.FormatExt
 {
     /// <summary>
     /// Provides extension methods to format values.

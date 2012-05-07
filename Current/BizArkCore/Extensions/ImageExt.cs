@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using BizArk.Core.DrawingExt;
+using BizArk.Core.Extensions.DrawingExt;
 
-namespace BizArk.Core.ImageExt
+namespace BizArk.Core.Extensions.ImageExt
 {
     /// <summary>
     /// Extension methods for images.

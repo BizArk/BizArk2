@@ -5,12 +5,12 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text;
-using BizArk.Core.ArrayExt;
-using BizArk.Core.AttributeExt;
-using BizArk.Core.ExceptionExt;
-using BizArk.Core.FormatExt;
-using BizArk.Core.StringExt;
-using BizArk.Core.TypeExt;
+using BizArk.Core.Extensions.ArrayExt;
+using BizArk.Core.Extensions.AttributeExt;
+using BizArk.Core.Extensions.ExceptionExt;
+using BizArk.Core.Extensions.FormatExt;
+using BizArk.Core.Extensions.StringExt;
+using BizArk.Core.Extensions.TypeExt;
 
 namespace BizArk.Core.CmdLine
 {
@@ -308,6 +308,7 @@ namespace BizArk.Core.CmdLine
         /// <param name="argName">This can be the shortcut, full property name, or a partial property name that is unique.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">Thrown when the command-line property cannot be found.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public CmdLineProperty this[string argName]
         {
             get

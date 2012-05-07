@@ -4,8 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
+using BizArk.Core.Extensions.WebExt;
 using BizArk.Core.Util;
-using BizArk.Core.WebExt;
 
 namespace BizArk.Core.Web
 {

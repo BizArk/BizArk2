@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BizArk.Core.DateExt
+namespace BizArk.Core.Extensions.DateExt
 {
 
     /// <summary>

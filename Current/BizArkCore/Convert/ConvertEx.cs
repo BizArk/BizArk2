@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using BizArk.Core.Convert;
-using BizArk.Core.TypeExt;
+using BizArk.Core.Extensions.TypeExt;
 
 namespace BizArk.Core
 {

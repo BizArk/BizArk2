@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using BizArk.Core.StringExt;
+using BizArk.Core.Extensions.StringExt;
 
 namespace BizArk.Core.Util
 {

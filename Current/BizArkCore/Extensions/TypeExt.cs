@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BizArk.Core.TypeExt
+namespace BizArk.Core.Extensions.TypeExt
 {
     /// <summary>
     /// Provides extension methods for Type.

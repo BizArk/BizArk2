@@ -1,5 +1,4 @@
 ﻿using System;
-using BizArk.Core.StringExt;
 
 namespace BizArk.Core.CmdLine
 {

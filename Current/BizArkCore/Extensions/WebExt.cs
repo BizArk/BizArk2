@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 
-namespace BizArk.Core.WebExt
+namespace BizArk.Core.Extensions.WebExt
 {
     /// <summary>
     /// Extension methods that are useful when working with web objects.

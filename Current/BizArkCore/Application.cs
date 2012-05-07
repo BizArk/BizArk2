@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using BizArk.Core.AttributeExt;
+using BizArk.Core.Extensions.AttributeExt;
+using BizArk.Core.Extensions.StringExt;
 using BizArk.Core.Util;
-using BizArk.Core.StringExt;
 
 namespace BizArk.Core
 {

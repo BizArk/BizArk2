@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 
-namespace BizArk.Core.DrawingExt
+namespace BizArk.Core.Extensions.DrawingExt
 {
 
     /// <summary>

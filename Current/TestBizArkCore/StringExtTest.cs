@@ -1,4 +1,4 @@
-﻿using BizArk.Core.StringExt;
+﻿using BizArk.Core.Extensions.StringExt;
 using System;
 using NUnit.Framework;
 

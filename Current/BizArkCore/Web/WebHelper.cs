@@ -5,7 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading;
-using BizArk.Core.ExceptionExt;
+using BizArk.Core.Extensions.ExceptionExt;
 
 namespace BizArk.Core.Web
 {

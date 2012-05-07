@@ -5,12 +5,12 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
-using BizArk.Core.ArrayExt;
-using BizArk.Core.AttributeExt;
-using BizArk.Core.StringExt;
-using BizArk.Core.FormatExt;
+using BizArk.Core.Extensions.ArrayExt;
+using BizArk.Core.Extensions.AttributeExt;
+using BizArk.Core.Extensions.FormatExt;
+using BizArk.Core.Extensions.ObjectExt;
+using BizArk.Core.Extensions.StringExt;
 using BizArk.Core.Web;
-using BizArk.Core.Template;
 
 namespace BizArk.Core.CmdLine
 {
@@ -342,7 +342,7 @@ namespace BizArk.Core.CmdLine
                 }
             }
 
-            var results = ObjectExt.ObjectExt.Validate(this);
+            var results = ObjectExt.Validate(this);
             foreach (var result in results)
             {
                 if (result.ErrorMessage.HasValue())
@@ -567,6 +567,7 @@ namespace BizArk.Core.CmdLine
             return true;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         private string GetXml(string path)
         {
             try

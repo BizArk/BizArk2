@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net;
 using System.Text;
-using BizArk.Core.AttributeExt;
-using BizArk.Core.WebExt;
-using BizArk.Core.StringExt;
+using BizArk.Core.Extensions.StringExt;
 
 namespace BizArk.Core.Web
 {

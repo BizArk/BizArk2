@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using BizArk.Core.StringExt;
-using BizArk.Core.FormatExt;
-using BizArk.Core.ArrayExt;
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
+using BizArk.Core.Extensions.ArrayExt;
+using BizArk.Core.Extensions.FormatExt;
 
 namespace BizArk.Core.DataAnnotations
 {

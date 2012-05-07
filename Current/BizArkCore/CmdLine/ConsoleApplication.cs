@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using BizArk.Core.StringExt;
+using BizArk.Core.Extensions.StringExt;
 
 namespace BizArk.Core.CmdLine
 {

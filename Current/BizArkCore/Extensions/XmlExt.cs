@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace BizArk.Core.XmlExt
+namespace BizArk.Core.Extensions.XmlExt
 {
     /// <summary>
     /// Provides extension methods for processing Xml.
