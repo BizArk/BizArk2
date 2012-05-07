@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using BizArk.Core.CmdLine;
-using BizArk.Core.StringExt;
-using BizArk.Core.WebExt;
+using BizArk.Core.Extensions.StringExt;
+using BizArk.Core.Extensions.WebExt;
 using BizArk.Core.Util;
 using System.IO;
 using System.Linq;
