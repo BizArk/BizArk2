@@ -526,6 +526,17 @@ namespace BizArk.Core.Extensions.DataExt
         }
 
         /// <summary>
+        /// Returns the field value as a byte array.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static byte[] GetBytes(this IDataReader row, string fieldName)
+        {
+            return GetValue<byte[]>(row, fieldName, null);
+        }
+
+        /// <summary>
         /// Returns the field value as the specified type. Uses ConvertEx to convert the value to the correct type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -591,5 +602,6 @@ namespace BizArk.Core.Extensions.DataExt
             }
             return false;
         }
+
     }
 }
