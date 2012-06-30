@@ -1,5 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
+using BizArk.Core.Extensions.StringExt;
+using BizArk.Core.Extensions.FormatExt;
+using BizArk.Core.Extensions.DateExt;
 
 namespace TestBizArkCore
 {
@@ -28,6 +31,28 @@ namespace TestBizArkCore
             }
         }
 
+        /// <summary>
+        /// Catches the given exception type and ignores it.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action"></param>
+        public static void Throws<T>(Action action) where T : Exception
+        {
+            try
+            {
+                action();
+                Assert.Fail("Expected exception '{0}' not thrown.", typeof(T).Name);
+            }
+            catch (T)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Catches all excpetions and makes sure the exception thrown is exactly the type sent in.
+        /// </summary>
+        /// <param name="exceptionType"></param>
+        /// <param name="action"></param>
         public static void Throws(Type exceptionType, Action action)
         {
             try
@@ -42,6 +67,12 @@ namespace TestBizArkCore
                 else
                     throw;
             }
+        }
+
+        public static void AreClose(DateTime expected, DateTime actual, TimeSpan giveOrTake)
+        {
+            if (!expected.IsClose(actual, giveOrTake))
+                Assert.Fail("Expected {0} (~{1}). Actual was {2}.".Fmt(expected, giveOrTake, actual));
         }
 
         //public static void NoError(FieldValidationResults res)
@@ -60,5 +91,6 @@ namespace TestBizArkCore
 
         //    Assert.Fail("Expected error {0}. Validation resulted in unexpected error: ({1}) {2}", msgID, res.Error.MessageID, res.Error.Message);
         //}
+
     }
 }

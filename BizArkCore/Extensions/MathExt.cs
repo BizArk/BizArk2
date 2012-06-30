@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace BizArk.Core.Extensions.MathExt
 {
 
@@ -91,6 +92,6 @@ namespace BizArk.Core.Extensions.MathExt
             if (val > max) return false;
             return true;
         }
-        
+
     }
 }

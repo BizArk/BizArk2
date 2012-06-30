@@ -128,7 +128,25 @@ namespace BizArk.Core.Extensions.ObjectExt
             var ctx = new ValidationContext(obj, null, null);
             var results = new List<ValidationResult>();
             Validator.TryValidateObject(obj, ctx, results, true);
-            return results.ToArray();            
+            return results.ToArray();
+        }
+
+        /// <summary>
+        /// Gets a collection of name/value pairs based on the public properties of an object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static NameValue[] GetNameValues(this object obj)
+        {
+            var vals = obj as NameValue[];
+            if (vals != null) return vals;
+
+            var pairs = new List<NameValue>();
+
+            foreach (var prop in obj.GetType().GetProperties())
+                pairs.Add(new NameValue(prop.Name, prop.GetValue(obj, null), prop.PropertyType));
+
+            return pairs.ToArray();
         }
 
     }

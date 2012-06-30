@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace BizArk.Core.Extensions.TypeExt
 {
@@ -141,6 +143,25 @@ namespace BizArk.Core.Extensions.TypeExt
                 return type.GetGenericArguments()[0];
             else
                 return type;
+        }
+
+        /// <summary>
+        /// Gets the fields that are of the specified type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="type"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public static FieldInfo[] GetFields<T>(this Type type, BindingFlags flags = BindingFlags.Default)
+        {
+            var flds = new List<FieldInfo>();
+            foreach (var fld in type.GetFields(flags))
+            {
+                if (fld.FieldType.IsDerivedFrom(typeof(T)))
+                    flds.Add(fld);
+            }
+
+            return flds.ToArray();
         }
 
     }
