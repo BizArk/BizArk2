@@ -133,7 +133,11 @@
     <Compile Include="Extensions\MathExt.cs" />
     <Compile Include="Util\MemSize.cs" />
     <Compile Include="Util\MimeMap.cs" />
+    <Compile Include="Util\NameValue.cs" />
     <Compile Include="Util\PropertyUtil.cs" />
+    <Compile Include="Util\Range.cs" />
+    <Compile Include="Util\RemoteDateTime.cs" />
+    <Compile Include="Util\StreamExt.cs" />
     <Compile Include="Util\StringWriterEx.cs" />
     <Compile Include="Util\TempFile.cs" />
     <Compile Include="Extensions\WebExt.cs" />
