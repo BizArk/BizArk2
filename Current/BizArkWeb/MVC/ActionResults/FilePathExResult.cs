@@ -50,11 +50,6 @@ namespace BizArk.Web.MVC.ActionResults
 
         #region Methods
 
-        public override void ExecuteResult(ControllerContext context)
-        {
-            base.ExecuteResult(context);
-        }
-
         /// <summary>
         /// Checks to see if the file cached on the client is the same as on the server using ETags.
         /// </summary>
