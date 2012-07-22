@@ -53,6 +53,10 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\SqlServerCompact.4.0.8482.1\lib\System.Data.SqlServerCe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
@@ -64,6 +68,10 @@
     <Compile Include="ConversionStrategyTest.cs" />
     <Compile Include="CmdLineObjectTest.cs" />
     <Compile Include="ConvertExTest.cs" />
+    <Compile Include="DatabaseTest.cs" />
+    <Compile Include="SqlCeAdapter.cs" />
+    <Compile Include="UtilTest.cs" />
+    <Compile Include="DbAdapterTest.cs" />
     <Compile Include="FormatExtTest.cs" />
     <Compile Include="HashListTest.cs" />
     <Compile Include="MimeMapTest.cs" />
@@ -81,17 +89,16 @@
     <Compile Include="XmlExtTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AuthoringTests.txt" />
     <None Include="packages.config" />
     <None Include="Resources\TestImg.png" />
+    <Content Include="Data\Northwind.sdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\ValidRpcFaultResponse.xml" />
     <Content Include="Resources\ValidRpcParamsResponse.xml" />
     <Content Include="Resources\XmlRpcInvokeTest.xml" />
     <Content Include="Resources\XmlRpcTest.xml" />
     <None Include="Resources\TextTemplateTest.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Shadow Include="Test References\Redwerb.BizArk.Core.accessor" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -104,8 +111,19 @@
       <Project>{8D3E6472-7E47-4266-947B-659F17F641F1}</Project>
       <Name>BizArkCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BizArkDB\BizArkDB.csproj">
+      <Project>{4bef5ef0-f804-42fe-876e-548167d79530}</Project>
+      <Name>BizArkDB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
+if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+xcopy /s /y "$(SolutionDir)packages\SqlServerCompact.4.0.8482.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

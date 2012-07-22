@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E978FCEC-F09B-4CB4-B2FC-2B121561BA09}</ProjectGuid>
+    <ProjectGuid>{4BEF5EF0-F804-42FE-876E-548167D79530}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BizArk.Web</RootNamespace>
-    <AssemblyName>BizArk.Web</AssemblyName>
+    <RootNamespace>BizArk.DB</RootNamespace>
+    <AssemblyName>BizArk.DB</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -24,7 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\BizArk.Web.XML</DocumentationFile>
+    <DocumentationFile>..\bin\BizArk.DB.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,16 +34,11 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\bin\BizArk.Web.XML</DocumentationFile>
+    <DocumentationFile>..\bin\BizArk.DB.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20505.0\lib\net40\System.Web.Mvc.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,9 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MVC\BizArkController.cs" />
-    <Compile Include="Utils\ETagGenerator.cs" />
-    <Compile Include="MVC\ActionResults\FilePathExResult.cs" />
+    <Compile Include="Adapters\AnsiSqlDbAdapter.cs" />
+    <Compile Include="Adapters\SqlDbAdapter.cs" />
+    <Compile Include="BizArkTransaction.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="DatabaseSaveException.cs" />
+    <Compile Include="ORM\DbFieldValue.cs" />
+    <Compile Include="ORM\DbFieldValueNotInitializedException.cs" />
+    <Compile Include="Adapters\IDbAdapter.cs" />
+    <Compile Include="ORM\DbObject.cs" />
+    <Compile Include="ORM\DbObjectState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHelperTestSite", "WebHel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizArkWeb", "BizArkWeb\BizArkWeb.csproj", "{E978FCEC-F09B-4CB4-B2FC-2B121561BA09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizArkDB", "BizArkDB\BizArkDB.csproj", "{4BEF5EF0-F804-42FE-876E-548167D79530}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
@@ -17,15 +19,18 @@ Global
 		SccLocalPath2 = TestBizArkCore
 		SccLocalPath3 = WebHelperTestSite
 		SccLocalPath4 = BizArkWeb
-		SccNumberOfProjects = 5
+		SccLocalPath5 = BizArkDB
+		SccNumberOfProjects = 6
 		SccProjectName1 = BizArkCore
 		SccProjectName2 = TestBizArkCore
 		SccProjectName3 = WebHelperTestSite
 		SccProjectName4 = BizArkWeb
+		SccProjectName5 = BizArkDB
 		SccProjectUniqueName1 = BizArkCore\\BizArkCore.csproj
 		SccProjectUniqueName2 = TestBizArkCore\\TestBizArkCore.csproj
 		SccProjectUniqueName3 = WebHelperTestSite\\WebHelperTestSite.csproj
 		SccProjectUniqueName4 = BizArkWeb\\BizArkWeb.csproj
+		SccProjectUniqueName5 = BizArkDB\\BizArkDB.csproj
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs09
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +42,10 @@ Global
 		{1A817E1B-CCE7-42FC-A6C5-558FB7CE918C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A817E1B-CCE7-42FC-A6C5-558FB7CE918C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A817E1B-CCE7-42FC-A6C5-558FB7CE918C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BEF5EF0-F804-42FE-876E-548167D79530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BEF5EF0-F804-42FE-876E-548167D79530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BEF5EF0-F804-42FE-876E-548167D79530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BEF5EF0-F804-42FE-876E-548167D79530}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D3E6472-7E47-4266-947B-659F17F641F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D3E6472-7E47-4266-947B-659F17F641F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D3E6472-7E47-4266-947B-659F17F641F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
