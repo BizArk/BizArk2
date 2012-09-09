@@ -34,7 +34,7 @@ namespace TestBizArkCore
 			Thread.Sleep(TimeSpan.FromSeconds(5));
 			DateTime now = DateTime.Now;
 			DateTime remoteNow = remote.Now;
-			AssertEx.AreClose(now, remoteNow, TimeSpan.FromMilliseconds(1));
+			AssertEx.AreClose(now, remoteNow, TimeSpan.FromMilliseconds(10));
 		}
 	}
 }
