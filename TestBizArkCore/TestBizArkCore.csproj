@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertEx.cs" />
+    <Compile Include="ConsoleApplicationTests.cs" />
     <Compile Include="ConversionStrategyTest.cs" />
     <Compile Include="CmdLineObjectTest.cs" />
     <Compile Include="ConvertExTest.cs" />
