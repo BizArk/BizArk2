@@ -17,7 +17,7 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         /// <typeparam name="TArgs">The type for the CmdLineObject to use. Must have a default constructor.</typeparam>
         /// <param name="run">The method to run once the arguments are initialized. Will not be called if the help flag is set or the args aren't valid.</param>
-        public static void RunProgram<TArgs>(Run<TArgs> run) where TArgs : CmdLineObject, new()
+        public static void RunProgram<TArgs>(Run<TArgs> run) where TArgs : ICmdLineObject, new()
         {
             var args = Activator.CreateInstance<TArgs>();
             args.Initialize();
@@ -30,7 +30,8 @@ namespace BizArk.Core.CmdLine
                 {
                     // Subtract 1 from the console width so that we can prevent 
                     // end-of-line issues.
-                    Console.WriteLine(args.GetHelpText(Console.WindowWidth-1));
+                    Console.WriteLine(args.GetHelpText(GetWindowWidth()));
+	                Environment.ExitCode = -1;
                     return;
                 }
 
@@ -53,6 +54,19 @@ namespace BizArk.Core.CmdLine
                 }
             }
         }
+
+		private static int GetWindowWidth()
+		{
+			try
+			{
+				return Console.WindowWidth;
+			}
+			catch
+			{
+				return 80;
+			}
+
+		}
 
         /// <summary>
         /// Displays the exception to the console.
@@ -107,7 +121,7 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
-        public delegate void Run<T>(T args) where T : CmdLineObject;
+		public delegate void Run<T>(T args) where T : ICmdLineObject;
 
     }
 
