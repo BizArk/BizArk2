@@ -72,6 +72,11 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         public StringComparison? Comparer { get; set; }
 
+		/// <summary>
+		/// Gets or sets the delimeter between the argument name and its value, the default is Space
+		/// </summary>
+		public char[] AssignmentDelimiters { get; set; }
+
         /// <summary>
         /// Creates the options object.
         /// </summary>
@@ -98,9 +103,10 @@ namespace BizArk.Core.CmdLine
                 options.Wait = (bool)Wait;
             if (Comparer != null)
                 options.Comparer = Comparer.Value;
+			if (AssignmentDelimiters != null)
+				options.AssignmentDelimiters = AssignmentDelimiters;
 
             return options;
         }
-
     }
 }

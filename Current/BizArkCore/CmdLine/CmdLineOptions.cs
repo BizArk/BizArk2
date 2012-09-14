@@ -77,6 +77,11 @@ namespace BizArk.Core.CmdLine
         /// </summary>
         public StringComparison Comparer { get; set; }
 
+		/// <summary>
+		/// Gets or sets the delimetert between the argument name and its value
+		/// </summary>
+	    public char[] AssignmentDelimiters { get; set; }
+
         #endregion
 
     }

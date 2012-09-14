@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using BizArk.Core.CmdLine;
 using BizArk.Core.Extensions.StringExt;
 using BizArk.Core.Extensions.WebExt;
@@ -404,6 +405,58 @@ namespace TestBizArkCore
              Assert.IsTrue(args.IsValid());
         }
 
+	    [Test]
+	    public void InitializeFromFullCmdLine_AssignmentDelimeterSpace_InitializedFromArgs()
+	    {
+			// Arrange
+		    var cmdLineObj = new DefaultAssignmentDelimeterCmndLineObject();
+
+			// Act
+			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John"});
+
+			//Assert
+			Assert.That(cmdLineObj.Name, Is.EqualTo("John"));
+	    }
+
+		[Test]
+		public void InitializeFromFullCmdLine_AssignmentDelimeterColonOneArgument_InitializedFromArgs()
+		{
+			// Arrange
+			var cmdLineObj = new ColonAssignmentDelimeterCmndLineObject();
+
+			// Act
+			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name:John", new[] { "prog.exe", "/Name:John" });
+
+			//Assert
+			Assert.That(cmdLineObj.Name, Is.EqualTo("John"));
+		}
+
+		[Test]
+		public void InitializeFromFullCmdLine_AssignmentDelimeterColonTwoArguments_InitializedFromArgs()
+		{
+			// Arrange
+			var cmdLineObj = new ColonAssignmentDelimeterCmndLineObject();
+
+			// Act
+			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name:John /Count:3", new[] { "prog.exe", "/Name:John", "/Count:3" });
+
+			//Assert
+			Assert.That(cmdLineObj.Name, Is.EqualTo("John"));
+			Assert.That(cmdLineObj.Count, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void InitializeFromFullCmdLine_AssignmentDelimeterColonArrayArguments_InitializedFromArgs()
+		{
+			// Arrange
+			var cmdLineObj = new ColonAssignmentDelimeterArrayArgCmndLineObject();
+
+			// Act
+			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Names:John Maria", new[] { "prog.exe", "/Name:John Maria" });
+
+			//Assert
+			Assert.That(cmdLineObj.Names, Is.EquivalentTo(new []{"John", "Maria"}));
+		}
     }
 
     [CmdLineOptions(DefaultArgName = "Hello", ApplicationName = "TESTAPP")]
@@ -540,4 +593,28 @@ namespace TestBizArkCore
         Lamborghini,
         Kia
     }
+
+	internal class DefaultAssignmentDelimeterCmndLineObject : CmdLineObject
+	{
+		[CmdLineArg]
+		public string Name { get; set; }
+	}
+
+	[CmdLineOptions(AssignmentDelimiters = new[] {':'})]
+	internal class ColonAssignmentDelimeterCmndLineObject : CmdLineObject
+	{
+		[CmdLineArg]
+		public string Name { get; set; }
+
+		[CmdLineArg]
+		public int Count { get; set; }
+	}
+
+	[CmdLineOptions(AssignmentDelimiters = new[] { ':' })]
+	internal class ColonAssignmentDelimeterArrayArgCmndLineObject : CmdLineObject
+	{
+		[CmdLineArg]
+		public string[] Names { get; set; }
+	}
+
 }
