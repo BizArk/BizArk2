@@ -13,6 +13,7 @@ using BizArk.Core.Extensions.FormatExt;
 using BizArk.Core.Extensions.ObjectExt;
 using BizArk.Core.Extensions.StringExt;
 using BizArk.Core.Web;
+using System.Linq;
 
 namespace BizArk.Core.CmdLine
 {
@@ -122,6 +123,13 @@ namespace BizArk.Core.CmdLine
 		/// </summary>
 		/// <returns></returns>
 		string ToString();
+
+		/// <summary>
+		/// Initializes the object with the given command line taking into consideration the Assignment Delimeter. 
+		/// </summary>
+		/// <param name="fullCommandLine"> </param>
+		/// <param name="fullCommandLineArgs"> </param>
+		void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs);
 	}
 
 	/// <summary>
@@ -290,10 +298,37 @@ namespace BizArk.Core.CmdLine
 			}
 			else
 			{
-				string[] args = Environment.GetCommandLineArgs();
-				args = args.Shrink(1); // the first parameter is the name of the application.
-				InitializeFromCmdLine(args);
+				InitializeFromFullCmdLine(Environment.CommandLine, Environment.GetCommandLineArgs());
 			}
+		}
+
+		/// <summary>
+		/// Initializes the object with the given command line taking into consideration the Assignment Delimeter. 
+		/// </summary>
+		/// <param name="fullCommandLine"> </param>
+		/// <param name="fullCommandLineArgs"> </param>
+		public void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs)
+		{
+			string[] args;
+
+			if (Options.AssignmentDelimiters == null || (
+				Options.AssignmentDelimiters != null && 
+				Options.AssignmentDelimiters.Length == 1 &&
+				Options.AssignmentDelimiters[0] == ' ' ) 
+				)
+			{
+				// the first parameter is the name of the application.
+				args = fullCommandLineArgs.Shrink(1); 
+			}
+			else
+			{
+				var commandLine = fullCommandLine;
+				commandLine = commandLine.Substring(fullCommandLineArgs[0].Length);
+				var delimeters = Options.AssignmentDelimiters.ToList();
+				delimeters.Add(' ');
+				args = commandLine.Split(delimeters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+			}
+			InitializeFromCmdLine(args);
 		}
 
 		/// <summary>
