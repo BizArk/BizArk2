@@ -406,10 +406,10 @@ namespace TestBizArkCore
         }
 
 	    [Test]
-	    public void InitializeFromFullCmdLine_AssignmentDelimeterSpace_InitializedFromArgs()
+	    public void InitializeFromFullCmdLine_AssignmentDelimiterSpace_InitializedFromArgs()
 	    {
 			// Arrange
-		    var cmdLineObj = new DefaultAssignmentDelimeterCmndLineObject();
+		    var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
 
 			// Act
 			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John"});
@@ -419,10 +419,10 @@ namespace TestBizArkCore
 	    }
 
 		[Test]
-		public void InitializeFromFullCmdLine_AssignmentDelimeterColonOneArgument_InitializedFromArgs()
+		public void InitializeFromFullCmdLine_AssignmentDelimiterColonOneArgument_InitializedFromArgs()
 		{
 			// Arrange
-			var cmdLineObj = new ColonAssignmentDelimeterCmndLineObject();
+			var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
 
 			// Act
 			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name:John", new[] { "prog.exe", "/Name:John" });
@@ -432,10 +432,10 @@ namespace TestBizArkCore
 		}
 
 		[Test]
-		public void InitializeFromFullCmdLine_AssignmentDelimeterColonTwoArguments_InitializedFromArgs()
+		public void InitializeFromFullCmdLine_AssignmentDelimiterColonTwoArguments_InitializedFromArgs()
 		{
 			// Arrange
-			var cmdLineObj = new ColonAssignmentDelimeterCmndLineObject();
+			var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
 
 			// Act
 			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name:John /Count:3", new[] { "prog.exe", "/Name:John", "/Count:3" });
@@ -446,16 +446,60 @@ namespace TestBizArkCore
 		}
 
 		[Test]
-		public void InitializeFromFullCmdLine_AssignmentDelimeterColonArrayArguments_InitializedFromArgs()
+		public void InitializeFromFullCmdLine_AssignmentDelimiterColonArrayArguments_InitializedFromArgs()
 		{
 			// Arrange
-			var cmdLineObj = new ColonAssignmentDelimeterArrayArgCmndLineObject();
+			var cmdLineObj = new ColonAssignmentDelimiterArrayArgCmndLineObject();
 
 			// Act
 			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Names:John Maria", new[] { "prog.exe", "/Name:John Maria" });
 
 			//Assert
 			Assert.That(cmdLineObj.Names, Is.EquivalentTo(new []{"John", "Maria"}));
+		}
+
+	    [Test]
+		public void GetHelpText_DefaultAssignmentDelimiterOneArgument_UsageContainsSpace()
+	    {
+			// Arrange
+			var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
+
+			// Act
+			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John" });
+
+			//Assert
+		    string helpText = cmdLineObj.GetHelpText(80);
+			Assert.That(helpText, Is.EqualTo(@"Command-line options.
+
+Usage:  [/Name <Name>] [/?[-]]
+
+Name:     The name of the user
+Help (?): Displays command-line usage information.
+          Default Value: False
+"));
+	    }
+
+		[Test]
+		public void GetHelpText_ColonAssignmentDelimiterCmdLineObject_UsageContainsSpace()
+		{
+			// Arrange
+			var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
+
+			// Act
+			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John" });
+
+			//Assert
+			string helpText = cmdLineObj.GetHelpText(80);
+			Assert.That(helpText, Is.EqualTo(@"Command-line options.
+
+Usage:  [/Name:<Name>] [/?[-]]
+
+Name:      The name of the user
+Count:     
+           Default Value: 0
+Help (?):  Displays command-line usage information.
+           Default Value: False
+"));
 		}
     }
 
@@ -594,24 +638,26 @@ namespace TestBizArkCore
         Kia
     }
 
-	internal class DefaultAssignmentDelimeterCmndLineObject : CmdLineObject
+	internal class DefaultAssignmentDelimiterCmdLineObject : CmdLineObject
 	{
-		[CmdLineArg]
+		[CmdLineArg(ShowInUsage = DefaultBoolean.True)]
+		[System.ComponentModel.Description("The name of the user")]
 		public string Name { get; set; }
 	}
 
-	[CmdLineOptions(AssignmentDelimiters = new[] {':'})]
-	internal class ColonAssignmentDelimeterCmndLineObject : CmdLineObject
+	[CmdLineOptions(AssignmentDelimiter = ':')]
+	internal class ColonAssignmentDelimiterCmdLineObject : CmdLineObject
 	{
-		[CmdLineArg]
+		[CmdLineArg(ShowInUsage = DefaultBoolean.True)]
+		[System.ComponentModel.Description("The name of the user")]
 		public string Name { get; set; }
 
 		[CmdLineArg]
 		public int Count { get; set; }
 	}
 
-	[CmdLineOptions(AssignmentDelimiters = new[] { ':' })]
-	internal class ColonAssignmentDelimeterArrayArgCmndLineObject : CmdLineObject
+	[CmdLineOptions(AssignmentDelimiter = ':')]
+	internal class ColonAssignmentDelimiterArrayArgCmndLineObject : CmdLineObject
 	{
 		[CmdLineArg]
 		public string[] Names { get; set; }

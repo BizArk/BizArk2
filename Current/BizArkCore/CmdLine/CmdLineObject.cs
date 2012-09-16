@@ -155,6 +155,8 @@ namespace BizArk.Core.CmdLine
 	/// </remarks>
 	public abstract class CmdLineObject : ICmdLineObject
 	{
+		private const char Space = ' ';
+
 		#region Initialization and Destruction
 
 		/// <summary>
@@ -311,11 +313,7 @@ namespace BizArk.Core.CmdLine
 		{
 			string[] args;
 
-			if (Options.AssignmentDelimiters == null || (
-				Options.AssignmentDelimiters != null && 
-				Options.AssignmentDelimiters.Length == 1 &&
-				Options.AssignmentDelimiters[0] == ' ' ) 
-				)
+			if (Options.AssignmentDelimiter == Space )
 			{
 				// the first parameter is the name of the application.
 				args = fullCommandLineArgs.Shrink(1); 
@@ -324,8 +322,7 @@ namespace BizArk.Core.CmdLine
 			{
 				var commandLine = fullCommandLine;
 				commandLine = commandLine.Substring(fullCommandLineArgs[0].Length);
-				var delimeters = Options.AssignmentDelimiters.ToList();
-				delimeters.Add(' ');
+				var delimeters = new[] { Options.AssignmentDelimiter, Space };
 				args = commandLine.Split(delimeters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 			}
 			InitializeFromCmdLine(args);
@@ -541,7 +538,7 @@ namespace BizArk.Core.CmdLine
 
 			int maxNameWidth = GetMaxNameLength() + 6; // Add extra for ' (S): '
 			int maxDescWidth = maxWidth - maxNameWidth;
-			var indent = new string(' ', maxNameWidth);
+			var indent = new string(Space, maxNameWidth);
 
 			foreach (CmdLineProperty prop in Properties)
 			{
@@ -807,8 +804,8 @@ namespace BizArk.Core.CmdLine
 
 			if (prop.PropertyType == typeof (bool))
 				return string.Format("{0}{1}[-]", Options.ArgumentPrefix, id);
-			else
-				return string.Format("{0}{1} <{2}>", Options.ArgumentPrefix, id, prop.Name);
+
+			return string.Format("{0}{1}{2}<{3}>", Options.ArgumentPrefix, id, Options.AssignmentDelimiter, prop.Name);
 		}
 
 		#endregion
