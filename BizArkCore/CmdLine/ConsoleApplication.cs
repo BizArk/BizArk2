@@ -5,13 +5,18 @@ using BizArk.Core.Extensions.StringExt;
 
 namespace BizArk.Core.CmdLine
 {
+	/// <summary>
+	/// Delegate method that is used to run a console application.
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="args"></param>
+	public delegate void Run<in T>(T args) where T : ICmdLineObject;
 
     /// <summary>
     /// Provides helper methods for command-line applications.
     /// </summary>
     public static class ConsoleApplication
     {
-
         /// <summary>
         /// Convenient method for running an application. Provides command-line argument initialization, help text, error handling, and waiting for exit. This is typically the only line of code in Main.
         /// </summary>
@@ -116,13 +121,6 @@ namespace BizArk.Core.CmdLine
             }
         }
 
-        /// <summary>
-        /// Delegate method that is used to run a console application.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="args"></param>
-		public delegate void Run<T>(T args) where T : ICmdLineObject;
 
     }
-
 }

@@ -18,6 +18,7 @@ namespace BizArk.Core.CmdLine
         public CmdLineOptions()
         {
             ArgumentPrefix = "/";
+	        AssignmentDelimiter = ' ';
             if (Application.Title.IsEmpty())
                 Title = "Command-line options.";
             else if (Application.Version == null)
@@ -80,7 +81,7 @@ namespace BizArk.Core.CmdLine
 		/// <summary>
 		/// Gets or sets the delimetert between the argument name and its value
 		/// </summary>
-	    public char[] AssignmentDelimiters { get; set; }
+	    public char AssignmentDelimiter { get; set; }
 
         #endregion
 
