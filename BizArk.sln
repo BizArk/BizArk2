@@ -12,9 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizArkDB", "BizArkDB\BizArkDB.csproj", "{4BEF5EF0-F804-42FE-876E-548167D79530}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A97A86B3-0594-4D0F-AD76-A44E02E7D6B5}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EA17910-C447-4124-86EF-F1B3B8E3E90A}"
 	ProjectSection(SolutionItems) = preProject

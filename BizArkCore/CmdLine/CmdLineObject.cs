@@ -17,6 +17,9 @@ using System.Linq;
 
 namespace BizArk.Core.CmdLine
 {
+	/// <summary>
+	/// Interface describing behavior of the class CmdLineObject
+	/// </summary>
 	public interface ICmdLineObject
 	{
 		/// <summary>
