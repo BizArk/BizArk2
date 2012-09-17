@@ -21,6 +21,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <NuSpecFile>TestBizArkCore.nuspec</NuSpecFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,6 +101,7 @@
     <Content Include="Resources\XmlRpcInvokeTest.xml" />
     <Content Include="Resources\XmlRpcTest.xml" />
     <None Include="Resources\TextTemplateTest.txt" />
+    <None Include="TestBizArkCore.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
