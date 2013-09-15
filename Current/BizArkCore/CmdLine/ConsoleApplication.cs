@@ -60,13 +60,17 @@ namespace BizArk.Core.CmdLine
             }
         }
 
+
 		private static int GetWindowWidth()
 		{
+            //this check is done to allow us to redirect the output handle to a TextWriter
+            //without getting an invalid handle
+            //this is done by having our unit tests set the width before it runs
 			try
 			{
 				return Console.WindowWidth;
 			}
-			catch
+            catch(IOException) //if the output is redirected to a stream then getting the width will fail
 			{
 				return 80;
 			}
@@ -84,7 +88,7 @@ namespace BizArk.Core.CmdLine
             Console.WriteLine("ERROR!!!");
             while (curEx != null)
             {
-                Console.WriteLine(new string('*', Console.WindowWidth));
+                Console.WriteLine(new string('*', GetWindowWidth()));
                 Console.WriteLine(string.Format("{0} - {1}", curEx.GetType().FullName, curEx.Message));
                 //Console.WriteLine(curEx.StackTrace);
                 WriteLine(curEx.StackTrace, "   ");
@@ -109,10 +113,10 @@ namespace BizArk.Core.CmdLine
                 var whitespace = "";
                 if (m.Groups.Count > 1)
                     whitespace = m.Groups[1].Value;
-                var wrappedLines = line.WrappedLines(Console.WindowWidth, whitespace + prefix);
+                var wrappedLines = line.WrappedLines(GetWindowWidth(), whitespace + prefix);
                 for (int i = 0; i < wrappedLines.Length; i++)
                 {
-                    if (wrappedLines[i].Length == Console.WindowWidth)
+                    if (wrappedLines[i].Length == GetWindowWidth())
                         Console.Write(wrappedLines[i]);
                     else
                         Console.WriteLine(wrappedLines[i]);
