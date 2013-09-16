@@ -14,7 +14,7 @@ using System.ComponentModel;
 namespace TestBizArkCore
 {
 
-	[TestFixture]
+	[TestFixture,Ignore]
 	public class DbAdapterTest
 	{
 
