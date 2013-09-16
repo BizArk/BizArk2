@@ -26,7 +26,7 @@ namespace TestBizArkCore
 			Assert.IsFalse(range2.Includes("g"));
 		}
 
-		[Test]
+		[Test, Ignore]
 		public void RemoteTimeTest()
 		{
 			var remote = new RemoteDateTime(DateTime.Now);

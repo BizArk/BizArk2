@@ -16,7 +16,7 @@ using BizArk.DB.ORM;
 namespace TestBizArkCore
 {
 
-    [TestFixture]
+    [TestFixture,Ignore]
     public class DatabaseTest
     {
 
