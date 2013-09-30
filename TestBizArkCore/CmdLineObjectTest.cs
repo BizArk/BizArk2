@@ -412,7 +412,7 @@ namespace TestBizArkCore
 		    var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
 
 			// Act
-			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John"});
+			cmdLineObj.InitializeFromCmdLine(new[] { "/Name", "John"});
 
 			//Assert
 			Assert.That(cmdLineObj.Name, Is.EqualTo("John"));
@@ -425,7 +425,7 @@ namespace TestBizArkCore
 			var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
 
 			// Act
-			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name:John", new[] { "prog.exe", "/Name:John" });
+			cmdLineObj.InitializeFromCmdLine(new[] { "/Name:John" });
 
 			//Assert
 			Assert.That(cmdLineObj.Name, Is.EqualTo("John"));
@@ -438,7 +438,7 @@ namespace TestBizArkCore
 			var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
 
 			// Act
-			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name:John /Count:3", new[] { "prog.exe", "/Name:John", "/Count:3" });
+			cmdLineObj.InitializeFromCmdLine(new[] { "/Name:John", "/Count:3" });
 
 			//Assert
 			Assert.That(cmdLineObj.Name, Is.EqualTo("John"));
@@ -452,11 +452,51 @@ namespace TestBizArkCore
 			var cmdLineObj = new ColonAssignmentDelimiterArrayArgCmndLineObject();
 
 			// Act
-			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Names:John Maria", new[] { "prog.exe", "/Name:John Maria" });
+            cmdLineObj.InitializeFromCmdLine(new[] { "/Names:John", "Maria" });
 
 			//Assert
 			Assert.That(cmdLineObj.Names, Is.EquivalentTo(new []{"John", "Maria"}));
 		}
+
+        [Test]
+        public void InitializeFromFullCmdLine_AssignmentDelimiterColonArrayArgumentsValueContainsDoubleQuotes_InitializedFromArgs()
+        {
+            // Arrange
+            var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
+
+            // Act
+            cmdLineObj.InitializeFromCmdLine(new[] { @"/Name:""John Smith""" });
+
+            //Assert
+            Assert.That(cmdLineObj.Name, Is.EqualTo("John Smith") );
+        }
+
+        [Test]
+        public void InitializeFromFullCmdLine_DefaultAssignmentDelimiterCmdLineObjectValueContainsDoubleQuotes_InitializedFromArgs()
+        {
+            // Arrange
+            var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
+
+            // Act
+            cmdLineObj.InitializeFromCmdLine(new[] { @"/Name", @"John Smith" });
+
+            //Assert
+            Assert.That(cmdLineObj.Name, Is.EqualTo("John Smith"));
+        }
+
+        [Test]
+        public void InitializeFromCmdLine_DefaultAssignmentDelimiterCmdLineObjectValueContainsDoubleQuotes_InitializedFromArgs()
+        {
+            // Arrange
+            var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
+
+            // Act
+            cmdLineObj.InitializeFromCmdLine(new[] { @"/Name", @"""John Smith""" });
+
+            //Assert
+            Assert.That(cmdLineObj.Name, Is.EqualTo("John Smith"));
+        }
+
 
 	    [Test]
 		public void GetHelpText_DefaultAssignmentDelimiterOneArgument_UsageContainsSpace()
