@@ -45,6 +45,7 @@ namespace BizArk.Core.CmdLine
             catch (Exception ex)
             {
                 WriteError(ex);
+                Environment.ExitCode = 1;
             }
             finally
             {
