@@ -129,10 +129,12 @@ namespace BizArk.Core.CmdLine
 
 		/// <summary>
 		/// Initializes the object with the given command line taking into consideration the Assignment Delimeter. 
+        /// [InitializeFromFullCmdLine is obsolete and will be removed in version 2.0.5. Use InitializeFromCmdLine instead.]
 		/// </summary>
 		/// <param name="fullCommandLine"> </param>
 		/// <param name="fullCommandLineArgs"> </param>
-		void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs);
+        [Obsolete("InitializeFromFullCmdLine is obsolete and will be removed in version 2.0.5. Use InitializeFromCmdLine instead.")]
+        void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs);
 	}
 
 	/// <summary>
@@ -308,27 +310,14 @@ namespace BizArk.Core.CmdLine
 		}
 
 		/// <summary>
-		/// Initializes the object with the given command line taking into consideration the Assignment Delimeter. 
+        /// Obsolete method, InitializeFromCmdLine should be used instead
 		/// </summary>
 		/// <param name="fullCommandLine"> </param>
 		/// <param name="fullCommandLineArgs"> </param>
+        [Obsolete("InitializeFromFullCmdLine is obsolete and will be removed in version 2.0.5. Use InitializeFromCmdLine instead.")]
 		public void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs)
 		{
-			string[] args;
-
-			if (Options.AssignmentDelimiter == Space )
-			{
-				// the first parameter is the name of the application.
-				args = fullCommandLineArgs.Shrink(1); 
-			}
-			else
-			{
-				var commandLine = fullCommandLine;
-				commandLine = commandLine.Substring(fullCommandLineArgs[0].Length);
-				var delimeters = new[] { Options.AssignmentDelimiter, Space };
-				args = commandLine.Split(delimeters.ToArray(), StringSplitOptions.RemoveEmptyEntries);
-			}
-			InitializeFromCmdLine(args);
+		    InitializeFromCmdLine(fullCommandLineArgs.Shrink(1));
 		}
 
 		/// <summary>
@@ -383,7 +372,9 @@ namespace BizArk.Core.CmdLine
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		public void InitializeFromCmdLine(params string[] args)
 		{
-			InitializeBy(() =>
+		    args = SplitArgsByDelimiter(args);
+
+		    InitializeBy(() =>
 				             {
 					             Initialize_Internal();
 					             if (Properties.Count == 0) return;
@@ -454,14 +445,26 @@ namespace BizArk.Core.CmdLine
 				             });
 		}
 
-		private string[] GetArgValues(string[] args)
+	    private string[] SplitArgsByDelimiter(string[] args)
+	    {
+	        if (Options.AssignmentDelimiter != Space)
+	        {
+	            var delimiters = new[] {Options.AssignmentDelimiter};
+	            args = args.SelectMany(a => a.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)).ToArray();
+	        }
+	        return args;
+	    }
+
+	    private string[] GetArgValues(string[] args)
 		{
 			var argValues = new List<string>();
 
 			for (int i = 0; i < args.Length; i++)
 			{
 				if (args[i].StartsWith(Options.ArgumentPrefix)) return argValues.ToArray();
-				argValues.Add(args[i]);
+			    var argumentValue = args[i];
+			    argumentValue = String.IsNullOrEmpty(argumentValue) ? String.Empty : argumentValue.Trim('"');
+			    argValues.Add(argumentValue);
 			}
 
 			return argValues.ToArray();
