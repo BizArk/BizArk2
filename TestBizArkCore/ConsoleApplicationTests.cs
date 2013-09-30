@@ -24,5 +24,20 @@ namespace TestBizArkCore
 
 			Assert.That(Environment.ExitCode, Is.EqualTo(-1));
 		}
+
+        private class HavingNameCommandLineObject : CmdLineObject
+        {
+            [CmdLineArg]
+            public string Name { get; set; }
+        }
+
+
+        [Test]
+        public void RunProgram_ExceptionThrown_ExitCodeMinusOne()
+        {
+            ConsoleApplication.RunProgram<HavingNameCommandLineObject>(a => { throw new Exception(); });
+
+            Assert.That(Environment.ExitCode, Is.EqualTo(1));
+        }
 	}
 }
