@@ -541,6 +541,32 @@ Help (?):  Displays command-line usage information.
            Default Value: False
 "));
 		}
+
+        [Test]
+        public void GetHelpText_EnumPropertyIncmdLineObject_EnumValuesDisplayed()
+        {
+            var cmdLineObject = new CmdLineObjectWithEnumProperty();
+            cmdLineObject.InitializeFromCmdLine(new []{"/?"});
+
+            var helpText = cmdLineObject.GetHelpText(80);
+
+            Assert.That(@"Command-line options.
+
+Usage:  [/?[-]]
+
+Car:      
+          Default Value: Tesla
+          Possible Values: [Tesla, Ferrari, Lamborghini, Kia]
+Help (?): Displays command-line usage information.
+          Default Value: False
+", Is.EqualTo(helpText));
+        }
+    }
+
+    internal class CmdLineObjectWithEnumProperty : CmdLineObject
+    {
+        [CmdLineArg]
+        public Car Car { get; set; }
     }
 
     [CmdLineOptions(DefaultArgName = "Hello", ApplicationName = "TESTAPP")]
