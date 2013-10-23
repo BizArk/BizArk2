@@ -162,7 +162,7 @@ namespace BizArk.Core.CmdLine
 	{
 		private const char Space = ' ';
 
-		#region Initialization and Destruction
+	    #region Initialization and Destruction
 
 		/// <summary>
 		/// Instantiates CmdLineObject.
@@ -412,32 +412,44 @@ namespace BizArk.Core.CmdLine
 						             argValues = GetArgValues(args.Shrink(i + 1));
 						             i = i + argValues.Length; // Move to the next valid argument.
 
-						             if (prop.PropertyType == typeof (bool))
-						             {
-							             // Boolean arguments don't require an argument value (/A and /A- can be used for true/false).
-							             if (argName.EndsWith("-"))
-								             prop.Value = false;
-							             else
-							             {
-								             bool bVal = true;
+					                 if (prop.PropertyType == typeof (bool))
+					                 {
+					                     // Boolean arguments don't require an argument value (/A and /A- can be used for true/false).
+					                     if (argName.EndsWith("-"))
+					                         prop.Value = false;
+					                     else
+					                     {
+					                         bool bVal = true;
 
-								             if (argValues.Length > 0)
-								             {
-									             bVal = ConvertEx.ToBoolean(argValues[0]);
-									             try
-									             {
-										             bVal = ConvertEx.ToBoolean(argValues[0]);
-									             }
-									             catch (Exception)
-									             {
-										             // The command-line argument value couldn't be converted to a 
-										             // bool so assume it wasn't intended to be.
-									             }
-								             }
-								             prop.Value = bVal;
-							             }
-						             }
-						             else if (argValues.Length > 0)
+					                         if (argValues.Length > 0)
+					                         {
+					                             bVal = ConvertEx.ToBoolean(argValues[0]);
+					                             try
+					                             {
+					                                 bVal = ConvertEx.ToBoolean(argValues[0]);
+					                             }
+					                             catch (Exception)
+					                             {
+					                                 // The command-line argument value couldn't be converted to a 
+					                                 // bool so assume it wasn't intended to be.
+					                             }
+					                         }
+					                         prop.Value = bVal;
+					                     }
+					                 }
+                                     else if (prop.PropertyType.IsArray && prop.PropertyType.GetElementType() != typeof(string))
+                                     {
+                                         try
+                                         {
+                                             var splitValues = argValues.Join(Options.ArraySeparator).Split(new[] { Options.ArraySeparator }, StringSplitOptions.RemoveEmptyEntries);
+                                             prop.Value = splitValues.Convert(prop.PropertyType.GetElementType());
+                                         }
+                                         catch (Exception)
+                                         {
+                                             prop.Value = argValues;
+                                         }
+                                     }
+					                 else if (argValues.Length > 0)
 						             {
 							             prop.Value = argValues;
 						             }
