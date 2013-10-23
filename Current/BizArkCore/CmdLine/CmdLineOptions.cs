@@ -9,7 +9,6 @@ namespace BizArk.Core.CmdLine
     /// </summary>
     public class CmdLineOptions
     {
-
         #region Initialization and Destruction
 
         /// <summary>
@@ -27,6 +26,7 @@ namespace BizArk.Core.CmdLine
                 Title = string.Format("{0} ver. {1}", Application.Title, Application.Version);
             ApplicationName = Application.ExeName;
             Comparer = StringComparison.OrdinalIgnoreCase;
+            ArraySeparator = ",";
         }
 
         #endregion
@@ -82,6 +82,11 @@ namespace BizArk.Core.CmdLine
 		/// Gets or sets the delimetert between the argument name and its value
 		/// </summary>
 	    public char AssignmentDelimiter { get; set; }
+
+        /// <summary>
+        /// Gets or sets array elements separator, default value is ","
+        /// </summary>
+        public string ArraySeparator { get; set; }
 
         #endregion
 

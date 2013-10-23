@@ -78,6 +78,14 @@ namespace BizArk.Core.CmdLine
 		public char AssignmentDelimiter { get; set; }
 
         /// <summary>
+        /// Gets or sets the array separator.
+        /// </summary>
+        /// <value>
+        /// The array separator.
+        /// </value>
+        public string ArraySeparator { get; set; }
+
+        /// <summary>
         /// Creates the options object.
         /// </summary>
         /// <returns></returns>
@@ -105,6 +113,8 @@ namespace BizArk.Core.CmdLine
                 options.Comparer = Comparer.Value;
 			if (AssignmentDelimiter != '\0')
 				options.AssignmentDelimiter = AssignmentDelimiter;
+            if (!String.IsNullOrEmpty(ArraySeparator))
+                options.ArraySeparator = ArraySeparator;
 
             return options;
         }

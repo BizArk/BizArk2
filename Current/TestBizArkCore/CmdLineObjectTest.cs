@@ -20,6 +20,15 @@ namespace TestBizArkCore
 [TestFixture]
     public class CmdLineObjectTest
     {
+        [Test]
+        public void InitializeFromCmdLine_ArgsContainsArrayOfEnum_EnumValuesAreParsed()
+        {
+            var objectWithMultipleEnumProperty = new CmdLineObjectWithMultipleEnumProperty();
+
+            objectWithMultipleEnumProperty.InitializeFromCmdLine(new[] { @"/Cars=Tesla,Ferrari,Lamborghini" });
+
+            Assert.That(objectWithMultipleEnumProperty.Cars, Is.EquivalentTo(new Car[] { Car.Tesla, Car.Ferrari, Car.Lamborghini }));
+        }
 
         /// <summary>
         ///A test for Initialize
@@ -561,6 +570,13 @@ Help (?): Displays command-line usage information.
           Default Value: False
 ", Is.EqualTo(helpText));
         }
+    }
+
+    [CmdLineOptions(AssignmentDelimiter = '=')]
+    internal class CmdLineObjectWithMultipleEnumProperty : CmdLineObject
+    {
+        [CmdLineArg]
+        public Car[] Cars { get; set; }
     }
 
     internal class CmdLineObjectWithEnumProperty : CmdLineObject

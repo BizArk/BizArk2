@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using BizArk.Core.Extensions.ArrayExt;
 using BizArk.Core.Extensions.AttributeExt;
@@ -15,15 +16,14 @@ using BizArk.Core.Extensions.TypeExt;
 namespace BizArk.Core.CmdLine
 {
     /// <summary>
-    /// Represents a property that can be set via the command-line.
+    ///     Represents a property that can be set via the command-line.
     /// </summary>
     public class CmdLineProperty
     {
-
         #region Initialization and Destruction
 
         /// <summary>
-        /// Creates an instance of a CmdLineProperty.
+        ///     Creates an instance of a CmdLineProperty.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="prop"></param>
@@ -33,7 +33,7 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Creates an instance of a CmdLineProperty.
+        ///     Creates an instance of a CmdLineProperty.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="prop"></param>
@@ -44,8 +44,8 @@ namespace BizArk.Core.CmdLine
             mProperty = prop;
             DefaultValue = Value;
             Validators = new List<ICustomValidator>();
-            if (prop.PropertyType == typeof(string))
-                ShowDefaultValue = !string.IsNullOrEmpty((string)Value);
+            if (prop.PropertyType == typeof (string))
+                ShowDefaultValue = !string.IsNullOrEmpty((string) Value);
             else
                 ShowDefaultValue = true;
 
@@ -55,7 +55,7 @@ namespace BizArk.Core.CmdLine
                 Usage = "";
                 ShowInUsage = DefaultBoolean.Default;
                 AllowSave = true;
-                Aliases = new string[] { };
+                Aliases = new string[] {};
             }
             else
             {
@@ -74,15 +74,15 @@ namespace BizArk.Core.CmdLine
 
         #region Fields and Properties
 
-        private PropertyDescriptor mProperty;
+        private readonly PropertyDescriptor mProperty;
 
         /// <summary>
-        /// Gets the command-line object associated with this property.
+        ///     Gets the command-line object associated with this property.
         /// </summary>
         public CmdLineObject Object { get; private set; }
 
         /// <summary>
-        /// The name of the command-line property.
+        ///     The name of the command-line property.
         /// </summary>
         public string Name
         {
@@ -90,7 +90,7 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Gets the description associated with the property.
+        ///     Gets the description associated with the property.
         /// </summary>
         public string Description
         {
@@ -98,7 +98,7 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Gets the type of the property.
+        ///     Gets the type of the property.
         /// </summary>
         public Type PropertyType
         {
@@ -106,44 +106,42 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Gets the aliases associated with this property.
+        ///     Gets the aliases associated with this property.
         /// </summary>
         public string[] Aliases { get; private set; }
 
         /// <summary>
-        /// Gets or sets a value that determines if this command-line argument is required.
+        ///     Gets or sets a value that determines if this command-line argument is required.
         /// </summary>
         public bool Required { get; set; }
 
         /// <summary>
-        /// Gets or sets the short description that should be used in the usage description.
+        ///     Gets or sets the short description that should be used in the usage description.
         /// </summary>
         public string Usage { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that determines if the argument should be displayed in the usage. By default, only required arguments and help are displayed in the usage in order to save space when printing the usage.
+        ///     Gets or sets a value that determines if the argument should be displayed in the usage. By default, only required
+        ///     arguments and help are displayed in the usage in order to save space when printing the usage.
         /// </summary>
         public DefaultBoolean ShowInUsage { get; set; }
 
         /// <summary>
-        /// Gets a value that determines if this property was set through the command-line or not.
+        ///     Gets a value that determines if this property was set through the command-line or not.
         /// </summary>
         public bool PropertySet { get; private set; }
 
         /// <summary>
-        /// Gets the default value for this property. Used in the command-line help description.
+        ///     Gets the default value for this property. Used in the command-line help description.
         /// </summary>
         public object DefaultValue { get; private set; }
 
         /// <summary>
-        /// Gets or sets the current value for this property.
+        ///     Gets or sets the current value for this property.
         /// </summary>
         public object Value
         {
-            get
-            {
-                return mProperty.GetValue(Object);
-            }
+            get { return mProperty.GetValue(Object); }
             set
             {
                 var strs = value as string[];
@@ -158,7 +156,9 @@ namespace BizArk.Core.CmdLine
                         catch (Exception ex)
                         {
                             Debug.WriteLine(ex.GetDetails());
-                            Error = "[{0}] is not valid. The value must be able to convert to an array of {2}.".Fmt(strs.Join(", "), Name, PropertyType.GetElementType().GetCSharpName());
+                            Error =
+                                "[{0}] is not valid. The value must be able to convert to an array of {2}.".Fmt(
+                                    strs.Join(", "), Name, PropertyType.GetElementType().GetCSharpName());
                             return;
                         }
                     }
@@ -173,12 +173,15 @@ namespace BizArk.Core.CmdLine
                             Debug.WriteLine(ex.GetDetails());
                             if (PropertyType.IsEnum)
                             {
-                                Error = "'{0}' is not valid. The argument must be one of these values: [{2}].".Fmt(strs[0], Name, Enum.GetValues(PropertyType).Join(", "));
+                                Error =
+                                    "'{0}' is not valid. The argument must be one of these values: [{2}].".Fmt(strs[0],
+                                        Name, Enum.GetValues(PropertyType).Join(", "));
                             }
                             else
                             {
                                 var typeName = PropertyType.GetCSharpName();
-                                Error = "'{0}' is not valid. The argument must be a{2} {3}.".Fmt(strs[0], Name, typeName[0].IsVowel() ? "n" : "", typeName);
+                                Error = "'{0}' is not valid. The argument must be a{2} {3}.".Fmt(strs[0], Name,
+                                    typeName[0].IsVowel() ? "n" : "", typeName);
                             }
                             return;
                         }
@@ -190,22 +193,22 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Gets or sets a value that determines if the default value should be displayed to the user in the usage.
+        ///     Gets or sets a value that determines if the default value should be displayed to the user in the usage.
         /// </summary>
         public bool ShowDefaultValue { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that determines if the property should be saved.
+        ///     Gets or sets a value that determines if the property should be saved.
         /// </summary>
         public bool AllowSave { get; set; }
 
         /// <summary>
-        /// Gets any errors associated with this property.
+        ///     Gets any errors associated with this property.
         /// </summary>
         public string Error { get; private set; }
 
         /// <summary>
-        /// Additional custom validators. Useful for adding validation outside of attributes.
+        ///     Additional custom validators. Useful for adding validation outside of attributes.
         /// </summary>
         public IList<ICustomValidator> Validators { get; private set; }
 
@@ -214,7 +217,7 @@ namespace BizArk.Core.CmdLine
         #region Methods
 
         /// <summary>
-        /// Gets the textual representation of this command-line object.
+        ///     Gets the textual representation of this command-line object.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -242,19 +245,17 @@ namespace BizArk.Core.CmdLine
         }
 
         #endregion
-
     }
 
     /// <summary>
-    /// A list of CmdLineProperty objects.
+    ///     A list of CmdLineProperty objects.
     /// </summary>
     public class CmdLinePropertyList : IEnumerable<CmdLineProperty>
     {
-
         #region Initialization and Destruction
 
         /// <summary>
-        /// Creates an instance of CmdLinePropertyList.
+        ///     Creates an instance of CmdLinePropertyList.
         /// </summary>
         public CmdLinePropertyList(CmdLineObject obj)
         {
@@ -298,17 +299,17 @@ namespace BizArk.Core.CmdLine
 
         #region Fields and Properties
 
-        private StringComparison mCompare;
-        private List<CmdLineProperty> mProperties = new List<CmdLineProperty>();
-        private Dictionary<string, CmdLineProperty> mPropertyDictionary;
+        private readonly StringComparison mCompare;
+        private readonly List<CmdLineProperty> mProperties = new List<CmdLineProperty>();
+        private readonly Dictionary<string, CmdLineProperty> mPropertyDictionary;
 
         /// <summary>
-        /// Gets the command-line property associated with this argument.
+        ///     Gets the command-line property associated with this argument.
         /// </summary>
         /// <param name="argName">This can be the shortcut, full property name, or a partial property name that is unique.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">Thrown when the command-line property cannot be found.</exception>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         public CmdLineProperty this[string argName]
         {
             get
@@ -338,12 +339,15 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Gets the number of properties in the list.
+        ///     Gets the number of properties in the list.
         /// </summary>
-        public int Count { get { return mProperties.Count; } }
+        public int Count
+        {
+            get { return mProperties.Count; }
+        }
 
         /// <summary>
-        /// Gets the command-line object for this list.
+        ///     Gets the command-line object for this list.
         /// </summary>
         public CmdLineObject Object { get; private set; }
 
@@ -352,7 +356,7 @@ namespace BizArk.Core.CmdLine
         #region Methods
 
         /// <summary>
-        /// Adds a command-line property to the list keyed to the given name.
+        ///     Adds a command-line property to the list keyed to the given name.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="prop"></param>
@@ -364,7 +368,7 @@ namespace BizArk.Core.CmdLine
         }
 
         /// <summary>
-        /// Gets the enumerator for the list.
+        ///     Gets the enumerator for the list.
         /// </summary>
         /// <returns></returns>
         public IEnumerator<CmdLineProperty> GetEnumerator()
@@ -378,6 +382,5 @@ namespace BizArk.Core.CmdLine
         }
 
         #endregion
-
     }
 }
