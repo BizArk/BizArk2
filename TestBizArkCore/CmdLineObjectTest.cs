@@ -514,7 +514,7 @@ namespace TestBizArkCore
 			var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
 
 			// Act
-			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John" });
+			cmdLineObj.InitializeFromCmdLine(new[] { "/Name", "John" });
 
 			//Assert
 		    string helpText = cmdLineObj.GetHelpText(80);
@@ -535,7 +535,7 @@ Help (?): Displays command-line usage information.
 			var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
 
 			// Act
-			cmdLineObj.InitializeFromFullCmdLine("prog.exe /Name John", new[] { "prog.exe", "/Name", "John" });
+			cmdLineObj.InitializeFromCmdLine(new[] {"/Name", "John" });
 
 			//Assert
 			string helpText = cmdLineObj.GetHelpText(80);
