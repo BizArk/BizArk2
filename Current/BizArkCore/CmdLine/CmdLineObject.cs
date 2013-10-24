@@ -305,7 +305,7 @@ namespace BizArk.Core.CmdLine
 			}
 			else
 			{
-				InitializeFromFullCmdLine(Environment.CommandLine, Environment.GetCommandLineArgs());
+				InitializeFromCmdLine(Environment.GetCommandLineArgs());
 			}
 		}
 
