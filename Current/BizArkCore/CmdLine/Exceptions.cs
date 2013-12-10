@@ -23,7 +23,7 @@ namespace BizArk.Core.CmdLine
     }
 
     /// <summary>
-    /// Exception thrown if there is a problem with a command line arugment definition.
+    /// Exception thrown if there is a problem with a command line argument definition.
     /// </summary>
     public class CmdLineArgumentException : CmdLineException
     {
