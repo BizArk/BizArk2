@@ -21,6 +21,12 @@ namespace TestBizArkCore
     public class CmdLineObjectTest
     {
         [Test]
+        public void InitializeFromCmdLine_EmptyPrefix_CmdLineArgumentExceptionThrown()
+        {
+            Assert.Throws<CmdLineArgumentException>(()=> new CmdLineObjectWithEmptyPrefix());
+        }
+
+        [Test]
         public void InitializeFromCmdLine_ArgsContainsArrayOfEnum_EnumValuesAreParsed()
         {
             var objectWithMultipleEnumProperty = new CmdLineObjectWithMultipleEnumProperty();
@@ -580,6 +586,13 @@ Help (?): Displays command-line usage information.
     }
 
     internal class CmdLineObjectWithEnumProperty : CmdLineObject
+    {
+        [CmdLineArg]
+        public Car Car { get; set; }
+    }
+
+    [CmdLineOptions(ArgumentPrefix = "")]
+    internal class CmdLineObjectWithEmptyPrefix : CmdLineObject
     {
         [CmdLineArg]
         public Car Car { get; set; }
