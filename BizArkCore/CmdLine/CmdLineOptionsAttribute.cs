@@ -104,13 +104,7 @@ namespace BizArk.Core.CmdLine
             if (DefaultArgNames != null)
                 options.DefaultArgNames = DefaultArgNames;
             if (ArgumentPrefix != null)
-            {
-                if (String.Empty == ArgumentPrefix)
-                {
-                    throw new CmdLineArgumentException("ArgumentPrefix cannot be empty string");
-                }
                 options.ArgumentPrefix = ArgumentPrefix;
-            }
             if (WaitArgName != null)
                 options.WaitArgName = WaitArgName;
             if (Wait != null)

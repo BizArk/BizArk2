@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using BizArk.Core.CmdLine;
 using BizArk.Core.Extensions.StringExt;
 using BizArk.Core.Extensions.WebExt;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Linq;
 using BizArk.Core;
 using BizArk.Core.DataAnnotations;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TestBizArkCore
@@ -17,13 +17,47 @@ namespace TestBizArkCore
     ///This is a test class for CmdLineObjectTest and is intended
     ///to contain all CmdLineObjectTest Unit Tests
     ///</summary>
-[TestFixture]
+    [TestFixture]
     public class CmdLineObjectTest
     {
         [Test]
-        public void InitializeFromCmdLine_EmptyPrefix_CmdLineArgumentExceptionThrown()
+        public void InitializeFromCmdLine_EmptyPrefixAndAssignmentDelimiterEqualitySignValueSurroundedByDoubleQuotes_FullPathWithoutDoubleQuotes()
         {
-            Assert.Throws<CmdLineArgumentException>(()=> new CmdLineObjectWithEmptyPrefix());
+            var cmdLineObjectWithEmptyPrefix = new CmdLineObjectWithEmptyPrefixAssignmentDelimiterEqualitySign();
+
+            cmdLineObjectWithEmptyPrefix.InitializeFromCmdLine(@"FullPath=""C:\Program Files\bizark\""");
+
+            cmdLineObjectWithEmptyPrefix.FullPath.Should().Be(@"C:\Program Files\bizark\");
+        }
+
+        [Test]
+        public void InitializeFromCmdLine_EmptyPrefixAndAssignmentDelimiterEqualitySign_CmdLineArgumentParsed()
+        {
+            var cmdLineObjectWithEmptyPrefix = new CmdLineObjectWithEmptyPrefixAssignmentDelimiterEqualitySign();
+
+            cmdLineObjectWithEmptyPrefix.InitializeFromCmdLine("Car=Lamborghini");
+
+            cmdLineObjectWithEmptyPrefix.Car.Should().Be(Car.Lamborghini);
+        }
+
+        [Test]
+        public void InitializeFromCmdLine_EmptyPrefix_CmdLineArgumentParsed()
+        {
+            var cmdLineObjectWithEmptyPrefix = new CmdLineObjectWithEmptyPrefix();
+
+            cmdLineObjectWithEmptyPrefix.InitializeFromCmdLine("Car", "Lamborghini");
+
+            cmdLineObjectWithEmptyPrefix.Car.Should().Be(Car.Lamborghini);
+        }
+
+        [Test]
+        public void InitializeFromCmdLine_EmptyPrefixArray_CmdLineArgumentParsed()
+        {
+            var cmdLineObjectWithEmptyPrefix = new CmdLineObjectWithEmptyPrefix();
+
+            cmdLineObjectWithEmptyPrefix.InitializeFromCmdLine("Cars", "Tesla,Ferrari,Lamborghini");
+
+            cmdLineObjectWithEmptyPrefix.Cars.ShouldBeEquivalentTo(new Car[] {Car.Tesla, Car.Ferrari, Car.Lamborghini});
         }
 
         [Test]
@@ -591,11 +625,27 @@ Help (?): Displays command-line usage information.
         public Car Car { get; set; }
     }
 
+    [CmdLineOptions(ArgumentPrefix = "", AssignmentDelimiter = '=')]
+    internal class CmdLineObjectWithEmptyPrefixAssignmentDelimiterEqualitySign : CmdLineObject
+    {
+        [CmdLineArg]
+        public string FullPath { get; set; }
+
+        [CmdLineArg]
+        public Car Car { get; set; }
+
+        [CmdLineArg]
+        public Car[] Cars { get; set; }
+    }
+
     [CmdLineOptions(ArgumentPrefix = "")]
     internal class CmdLineObjectWithEmptyPrefix : CmdLineObject
     {
         [CmdLineArg]
         public Car Car { get; set; }
+
+        [CmdLineArg]
+        public Car[] Cars { get; set; }
     }
 
     [CmdLineOptions(DefaultArgName = "Hello", ApplicationName = "TESTAPP")]
