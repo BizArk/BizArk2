@@ -473,16 +473,26 @@ namespace BizArk.Core.CmdLine
 
 			for (int i = 0; i < args.Length; i++)
 			{
+			    if (String.IsNullOrEmpty(Options.ArgumentPrefix))
+			    {
+                    return new[] { GetArgumentValue(args[0]) };
+			    }
 				if (args[i].StartsWith(Options.ArgumentPrefix)) return argValues.ToArray();
 			    var argumentValue = args[i];
-			    argumentValue = String.IsNullOrEmpty(argumentValue) ? String.Empty : argumentValue.Trim('"');
+			    argumentValue = GetArgumentValue(argumentValue);
 			    argValues.Add(argumentValue);
 			}
 
 			return argValues.ToArray();
 		}
 
-		/// <summary>
+	    private static string GetArgumentValue(string argumentValue)
+	    {
+	        argumentValue = String.IsNullOrEmpty(argumentValue) ? String.Empty : argumentValue.Trim('"');
+	        return argumentValue;
+	    }
+
+	    /// <summary>
 		/// Override this method to perform cmd-line validation. It is recommended to call the base method.
 		/// </summary>
 		/// <returns></returns>
