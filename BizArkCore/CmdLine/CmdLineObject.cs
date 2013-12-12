@@ -126,15 +126,6 @@ namespace BizArk.Core.CmdLine
 		/// </summary>
 		/// <returns></returns>
 		string ToString();
-
-		/// <summary>
-		/// Initializes the object with the given command line taking into consideration the Assignment Delimeter. 
-        /// [InitializeFromFullCmdLine is obsolete and will be removed in version 2.0.5. Use InitializeFromCmdLine instead.]
-		/// </summary>
-		/// <param name="fullCommandLine"> </param>
-		/// <param name="fullCommandLineArgs"> </param>
-        [Obsolete("InitializeFromFullCmdLine is obsolete and will be removed in version 2.0.5. Use InitializeFromCmdLine instead.")]
-        void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs);
 	}
 
 	/// <summary>
@@ -305,22 +296,11 @@ namespace BizArk.Core.CmdLine
 			}
 			else
 			{
-				InitializeFromCmdLine(Environment.GetCommandLineArgs());
+			    InitializeFromCmdLine(Environment.GetCommandLineArgs().Shrink(1));
 			}
 		}
 
-		/// <summary>
-        /// Obsolete method, InitializeFromCmdLine should be used instead
-		/// </summary>
-		/// <param name="fullCommandLine"> </param>
-		/// <param name="fullCommandLineArgs"> </param>
-        [Obsolete("InitializeFromFullCmdLine is obsolete and will be removed in version 2.0.5. Use InitializeFromCmdLine instead.")]
-		public void InitializeFromFullCmdLine(string fullCommandLine, string[] fullCommandLineArgs)
-		{
-		    InitializeFromCmdLine(fullCommandLineArgs.Shrink(1));
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Initializes the command-line object, but does not populate it.
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
