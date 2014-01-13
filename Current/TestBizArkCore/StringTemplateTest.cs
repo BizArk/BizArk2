@@ -1,9 +1,9 @@
-﻿using BizArk.Core.Template;
-using System;
+﻿using System;
 using System.Diagnostics;
+using BizArk.Core.Template;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 
 	[TestFixture]

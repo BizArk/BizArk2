@@ -1,8 +1,8 @@
-﻿using BizArk.Core.Extensions.ArrayExt;
-using System;
+﻿using System;
+using BizArk.Core.Extensions.ArrayExt;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 
 

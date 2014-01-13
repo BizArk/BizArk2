@@ -2,7 +2,7 @@
 using BizArk.Core.CmdLine;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 	[TestFixture]
 	public class ConsoleApplicationTests

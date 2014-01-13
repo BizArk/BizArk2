@@ -1,8 +1,8 @@
-﻿using BizArk.Core.Web;
-using System.IO;
+﻿using System.IO;
+using BizArk.Core.Web;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 	
 	

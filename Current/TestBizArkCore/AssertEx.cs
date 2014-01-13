@@ -1,10 +1,9 @@
 ﻿using System;
-using NUnit.Framework;
-using BizArk.Core.Extensions.StringExt;
-using BizArk.Core.Extensions.FormatExt;
 using BizArk.Core.Extensions.DateExt;
+using BizArk.Core.Extensions.FormatExt;
+using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
     /// <summary>
     /// Additional assertions beyond what is provided by Assert.

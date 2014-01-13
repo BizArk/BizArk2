@@ -1,8 +1,8 @@
-﻿using BizArk.Core.Extensions.StringExt;
-using System;
+﻿using System;
+using BizArk.Core.Extensions.StringExt;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 	/// <summary>
 	///This is a test class for StringExtTest and is intended
