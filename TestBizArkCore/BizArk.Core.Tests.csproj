@@ -8,8 +8,8 @@
     <ProjectGuid>{1A817E1B-CCE7-42FC-A6C5-558FB7CE918C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestBizArkCore</RootNamespace>
-    <AssemblyName>TestBizArkCore</AssemblyName>
+    <RootNamespace>BizArk.Core.Tests</RootNamespace>
+    <AssemblyName>BizArk.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -69,9 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertEx.cs" />
+    <Compile Include="CmdLine\CmdLineObjectTests.cs" />
     <Compile Include="ConsoleApplicationTests.cs" />
     <Compile Include="ConversionStrategyTest.cs" />
-    <Compile Include="CmdLineObjectTest.cs" />
     <Compile Include="ConvertExTest.cs" />
     <Compile Include="DatabaseTest.cs" />
     <Compile Include="SqlCeAdapter.cs" />
@@ -115,15 +115,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BizArkCore\BizArkCore.csproj">
+    <ProjectReference Include="..\BizArkCore\BizArk.Core.csproj">
       <Project>{8D3E6472-7E47-4266-947B-659F17F641F1}</Project>
-      <Name>BizArkCore</Name>
+      <Name>BizArk.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\BizArkDB\BizArkDB.csproj">
       <Project>{4bef5ef0-f804-42fe-876e-548167d79530}</Project>
       <Name>BizArkDB</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

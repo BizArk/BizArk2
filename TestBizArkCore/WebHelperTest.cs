@@ -1,13 +1,13 @@
-﻿using BizArk.Core.Web;
-using System;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Net;
-using System.Drawing;
-using BizArk.Core.Util;
 using System.Threading;
+using BizArk.Core.Util;
+using BizArk.Core.Web;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 
 

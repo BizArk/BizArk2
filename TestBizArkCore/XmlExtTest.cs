@@ -1,9 +1,9 @@
-﻿using BizArk.Core.Extensions.XmlExt;
+﻿using System.Diagnostics;
 using System.Xml;
-using System.Diagnostics;
+using BizArk.Core.Extensions.XmlExt;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
     
     

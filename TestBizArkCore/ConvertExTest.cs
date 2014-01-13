@@ -1,10 +1,9 @@
-﻿using BizArk.Core;
-using System;
-using System.Drawing;
+﻿using System;
 using System.Data;
+using System.Drawing;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 
 

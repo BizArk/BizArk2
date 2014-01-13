@@ -1,7 +1,7 @@
 ﻿using BizArk.Core.Extensions.FormatExt;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
     
     

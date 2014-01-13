@@ -1,19 +1,11 @@
-﻿using BizArk.Core;
-using System;
-using System.Drawing;
-using System.Data;
-using NUnit.Framework;
-using BizArk.DB.Adapters;
-using BizArk.DB;
-using System.Diagnostics;
+﻿using System.Data.SqlServerCe;
 using System.IO;
-using System.Data.SqlServerCe;
-using System.Data.Common;
-using System.ComponentModel;
 using BizArk.Core.Extensions.DataExt;
+using BizArk.DB;
 using BizArk.DB.ORM;
+using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests
 {
 
     [TestFixture,Ignore]

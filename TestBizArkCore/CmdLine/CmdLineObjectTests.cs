@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using BizArk.Core;
 using BizArk.Core.CmdLine;
 using BizArk.Core.DataAnnotations;
 using BizArk.Core.Extensions.StringExt;
@@ -11,15 +10,25 @@ using BizArk.Core.Util;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TestBizArkCore
+namespace BizArk.Core.Tests.CmdLine
 {
     /// <summary>
     ///     This is a test class for CmdLineObjectTest and is intended
     ///     to contain all CmdLineObjectTest Unit Tests
     /// </summary>
     [TestFixture]
-    public class CmdLineObjectTest
+    public class CmdLineObjectTests
     {
+        [Test]
+        public void InitializeFromCmdLine_ValueContainsDollarSign_PropertyContainsTheWholeValue()
+        {
+            // full alias
+            var cmdLine = new CmdLineObjectWithPassword();
+            cmdLine.InitializeFromCmdLine(new[] {@"/Password=qaz$12"});
+
+            cmdLine.Password.Should().Be("qaz$12");
+        }
+
         [Test]
         public void AliasTest()
         {
@@ -618,6 +627,13 @@ Help (?): Displays command-line usage information.
             Debug.WriteLine(args.GetHelpText(50));
             Assert.IsTrue(args.IsValid());
         }
+    }
+
+    [CmdLineOptions(AssignmentDelimiter = '=')]
+    public class CmdLineObjectWithPassword : CmdLineObject
+    {
+        [CmdLineArg]
+        public string Password { get; set; }
     }
 
     [CmdLineOptions(AssignmentDelimiter = '=')]
