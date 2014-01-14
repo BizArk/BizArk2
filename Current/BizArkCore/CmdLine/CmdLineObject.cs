@@ -529,20 +529,22 @@ namespace BizArk.Core.CmdLine
 		{
 			if (Properties == null) throw new InvalidOperationException("The command-line object has not been initialized yet.");
 
-			var desc = new StringBuilder();
+            var helpTextBuilder = new HelpTextBuilder(maxWidth);
 
-			if (mErrors != null && mErrors.Length > 0)
+			if (mErrors != null && mErrors.Any())
 			{
-				desc.AppendLine(("ERROR: " + mErrors[0]).Wrap(maxWidth));
-				for (int i = 1; i < mErrors.Length; i++)
-					desc.AppendLine(mErrors[i].Wrap(maxWidth, "    "));
-				desc.AppendLine();
+				helpTextBuilder.AppendLine("ERROR: " + mErrors[0]);
+			    foreach (var error in mErrors)
+			    {
+                    helpTextBuilder.AppendLine(error);
+			    }
+				helpTextBuilder.AppendLine();
 			}
 
-			desc.AppendLine(Options.Title);
-			desc.AppendLine(Options.Description.Wrap(maxWidth));
-			desc.AppendLine("Usage: " + Options.Usage);
-			desc.AppendLine();
+			helpTextBuilder.AppendLine(Options.Title);
+			helpTextBuilder.AppendLine(Options.Description);
+			helpTextBuilder.AppendLine("Usage: " + Options.Usage);
+			helpTextBuilder.AppendLine();
 
 			int maxNameWidth = GetMaxNameLength() + 6; // Add extra for ' (S): '
 			int maxDescWidth = maxWidth - maxNameWidth;
@@ -559,22 +561,22 @@ namespace BizArk.Core.CmdLine
 					propName.Append(")");
 				}
 				propName.Append(": ");
-				desc.Append(propName.ToString().PadRight(maxNameWidth));
+				helpTextBuilder.Append(propName.ToString().PadRight(maxNameWidth));
 				string propDesc = prop.Description.Wrap(maxDescWidth);
 				string[] lines = propDesc.Lines();
 				if (lines.Length > 0)
 				{
-					desc.AppendLine(lines[0]);
+					helpTextBuilder.AppendLine(lines[0]);
 					for (int i = 1; i < lines.Length; i++)
-						desc.AppendLine(indent + lines[i]);
+						helpTextBuilder.AppendLine(indent + lines[i]);
 				}
 				else
 				{
 					// If there isn't a description, we need to add a line break.
-					desc.AppendLine();
+					helpTextBuilder.AppendLine();
 				}
 				if (prop.Required)
-					desc.AppendLine(indent + "REQUIRED");
+					helpTextBuilder.AppendLine(indent + "REQUIRED");
 				else if (prop.ShowDefaultValue)
 				{
 					object dflt = prop.DefaultValue;
@@ -589,7 +591,7 @@ namespace BizArk.Core.CmdLine
 							else
 								dflt = "[{0}]".Fmt(strs.Join(", "));
 						}
-						desc.AppendLine(indent + string.Format("Default Value: {0}", dflt));
+						helpTextBuilder.AppendLine(indent + string.Format("Default Value: {0}", dflt));
 					}
 				}
 
@@ -598,25 +600,24 @@ namespace BizArk.Core.CmdLine
 					var enumVals = new StringBuilder();
 					string[] enumNames = prop.PropertyType.GetEnumNames();
 					enumVals.AppendFormat(indent + "Possible Values: [{0}]", enumNames.Join(", "));
-					if (enumVals.Length < maxWidth)
-						desc.AppendLine(enumVals.ToString());
+                    helpTextBuilder.AppendLine(enumVals.ToString());
 				}
 
 				foreach (ValidationAttribute validator in prop.GetValidationAtts())
 				{
 					string message = validator.FormatErrorMessage(prop.Name).Wrap(maxDescWidth);
 					foreach (string line in message.Lines())
-						desc.AppendLine(indent + line);
+						helpTextBuilder.AppendLine(indent + line);
 				}
 				foreach (ICustomValidator validator in prop.Validators)
 				{
 					string message = validator.FormatErrorMessage(prop.Name).Wrap(maxDescWidth);
 					foreach (string line in message.Lines())
-						desc.AppendLine(indent + line);
+						helpTextBuilder.AppendLine(indent + line);
 				}
 			}
 
-			return desc.ToString();
+			return helpTextBuilder.ToString();
 		}
 
 		private int GetMaxNameLength()

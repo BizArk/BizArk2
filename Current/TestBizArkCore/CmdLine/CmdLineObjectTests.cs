@@ -12,13 +12,99 @@ using NUnit.Framework;
 
 namespace BizArk.Core.Tests.CmdLine
 {
-    /// <summary>
-    ///     This is a test class for CmdLineObjectTest and is intended
-    ///     to contain all CmdLineObjectTest Unit Tests
-    /// </summary>
     [TestFixture]
     public class CmdLineObjectTests
     {
+        #region GetHelpText
+
+        [Test]
+        public void GetHelpText_CmdLineWithEnumProperty_HelpTextContainsAllEnumValues()
+        {
+            // Act
+            var cmdLine = new CmdLineObjectWithEnumPropertyWithManyValues();
+            cmdLine.Initialize();
+            var helpText = cmdLine.GetHelpText(80);
+
+            // Assert
+            helpText.Should().Be("Command-line options.\r\n\r\nUsage:  [/?[-]]\r\n\r\nCountry:     \r\n             Default Value: Abkhazia\r\n             Possible Values: [Abkhazia, Albania, Afghanistan, Algeria, Andorra,\n             Angola, Anguilla, Antigua, Argentina, Armenia, Aruba, Australia,\n             Austria, Azerbaijan]\r\nHelp (?):    Displays command-line usage information.\r\n             Default Value: False\r\n");
+        }
+
+        [Test]
+        public void GetHelpText_ColonAssignmentDelimiterCmdLineObject_UsageContainsSpace()
+        {
+            // Arrange
+            var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
+
+            // Act
+            cmdLineObj.InitializeFromCmdLine(new[] { "/Name", "John" });
+
+            //Assert
+            string helpText = cmdLineObj.GetHelpText(80);
+            Assert.That(helpText, Is.EqualTo(@"Command-line options.
+
+Usage:  [/Name:<Name>] [/?[-]]
+
+Name:      The name of the user
+Count:     
+           Default Value: 0
+Help (?):  Displays command-line usage information.
+           Default Value: False
+"));
+        }
+
+        [Test]
+        public void GetHelpText_DefaultAssignmentDelimiterOneArgument_UsageContainsSpace()
+        {
+            // Arrange
+            var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
+
+            // Act
+            cmdLineObj.InitializeFromCmdLine(new[] { "/Name", "John" });
+
+            //Assert
+            string helpText = cmdLineObj.GetHelpText(80);
+            Assert.That(helpText, Is.EqualTo(@"Command-line options.
+
+Usage:  [/Name <Name>] [/?[-]]
+
+Name:     The name of the user
+Help (?): Displays command-line usage information.
+          Default Value: False
+"));
+        }
+
+        [Test]
+        public void GetHelpText_EnumPropertyIncmdLineObject_EnumValuesDisplayed()
+        {
+            var cmdLineObject = new CmdLineObjectWithEnumProperty();
+            cmdLineObject.InitializeFromCmdLine(new[] { "/?" });
+
+            string helpText = cmdLineObject.GetHelpText(80);
+
+            Assert.That(@"Command-line options.
+
+Usage:  [/?[-]]
+
+Car:      
+          Default Value: Tesla
+          Possible Values: [Tesla, Ferrari, Lamborghini, Kia]
+Help (?): Displays command-line usage information.
+          Default Value: False
+", Is.EqualTo(helpText));
+        }
+
+        [Test]
+        public void HelpTextWrappingTest()
+        {
+            var args = new MyTestCmdLineObject();
+            args.InitializeFromCmdLine();
+            var vals = new[] { 1, 2 };
+            Debug.WriteLine(args.GetHelpText(40));
+            Assert.IsTrue(args.IsValid());
+        }
+        #endregion GetHelpText
+
+        #region InitializeFromCmdLine
         [Test]
         public void InitializeFromCmdLine_ValueContainsDollarSign_PropertyContainsTheWholeValue()
         {
@@ -30,7 +116,7 @@ namespace BizArk.Core.Tests.CmdLine
         }
 
         [Test]
-        public void AliasTest()
+        public void InitializeFromCmdLine_Alias_Initialized()
         {
             // full alias
             var cmdLine = new MyTestCmdLineObject();
@@ -44,7 +130,7 @@ namespace BizArk.Core.Tests.CmdLine
         }
 
         [Test]
-        public void ArgumentValidationTest()
+        public void InitializeFromCmdLine_ArgumentValidationTest()
         {
             var args = new MyTestCmdLineObject();
             args.InitializeFromCmdLine("/NumberOfScoops", "2");
@@ -83,6 +169,27 @@ namespace BizArk.Core.Tests.CmdLine
         }
 
         [Test]
+        public void InitializeFromCmdLine_DefaultPropTest()
+        {
+            MyTestCmdLineObject3 target;
+            string[] args;
+            string[] expected;
+
+            target = new MyTestCmdLineObject3();
+            args = new[] { "Brian", "Christine", "Abrian", "Brooke" };
+            target.InitializeFromCmdLine(args);
+            expected = new[] { "Brian", "Christine", "Abrian", "Brooke" };
+            AssertEx.AreEqual(expected, target.Family);
+
+            target = new MyTestCmdLineObject3();
+            args = new[] { "Brian", "Christine", "Abrian", "Brooke", "/D", "Brian" };
+            target.InitializeFromCmdLine(args);
+            expected = new[] { "Brian", "Christine", "Abrian", "Brooke" };
+            AssertEx.AreEqual(expected, target.Family);
+            Assert.AreEqual("Brian", target.Father);
+        }
+
+        [Test]
         public void CmdLineDescriptionTest()
         {
             string test = "This is a test\ntest  test test";
@@ -95,109 +202,11 @@ namespace BizArk.Core.Tests.CmdLine
             Debug.WriteLine(args.GetHelpText(50));
         }
 
-        /// <summary>
-        ///     A test for Initialize
-        /// </summary>
         [Test]
-        public void DefaultPropTest()
-        {
-            MyTestCmdLineObject3 target;
-            string[] args;
-            string[] expected;
-
-            target = new MyTestCmdLineObject3();
-            args = new[] {"Brian", "Christine", "Abrian", "Brooke"};
-            target.InitializeFromCmdLine(args);
-            expected = new[] {"Brian", "Christine", "Abrian", "Brooke"};
-            AssertEx.AreEqual(expected, target.Family);
-
-            target = new MyTestCmdLineObject3();
-            args = new[] {"Brian", "Christine", "Abrian", "Brooke", "/D", "Brian"};
-            target.InitializeFromCmdLine(args);
-            expected = new[] {"Brian", "Christine", "Abrian", "Brooke"};
-            AssertEx.AreEqual(expected, target.Family);
-            Assert.AreEqual("Brian", target.Father);
-        }
-
-        [Test]
-        public void DuplicateArgumentsTest()
+        public void InitializeEmpty_DuplicateArgumentsTest()
         {
             var cmdLine = new AliasesWithDifferentCaseTestCmdLineObject();
-            AssertEx.Throws(typeof (CmdLineArgumentException), () => { cmdLine.InitializeEmpty(); });
-        }
-
-        [Test]
-        public void GetHelpText_ColonAssignmentDelimiterCmdLineObject_UsageContainsSpace()
-        {
-            // Arrange
-            var cmdLineObj = new ColonAssignmentDelimiterCmdLineObject();
-
-            // Act
-            cmdLineObj.InitializeFromCmdLine(new[] {"/Name", "John"});
-
-            //Assert
-            string helpText = cmdLineObj.GetHelpText(80);
-            Assert.That(helpText, Is.EqualTo(@"Command-line options.
-
-Usage:  [/Name:<Name>] [/?[-]]
-
-Name:      The name of the user
-Count:     
-           Default Value: 0
-Help (?):  Displays command-line usage information.
-           Default Value: False
-"));
-        }
-
-        [Test]
-        public void GetHelpText_DefaultAssignmentDelimiterOneArgument_UsageContainsSpace()
-        {
-            // Arrange
-            var cmdLineObj = new DefaultAssignmentDelimiterCmdLineObject();
-
-            // Act
-            cmdLineObj.InitializeFromCmdLine(new[] {"/Name", "John"});
-
-            //Assert
-            string helpText = cmdLineObj.GetHelpText(80);
-            Assert.That(helpText, Is.EqualTo(@"Command-line options.
-
-Usage:  [/Name <Name>] [/?[-]]
-
-Name:     The name of the user
-Help (?): Displays command-line usage information.
-          Default Value: False
-"));
-        }
-
-        [Test]
-        public void GetHelpText_EnumPropertyIncmdLineObject_EnumValuesDisplayed()
-        {
-            var cmdLineObject = new CmdLineObjectWithEnumProperty();
-            cmdLineObject.InitializeFromCmdLine(new[] {"/?"});
-
-            string helpText = cmdLineObject.GetHelpText(80);
-
-            Assert.That(@"Command-line options.
-
-Usage:  [/?[-]]
-
-Car:      
-          Default Value: Tesla
-          Possible Values: [Tesla, Ferrari, Lamborghini, Kia]
-Help (?): Displays command-line usage information.
-          Default Value: False
-", Is.EqualTo(helpText));
-        }
-
-        [Test]
-        public void HelpTextWrappingTest()
-        {
-            var args = new MyTestCmdLineObject();
-            args.InitializeFromCmdLine();
-            var vals = new[] {1, 2};
-            Debug.WriteLine(args.GetHelpText(40));
-            Assert.IsTrue(args.IsValid());
+            AssertEx.Throws(typeof(CmdLineArgumentException), () => { cmdLine.InitializeEmpty(); });
         }
 
         [Test]
@@ -350,9 +359,16 @@ Help (?): Displays command-line usage information.
             Assert.That(cmdLineObj.Name, Is.EqualTo("John Smith"));
         }
 
-        /// <summary>
-        ///     A test for Initialize
-        /// </summary>
+        [Test]
+        public void LongArgPrefixTest()
+        {
+            var args = new MyTestCmdLineObject6();
+            Assert.AreEqual("--", args.Options.ArgumentPrefix);
+            args.InitializeFromCmdLine("--D", "Brian");
+            Assert.AreEqual("Brian", args.Father);
+        }
+        #endregion
+
         [Test]
         public void InitializeTest()
         {
@@ -426,15 +442,6 @@ Help (?): Displays command-line usage information.
             target.InitializeFromCmdLine(args);
             string[] expectedStuff = {"Cars", "Computers", "Food"};
             AssertEx.AreEqual(expectedStuff, target.StuffILike);
-        }
-
-        [Test]
-        public void LongArgPrefixTest()
-        {
-            var args = new MyTestCmdLineObject6();
-            Assert.AreEqual("--", args.Options.ArgumentPrefix);
-            args.InitializeFromCmdLine("--D", "Brian");
-            Assert.AreEqual("Brian", args.Father);
         }
 
         [Test]
@@ -647,6 +654,30 @@ Help (?): Displays command-line usage information.
     {
         [CmdLineArg]
         public Car Car { get; set; }
+    }
+
+    internal class CmdLineObjectWithEnumPropertyWithManyValues : CmdLineObject
+    {
+        [CmdLineArg]
+        public Country Country { get; set; }
+    }
+
+    internal enum Country
+    {
+        Abkhazia,
+        Albania,
+        Afghanistan,
+        Algeria,
+        Andorra,
+        Angola,
+        Anguilla,
+        Antigua,
+        Argentina,
+        Armenia,
+        Aruba,
+        Australia,
+        Austria,
+        Azerbaijan
     }
 
     [CmdLineOptions(ArgumentPrefix = "", AssignmentDelimiter = '=')]
