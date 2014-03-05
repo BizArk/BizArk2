@@ -71,27 +71,27 @@
     <Compile Include="AssertEx.cs" />
     <Compile Include="CmdLine\CmdLineObjectTests.cs" />
     <Compile Include="ConsoleApplicationTests.cs" />
-    <Compile Include="ConversionStrategyTest.cs" />
-    <Compile Include="ConvertExTest.cs" />
-    <Compile Include="DatabaseTest.cs" />
+    <Compile Include="ConversionStrategyTests.cs" />
+    <Compile Include="ConvertExTests.cs" />
+    <Compile Include="DatabaseTests.cs" />
     <Compile Include="SqlCeAdapter.cs" />
-    <Compile Include="UtilTest.cs" />
-    <Compile Include="DbAdapterTest.cs" />
-    <Compile Include="FormatExtTest.cs" />
-    <Compile Include="HashListTest.cs" />
-    <Compile Include="MimeMapTest.cs" />
-    <Compile Include="UploadFileTest.cs" />
-    <Compile Include="WebHelperTest.cs" />
+    <Compile Include="UtilTests.cs" />
+    <Compile Include="DbAdapterTests.cs" />
+    <Compile Include="FormatExtTests.cs" />
+    <Compile Include="HashListTests.cs" />
+    <Compile Include="MimeMapTests.cs" />
+    <Compile Include="UploadFileTests.cs" />
+    <Compile Include="WebHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ArrayExtTest.cs" />
+    <Compile Include="ArrayExtTests.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="StringExtTest.cs" />
-    <Compile Include="StringTemplateTest.cs" />
-    <Compile Include="XmlExtTest.cs" />
+    <Compile Include="StringExtTests.cs" />
+    <Compile Include="StringTemplateTests.cs" />
+    <Compile Include="XmlExtTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

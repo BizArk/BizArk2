@@ -7,7 +7,7 @@ namespace BizArk.Core.Tests
 {
 
 	[TestFixture]
-    public class StringTemplateTest
+    public class StringTemplateTests
     {
 
         [Test]

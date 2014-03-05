@@ -12,7 +12,7 @@ namespace BizArk.Core.Tests
 	///to contain all ConvertExTest Unit Tests
 	///</summary>
 	[TestFixture]
-	public class ConvertExTest
+	public class ConvertExTests
 	{
 
 		[Test]

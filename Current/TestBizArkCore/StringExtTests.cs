@@ -9,7 +9,7 @@ namespace BizArk.Core.Tests
 	///to contain all StringExtTest Unit Tests
 	///</summary>
 	[TestFixture]
-	public class StringExtTest
+	public class StringExtTests
 	{
 
 		[Test]

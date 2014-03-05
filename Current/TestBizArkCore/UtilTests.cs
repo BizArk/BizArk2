@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace BizArk.Core.Tests
 {
 	[TestFixture]
-	public class UtilTest
+	public class UtilTests
 	{
 		[Test]
 		public void RangeIncludesTest()

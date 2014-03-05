@@ -9,7 +9,7 @@ namespace BizArk.Core.Tests
 {
 
     [TestFixture,Ignore]
-    public class DatabaseTest
+    public class DatabaseTests
     {
 
         private const string cNorthwindConnStr = "Data Source=NorthwindTmp.sdf;Persist Security Info=False;";

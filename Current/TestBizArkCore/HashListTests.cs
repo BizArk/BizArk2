@@ -10,7 +10,7 @@ namespace BizArk.Core.Tests
     ///to contain all HashListTest Unit Tests
     ///</summary>
 [TestFixture]
-    public class HashListTest
+    public class HashListTests
     {
 
 [Test]

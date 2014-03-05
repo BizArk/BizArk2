@@ -442,7 +442,7 @@ namespace BizArk.Core.CmdLine
 	        if (Options.AssignmentDelimiter != Space)
 	        {
 	            var delimiters = new[] {Options.AssignmentDelimiter};
-	            args = args.SelectMany(a => a.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)).ToArray();
+                args = args.SelectMany(a => a.Split(delimiters, 2, StringSplitOptions.RemoveEmptyEntries)).ToArray();
 	        }
 	        return args;
 	    }
