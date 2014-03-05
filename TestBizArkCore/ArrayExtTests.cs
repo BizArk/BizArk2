@@ -11,7 +11,7 @@ namespace BizArk.Core.Tests
     ///to contain all StringArrayExtTest Unit Tests
     ///</summary>
 [TestFixture]
-    public class ArrayExtTest
+    public class ArrayExtTests
     {
 
         [Test]

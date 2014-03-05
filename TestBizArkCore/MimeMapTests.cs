@@ -10,7 +10,7 @@ namespace BizArk.Core.Tests
 	///to contain all MimeMapTest Unit Tests
 	///</summary>
 	[TestFixture]
-	public class MimeMapTest
+	public class MimeMapTests
 	{
 
 		[Test]

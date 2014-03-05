@@ -11,7 +11,7 @@ namespace BizArk.Core.Tests
 	///to contain all UploadFileTest Unit Tests
 	///</summary>
 	[TestFixture]
-	public class UploadFileTest
+	public class UploadFileTests
 	{
 
 		[Test]

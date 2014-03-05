@@ -18,6 +18,17 @@ namespace BizArk.Core.Tests.CmdLine
         #region GetHelpText
 
         [Test]
+        public void InitializeFromCmdLine_CmdLineObjectWithColonAssignmentDelimiter_ArgumentContainsCorrectValue()
+        {
+            // Act
+            var cmdLine = new CmdLineObjectWithColonAssignmentDelimiter();
+            cmdLine.InitializeFromCmdLine(new []{@"-path:""d:\1\"});
+
+            // Assert
+            cmdLine.Path.Should().Be(@"d:\1\");
+        }
+
+        [Test]
         public void GetHelpText_CmdLineWithEnumProperty_HelpTextContainsAllEnumValues()
         {
             // Act
@@ -634,6 +645,13 @@ Help (?): Displays command-line usage information.
             Debug.WriteLine(args.GetHelpText(50));
             Assert.IsTrue(args.IsValid());
         }
+    }
+
+    [CmdLineOptions(AssignmentDelimiter = ':', ArgumentPrefix = "-")]
+    public class CmdLineObjectWithColonAssignmentDelimiter : CmdLineObject
+    {
+        [CmdLineArg]
+        public string Path { get; set; }
     }
 
     [CmdLineOptions(AssignmentDelimiter = '=')]

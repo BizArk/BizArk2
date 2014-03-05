@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace BizArk.Core.Tests
 {
     [TestFixture]
-    public class ConversionStrategyTest
+    public class ConversionStrategyTests
     {
         [Test]
         public void ByteArrayImageConversionStrategyTest()

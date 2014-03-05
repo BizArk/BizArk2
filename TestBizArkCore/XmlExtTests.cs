@@ -12,7 +12,7 @@ namespace BizArk.Core.Tests
     ///to contain all XmlExtTest Unit Tests
     ///</summary>
 [TestFixture]
-    public class XmlExtTest
+    public class XmlExtTests
     {
         private TestContext testContextInstance;
 

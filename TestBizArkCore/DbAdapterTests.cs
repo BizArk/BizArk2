@@ -8,7 +8,7 @@ namespace BizArk.Core.Tests
 {
 
 	[TestFixture,Ignore]
-	public class DbAdapterTest
+	public class DbAdapterTests
 	{
 
         private const string cNorthwindConnStr = "Data Source=NorthwindTmp.sdf;Persist Security Info=False;";

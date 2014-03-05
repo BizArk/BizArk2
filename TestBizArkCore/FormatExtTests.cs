@@ -10,7 +10,7 @@ namespace BizArk.Core.Tests
     ///to contain all FormatExtTest Unit Tests
     ///</summary>
 [TestFixture]
-    public class FormatExtTest
+    public class FormatExtTests
     {
         
         /// <summary>

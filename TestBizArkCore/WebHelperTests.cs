@@ -16,7 +16,7 @@ namespace BizArk.Core.Tests
     ///to contain all NoContentTypeTest Unit Tests
     ///</summary>
 	[TestFixture]
-    public class WebHelperTest
+    public class WebHelperTests
     {
 
         //[TestMethod]
