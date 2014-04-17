@@ -117,6 +117,16 @@ Help (?): Displays command-line usage information.
 
         #region InitializeFromCmdLine
         [Test]
+        public void InitializeFromCmdLine_StringArray_PropertyContainsTheWholeValue()
+        {
+            // full alias
+            var cmdLine = new CmdLineObjectWithStringArray();
+            cmdLine.InitializeFromCmdLine(new[] { @"-Names:1;2" });
+
+            cmdLine.Names.Should().BeEquivalentTo(new[] {"1", "2"});
+        }
+
+        [Test]
         public void InitializeFromCmdLine_ValueContainsDollarSign_PropertyContainsTheWholeValue()
         {
             // full alias
@@ -645,6 +655,13 @@ Help (?): Displays command-line usage information.
             Debug.WriteLine(args.GetHelpText(50));
             Assert.IsTrue(args.IsValid());
         }
+    }
+
+    [CmdLineOptions(ArgumentPrefix = "-", AssignmentDelimiter = ':', ArraySeparator = ";")]
+    public class CmdLineObjectWithStringArray : CmdLineObject
+    {
+        [CmdLineArg]
+        public string[] Names { get; set; }
     }
 
     [CmdLineOptions(AssignmentDelimiter = ':', ArgumentPrefix = "-")]
