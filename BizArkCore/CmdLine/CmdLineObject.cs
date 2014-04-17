@@ -417,7 +417,7 @@ namespace BizArk.Core.CmdLine
 					                         prop.Value = bVal;
 					                     }
 					                 }
-                                     else if (prop.PropertyType.IsArray && prop.PropertyType.GetElementType() != typeof(string))
+                                     else if (prop.PropertyType.IsArray)
                                      {
                                          try
                                          {
