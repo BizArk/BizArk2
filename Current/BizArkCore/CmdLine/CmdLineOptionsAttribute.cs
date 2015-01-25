@@ -65,7 +65,7 @@ namespace BizArk.Core.CmdLine
         /// <summary>
         /// Gets or sets a value used to determine if the application should wait before exiting. Only used in ConsoleApplication.RunProgram(). If WaitProperty is set, this value will be set during initialization.
         /// </summary>
-        public bool? Wait { get; set; }
+        public bool Wait { get; set; }
 
         /// <summary>
         /// Gets or sets the rule for comparing the names/aliases. By default this is set to 
@@ -107,8 +107,7 @@ namespace BizArk.Core.CmdLine
                 options.ArgumentPrefix = ArgumentPrefix;
             if (WaitArgName != null)
                 options.WaitArgName = WaitArgName;
-            if (Wait != null)
-                options.Wait = (bool)Wait;
+            options.Wait = Wait;
             if (Comparer != null)
                 options.Comparer = Comparer.Value;
 			if (AssignmentDelimiter != '\0')

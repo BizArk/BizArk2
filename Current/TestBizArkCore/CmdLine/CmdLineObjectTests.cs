@@ -655,6 +655,45 @@ Help (?): Displays command-line usage information.
             Debug.WriteLine(args.GetHelpText(50));
             Assert.IsTrue(args.IsValid());
         }
+
+        [Test]
+        public void Wait_CmdLineWithWaitTrue_True()
+        {
+            var cmdLineWithWaitTrue = new CmdLineWithWaitTrue();
+
+            cmdLineWithWaitTrue.Options.Wait.Should().BeTrue();
+        }        
+        
+        [Test]
+        public void WaitArgs_CmdLineWithWaitTrue_True()
+        {
+            // Act
+            var cmdLineWithWaitArgName = new CmdLineWithWaitArgName();
+            cmdLineWithWaitArgName.InitializeFromCmdLine("/PleaseWaitMe");
+
+            // Assert
+            cmdLineWithWaitArgName.Options.Wait.Should().BeTrue();
+            cmdLineWithWaitArgName.Options.WaitArgName.Should().Be("PleaseWaitMe");
+        }
+    }
+
+    [CmdLineOptions(Wait = true, WaitArgName = "PleaseWaitMe")]
+    public class CmdLineWithWaitArgName : CmdLineObject
+    {
+        [CmdLineArg]
+        public string Name { get; set; }
+
+        [CmdLineArg]
+        public bool PleaseWaitMe { get; set; }
+        
+    }
+
+    [CmdLineOptions(Wait = true)]
+    public class CmdLineWithWaitTrue : CmdLineObject
+    {
+        [CmdLineArg]
+        public string[] Names { get; set; }
+        
     }
 
     [CmdLineOptions(ArgumentPrefix = "-", AssignmentDelimiter = ':', ArraySeparator = ";")]
