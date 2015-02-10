@@ -37,7 +37,18 @@ namespace BizArk.Core.Tests.CmdLine
             var helpText = cmdLine.GetHelpText(80);
 
             // Assert
-            helpText.Should().Be("Command-line options.\r\n\r\nUsage:  [/?[-]]\r\n\r\nCountry:     \r\n             Default Value: Abkhazia\r\n             Possible Values: [Abkhazia, Albania, Afghanistan, Algeria, Andorra,\n             Angola, Anguilla, Antigua, Argentina, Armenia, Aruba, Australia,\n             Austria, Azerbaijan]\r\nHelp (?):    Displays command-line usage information.\r\n             Default Value: False\r\n");
+            helpText.Should().Be(@"Command-line options.
+
+ [/?[-]]
+
+/Country     Country
+             Default Value: Abkhazia
+             Possible Values: [Abkhazia, Albania, Afghanistan, Algeria, Andorra,
+             Angola, Anguilla, Antigua, Argentina, Armenia, Aruba, Australia,
+             Austria, Azerbaijan]
+/?           Displays command-line usage information.
+             Default Value: False
+");
         }
 
         [Test]
@@ -53,12 +64,12 @@ namespace BizArk.Core.Tests.CmdLine
             string helpText = cmdLineObj.GetHelpText(80);
             Assert.That(helpText, Is.EqualTo(@"Command-line options.
 
-Usage:  [/Name:<Name>] [/?[-]]
+ [/Name:<Name>] [/?[-]]
 
-Name:      The name of the user
-Count:     
+/Name      The name of the user
+/Count     Count
            Default Value: 0
-Help (?):  Displays command-line usage information.
+/?         Displays command-line usage information.
            Default Value: False
 "));
         }
@@ -71,17 +82,17 @@ Help (?):  Displays command-line usage information.
 
             // Act
             cmdLineObj.InitializeFromCmdLine(new[] { "/Name", "John" });
+            string helpText = cmdLineObj.GetHelpText(80);
 
             //Assert
-            string helpText = cmdLineObj.GetHelpText(80);
-            Assert.That(helpText, Is.EqualTo(@"Command-line options.
+            helpText.Should().Be(@"Command-line options.
 
-Usage:  [/Name <Name>] [/?[-]]
+ [/Name <Name>] [/?[-]]
 
-Name:     The name of the user
-Help (?): Displays command-line usage information.
+/Name     The name of the user
+/?        Displays command-line usage information.
           Default Value: False
-"));
+");
         }
 
         [Test]
@@ -89,19 +100,18 @@ Help (?): Displays command-line usage information.
         {
             var cmdLineObject = new CmdLineObjectWithEnumProperty();
             cmdLineObject.InitializeFromCmdLine(new[] { "/?" });
-
             string helpText = cmdLineObject.GetHelpText(80);
 
-            Assert.That(@"Command-line options.
+            helpText.Should().Be(@"Command-line options.
 
-Usage:  [/?[-]]
+ [/?[-]]
 
-Car:      
+/Car      Car
           Default Value: Tesla
           Possible Values: [Tesla, Ferrari, Lamborghini, Kia]
-Help (?): Displays command-line usage information.
+/?        Displays command-line usage information.
           Default Value: False
-", Is.EqualTo(helpText));
+");
         }
 
         [Test]
