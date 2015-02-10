@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using BizArk.Core.Extensions.ArrayExt;
-using BizArk.Core.Extensions.FormatExt;
+using System.IO;
 using System.Text.RegularExpressions;
+using BizArk.Core.Extensions.ArrayExt;
 
 namespace BizArk.Core.Extensions.StringExt
 {
@@ -16,23 +16,12 @@ namespace BizArk.Core.Extensions.StringExt
         /// </summary>
         /// <param name="str">The string to wrap.</param>
         /// <param name="maxLength">The maximum number of characters per line.</param>
-        /// <returns></returns>
-        public static string Wrap(this string str, int maxLength)
-        {
-            return Wrap(str, maxLength, "");
-        }
-
-        /// <summary>
-        /// Forces the string to word wrap so that each line doesn't exceed the maxLineLength.
-        /// </summary>
-        /// <param name="str">The string to wrap.</param>
-        /// <param name="maxLength">The maximum number of characters per line.</param>
         /// <param name="prefix">Adds this string to the beginning of each line that has been broken (used for indenting text).</param>
         /// <returns></returns>
-        public static string Wrap(this string str, int maxLength, string prefix)
+        public static string Wrap(this string str, int maxLength, string prefix = "")
         {
             var lines = WrappedLines(str, maxLength, prefix);
-            return string.Join("\n", lines);
+            return string.Join(Environment.NewLine, lines);
         }
 
         /// <summary>
@@ -99,7 +88,7 @@ namespace BizArk.Core.Extensions.StringExt
         public static string[] Lines(this string str)
         {
             var lines = new List<string>();
-            using (var sr = new System.IO.StringReader(str))
+            using (var sr = new StringReader(str))
             {
                 string line = sr.ReadLine();
                 while (line != null)

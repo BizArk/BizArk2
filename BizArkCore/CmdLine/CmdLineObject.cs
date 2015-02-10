@@ -543,7 +543,7 @@ namespace BizArk.Core.CmdLine
 
 			helpTextBuilder.AppendLine(Options.Title);
 			helpTextBuilder.AppendLine(Options.Description);
-			helpTextBuilder.AppendLine("Usage: " + Options.Usage);
+			helpTextBuilder.AppendLine(Options.Usage);
 			helpTextBuilder.AppendLine();
 
 			int maxNameWidth = GetMaxNameLength() + 6; // Add extra for ' (S): '
@@ -553,14 +553,18 @@ namespace BizArk.Core.CmdLine
 			foreach (CmdLineProperty prop in Properties)
 			{
 				var propName = new StringBuilder();
-				propName.Append(prop.Name);
-				if (prop.Aliases.Length > 0)
+
+			    if (prop.Aliases.Length == 0)
+			    {
+                    propName.Append(Options.ArgumentPrefix);
+			        propName.Append(prop.Name);
+			    }
+                else
 				{
-					propName.Append(" (");
-					propName.Append(string.Join(", ", prop.Aliases));
-					propName.Append(")");
+					propName.Append(Options.ArgumentPrefix);
+                    propName.Append(string.Join(" | " + Options.ArgumentPrefix, prop.Aliases));
 				}
-				propName.Append(": ");
+
 				helpTextBuilder.Append(propName.ToString().PadRight(maxNameWidth));
 				string propDesc = prop.Description.Wrap(maxDescWidth);
 				string[] lines = propDesc.Lines();
@@ -573,7 +577,7 @@ namespace BizArk.Core.CmdLine
 				else
 				{
 					// If there isn't a description, we need to add a line break.
-					helpTextBuilder.AppendLine();
+					helpTextBuilder.AppendLine(prop.Name.Wrap(maxDescWidth));
 				}
 				if (prop.Required)
 					helpTextBuilder.AppendLine(indent + "REQUIRED");
