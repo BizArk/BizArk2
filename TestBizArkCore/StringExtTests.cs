@@ -22,13 +22,13 @@ namespace BizArk.Core.Tests
 
 			str = "This is my line.";
 			maxLineLength = 5;
-			expected = "This\nis\nmy\nline\n.";
+			expected = "This\r\nis\r\nmy\r\nline\r\n.";
 			actual = StringExt.Wrap(str, maxLineLength);
 			Assert.AreEqual(expected, actual);
 
 			str = "ThisIsMyLine.";
 			maxLineLength = 5;
-			expected = "ThisI\nsMyLi\nne.";
+			expected = "ThisI\r\nsMyLi\r\nne.";
 			actual = StringExt.Wrap(str, maxLineLength);
 			Assert.AreEqual(expected, actual);
 
@@ -52,7 +52,7 @@ namespace BizArk.Core.Tests
 
 			str = "hellohello";
 			maxLineLength = 5;
-			expected = "hello\nhello";
+			expected = "hello\r\nhello";
 			actual = StringExt.Wrap(str, maxLineLength);
 			Assert.AreEqual(expected, actual);
 
