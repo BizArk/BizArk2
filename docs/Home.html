@@ -1,0 +1,58 @@
+<div class="wikidoc">
+<h1><span style="font-size:10pt">Welcome to the BizArk Toolkit Home Page</span></h1>
+<p style="padding-left:30px">&nbsp;</p>
+<p style="padding-left:30px"><strong>UPDATE: BizArk v3 is now available on GitHub!&nbsp;<a href="https://github.com/BizArk/BizArk3">Check it Out</a>&nbsp;</strong>or read about the update
+<a href="https://bizark.codeplex.com/discussions/652459">here</a>.</p>
+<p style="padding-left:30px">&nbsp;</p>
+<p>BizArk Toolkit is a container for different reusable things.<br>
+<br>
+<strong>BizArkCore features:</strong></p>
+<ul>
+<li>Simple but powerful command-line argument parsing. See <a href="/wikipage?title=Command-line%20Parsing&referringTitle=Home">
+Command-line Parsing</a>. </li><li>Console application with command-line parsing&nbsp;<a href="https://bizark.codeplex.com/wikipage?title=Console%20application%20with%20command-line%20parsing%20and%20validation&referringTitle=Documentation">Console application with command-line parsing and
+ validation</a> </li><li>Robust data-type conversion class. Handles many types of conversions that the built-in .Net conversion class cannot. See
+<a href="/wikipage?title=Data%20Type%20Conversions&referringTitle=Home">Data Type Conversions</a>.
+</li><li>WebHelper class, similar to the WebClient, but supports multiple-file uploads, setting the timeout to something other than the default, and allows customization of the request. See
+<a href="/wikipage?title=Web%20Helper&referringTitle=Home">Web Helper</a>. </li><li>String templates allow you to used named arguments in a string instead of numeric place holders while still getting the formatting capabilities of String.Format. See
+<a href="/wikipage?title=String%20Templates&referringTitle=Home">String Templates</a>.
+</li><li>Data caching with built-in time-out and memory management. </li><li>Simple class factory for replacing types with other types. </li><li>Application object provides simplified access to the typical applicaion attributes, cache, and file utilities based on the application (temp directory, relative to app path, etc)
+</li><li>A mime type map that can be used to get a mime type based on a file extension. This map defaults to the
+<a href="http://svn.apache.org/viewvc/httpd/httpd/trunk/docs/conf/mime.types?view=markup">
+Apache Mime.Types</a> file. </li><li>Use embedded fonts or fonts from a file with FontUtil. </li><li>Manage your database access using the Database class. It can return strongly typed values with the ExecuteScalar&lt;T&gt; functions and you can use the Select&lt;T&gt; method to map an IDataReader to an object.
+</li><li>Many extension methods (over 160):
+<ul>
+<li>Array - Shrink, Convert, IndexOf, Contains, Copy </li><li>PropertyDescriptor - GetAttribute </li><li>Type - GetAttribute, Implements (checks if type implements an interface), IsDerivedFrom, Instantiate (creates a new instance of the type)
+</li><li>Assembly - GetAttribute </li><li>Object - GetAttribute, Convert, GetValue (gets a property value using reflection)
+</li><li>Size - Resize (proportional resize given max width and height) </li><li>Exception - GetDetails (full log of exception) </li><li>Image - Open (opens Image in default application), GetExtension (gets the appropriate file extension for an Image), Resize (proportionally resizes image)
+</li><li>String - Wrap (wraps a string based on a max char count), Lines (returns an array of strings delimited by newline), Words (returns an array of strings delimited by white space), F
+</li><li>Xml - Easily get and set values in an XmlDocument. </li><li>Web - Encode/decode html and url strings. </li><li>Format - Convenient methods for formatting numeric values, a shortcut for string.Format, and a shortcut for
+<a href="/wikipage?title=String%20Templates&referringTitle=Home">String Templates</a>.
+</li><li>Data - Methods to get typed values from IDataReader, DataRow, and DataRowView. Uses ConvertEx to convert values if necessary.
+</li></ul>
+</li></ul>
+<hr>
+<p><strong>Available on nuget in two packages:</strong></p>
+<p>BizarkToolKit: the full toolkit&nbsp;</p>
+<p><a href="http://www.nuget.org/packages/BizArkToolkit">http://www.nuget.org/packages/BizArkToolkit</a>&nbsp;</p>
+<p>Bizark.Core: contains the command-line parsing component</p>
+<p><a href="http://www.nuget.org/packages/BizArk.Core/">http://www.nuget.org/packages/BizArk.Core/</a></p>
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+<p><strong>Powered by:</strong></p>
+<p><a href="https://www.visualsvn.com/"><strong><img src="http://www.visualsvn.com/images/visualsvn_logo.jpg" alt="" width="61" height="60"></strong></a></p>
+<p><a href="http://www.ndepend.com/"><img src="http://nlog-project.org/images/PoweredByNDepend.png" alt="" width="190" height="57"></a></p>
+<p><a href="https://www.jetbrains.com/resharper/"><img src="https://www.jetbrains.com/resharper/docs/logo_resharper.png" alt="" width="250" height="50"></a></p>
+<p><a href="https://www.jetbrains.com/teamcity/"><img src="http://www.jetbrains.com/img/logos/logo_teamcity_small.gif" alt="" width="147" height="33"></a></p>
+<p><a href="http://codebetter.com/"><img src="http://cdn1.codebetter.com/wp-content/themes/codebetter/images/codebetter_logo.png" alt="" width="223" height="48"></a></p>
+<p>&nbsp;</p>
+<p>Build hosted on <a href="http://teamcity.codebetter.com/">CodeBetter's TeamCity</a>:</p>
+<div style="background-color:#00578e; margin:0; padding:0; text-decoration:none; text-indent:0; letter-spacing:-0.001em; width:728px; height:90px">
+<a title="YouTrack by JetBrains" href="http://www.jetbrains.com/youtrack" style="margin:60px 0 0 190px; padding:0; float:left; font-size:14px; border:0; color:#acc4f9; font-family:trebuchet ms,arial,sans-serif; font-weight:normal; text-align:left">keyboard-centric
+ bug tracker</a> <a title="TeamCity by JetBrains" href="http://www.jetbrains.com/teamcity" style="margin:0 0 0 400px; padding:60px 0 2px 0; font-size:14px; border:0; display:block; color:#acc4f9; font-family:trebuchet ms,arial,sans-serif; font-weight:normal; text-align:left">
+continuous integration server</a></div>
+<hr>
+<p><br>
+<em>NOTE: This project is not associated with the website of the same name.</em></p>
+<p>&nbsp;</p>
+</div><div class="ClearBoth"></div>
