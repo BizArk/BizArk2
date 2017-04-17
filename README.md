@@ -1,10 +1,10 @@
-#Welcome to the BizArk Toolkit Home Page
+# Welcome to the BizArk Toolkit Home Page
 
 **UPDATE: BizArk v3 is now available! [Check it Out](https://github.com/BizArk/BizArk3)**
 
 BizArk Toolkit is a container for different reusable things.  
 
-##BizArkCore features:
+## BizArkCore features
 
 * Simple but powerful command-line argument parsing. See [Command-line Parsing](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Command-line%20Parsing.md).
 * Console application with command-line parsing [Console application with command-line parsing and validation](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Console%20application%20with%20command-line%20parsing%20and%20validation.md)
@@ -34,7 +34,7 @@ BizArk Toolkit is a container for different reusable things.
 
 * * *
 
-##Available on nuget:
+## Available on nuget
 
 Bizark.Core: contains the command-line parsing component
 
