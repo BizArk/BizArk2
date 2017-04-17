@@ -4,6 +4,8 @@
 
 BizArk Toolkit is a container for different reusable things.  
 
+**NOTE:** This repository was imported from CodePlex. The documentation is a bit rough, but should be adequate. Look in the docs folder for the full set of documentation that was imported from CodePlex.
+
 ## BizArkCore features
 
 * Simple but powerful command-line argument parsing. See [Command-line Parsing](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Command-line%20Parsing.md).
