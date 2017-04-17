@@ -1,16 +1,16 @@
-# Welcome to the BizArk Toolkit Home Page
+#Welcome to the BizArk Toolkit Home Page
 
 **UPDATE: BizArk v3 is now available! [Check it Out](https://github.com/BizArk/BizArk3)**
 
 BizArk Toolkit is a container for different reusable things.  
 
-## BizArkCore features:
+##BizArkCore features:
 
-* Simple but powerful command-line argument parsing. See [Command-line Parsing](/wikipage?title=Command-line%20Parsing&referringTitle=Home).
-* Console application with command-line parsing [Console application with command-line parsing and validation](https://bizark.codeplex.com/wikipage?title=Console%20application%20with%20command-line%20parsing%20and%20validation&referringTitle=Documentation)
-* Robust data-type conversion class. Handles many types of conversions that the built-in .Net conversion class cannot. See [Data Type Conversions](/wikipage?title=Data%20Type%20Conversions&referringTitle=Home).
-* WebHelper class, similar to the WebClient, but supports multiple-file uploads, setting the timeout to something other than the default, and allows customization of the request. See [Web Helper](/wikipage?title=Web%20Helper&referringTitle=Home).
-* String templates allow you to used named arguments in a string instead of numeric place holders while still getting the formatting capabilities of String.Format. See [String Templates](/wikipage?title=String%20Templates&referringTitle=Home).
+* Simple but powerful command-line argument parsing. See [Command-line Parsing](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Command-line%20Parsing.md).
+* Console application with command-line parsing [Console application with command-line parsing and validation](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Console%20application%20with%20command-line%20parsing%20and%20validation.md)
+* Robust data-type conversion class. Handles many types of conversions that the built-in .Net conversion class cannot. See [Data Type Conversions](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Data%20Type%20Conversions.md).
+* WebHelper class, similar to the WebClient, but supports multiple-file uploads, setting the timeout to something other than the default, and allows customization of the request. See [Web Helper](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/Web%20Helper.md).
+* String templates allow you to used named arguments in a string instead of numeric place holders while still getting the formatting capabilities of String.Format. See [String Templates](https://raw.githubusercontent.com/BizArk/BizArk2/master/docs/String%20Templates.md).
 * Data caching with built-in time-out and memory management.
 * Simple class factory for replacing types with other types.
 * Application object provides simplified access to the typical applicaion attributes, cache, and file utilities based on the application (temp directory, relative to app path, etc)
@@ -34,7 +34,7 @@ BizArk Toolkit is a container for different reusable things.
 
 * * *
 
-## Available on nuget:
+##Available on nuget:
 
 Bizark.Core: contains the command-line parsing component
 
